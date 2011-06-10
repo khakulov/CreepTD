@@ -481,18 +481,16 @@ public class RunningGameState extends AbstractGameState implements
             if (!this.playerPositions.contains(player)) {
                 if (submitted_position > 0 && submitted_position <= this.playerPositions.size() && this.playerPositions.get(submitted_position-1) == null) {
                     position = submitted_position;
+                    this.playerPositions.set(position, player);
                 } else {
                     for (position = this.getGame().getMaxPlayers(); position >= 1; position--) {
                         if (this.playerPositions.get(position-1) == null) {
+                            this.playerPositions.set(position-1, player);
                             break;
                         }
                     }
                 }
-                if (position > this.playerPositions.size()) {
-                    logger.warn("Invalid position detected: submitted="+submitted_position+" calculated to position="+position+" (max="+this.playerPositions.size()+")");
-                    position = this.playerPositions.size();
-                }
-                this.playerPositions.set(position-1, player);
+                position = this.playerPositions.indexOf(player);
                 logger.info("Game over for " + player + " (position: #" + (position+1) + ")");
             }
         }
