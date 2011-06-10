@@ -1,0 +1,98 @@
+###
+### MAP_RACEWAYS
+###
+# set the Background:
+map_raceways.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN:
+# or if you do not want to use it for this map:
+# just set it to:
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:OFF
+
+# Next lines represent cells
+# where no tower can be built.
+# Just like a holy land.
+#
+# x y coordinates are seperated by
+# semicolon
+7;10
+9;10
+9;8
+7;8
+7;6
+9;6
+9;4
+7;4
+7;2
+9;2
+
+# This is the way where creeps walk.
+#
+# x y coordinates are seperated by
+# comma.
+
+1,15
+1,14
+1,13
+2,13
+3,13
+3,12
+3,11
+2,11
+1,11
+1,12
+1,13
+2,13
+3,13
+4,13
+5,13
+6,13
+7,13
+8,13
+9,13
+9,12
+9,11
+8,11
+7,11
+7,9
+7,7
+7,5
+7,3
+7,1
+8,1
+9,1
+9,3
+9,5
+9,7
+9,9
+9,11
+9,12
+9,13
+9,14
+10,14
+11,14
+12,14
+13,14
+14,14
+14,13
+14,12
+14,11
+14,10
+14,9
+14,8
+14,7
+14,6
+14,5
+14,4
+14,3
+14,2
+13,2
+12,2
+11,2
+11,1
+12,1
+13,1
+14,1
+15,1

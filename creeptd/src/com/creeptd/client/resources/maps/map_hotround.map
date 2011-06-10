@@ -1,0 +1,54 @@
+###
+### MAP_HOTROUND
+###
+# set the Background:
+map_hotround.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN:
+# or if you do not want to use it for this map:
+# just set it to:
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:WHITE
+
+# Next lines represent cells
+# where no tower can be built.
+# Just like a holy land.
+#
+# x y coordinates are seperated by
+# semicolon
+
+# This is the way where creeps walk.
+#
+# x y coordinates are seperated by
+# comma.
+
+9,15
+9,14
+9,13
+9,12
+9,11
+9,10
+9,9
+10,9
+10,8
+10,7
+9,7
+9,6
+8,6
+7,6
+7,7
+6,7
+6,8
+6,9
+7,9
+7,10
+8,10
+9,10
+9,9
+10,9
+11,9
+12,9
+13,9
+14,9
+15,9

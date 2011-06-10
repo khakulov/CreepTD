@@ -1,0 +1,92 @@
+###
+### RED VECTOR MAP
+###
+
+# set the Background:
+map_redvector.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN
+# or if you do not want to use it for this map
+# just set it to: 
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:OFF
+
+# Next lines represent cells
+# where no tower can be built.
+#  Just like a holy land.
+#
+# x y coordinates are separated by
+# semicolon
+## no one likes this holy_grid in this map
+
+
+# This is the way where creeps walk.
+# 
+# x y coordinates are separated by
+# comma.
+
+5,15
+5,14
+5,13
+5,12
+5,11
+5,10
+5,9
+5,8
+5,7
+5,6
+5,5
+4,5
+3,5
+2,5
+1,5
+0,5
+0,6
+0,7
+0,8
+0,9
+0,10
+1,10
+2,10
+3,10
+4,10
+5,10
+6,10
+7,10
+8,10
+9,10
+10,10
+11,10
+12,10
+13,10
+14,10
+15,10
+15,11
+15,12
+15,13
+15,14
+15,15
+14,15
+13,15
+12,15
+11,15
+10,15
+10,14
+10,13
+10,12
+10,11
+10,10
+10,9
+10,8
+10,7
+10,6
+10,5
+11,5
+12,5
+13,5
+14,5
+15,5
+
+
+

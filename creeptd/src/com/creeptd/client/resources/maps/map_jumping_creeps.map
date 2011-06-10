@@ -1,0 +1,73 @@
+###
+### MAP_JUMPING_CREEPS
+###
+# set the Background:
+map_jumping_creeps.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN:
+# or if you do not want to use it for this map:
+# just set it to:
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:OFF
+
+# Next lines represent cells
+# where no tower can be built.
+# Just like a holy land.
+#
+# x y coordinates are seperated by
+# semicolon
+
+# This is the way where creeps walk.
+#
+# x y coordinates are seperated by
+# comma.
+
+2,15
+2,14
+2,13
+2,12
+2,11
+2,10
+3,10
+4,10
+5,10
+6,10
+7,10
+8,10
+8,11
+8,12
+8,13
+8,14
+7,14
+6,14
+5,14
+4,14
+4,13
+4,12
+5,12
+6,12
+12,6
+12,5
+12,4
+13,4
+14,4
+14,5
+14,6
+14,7
+14,8
+13,8
+12,8
+11,8
+10,8
+10,7
+10,6
+10,5
+10,4
+10,3
+10,2
+11,2
+12,2
+13,2
+14,2
+15,2

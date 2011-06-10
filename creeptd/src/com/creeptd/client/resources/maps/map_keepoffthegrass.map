@@ -1,0 +1,62 @@
+###
+### KEEP OFF THE GRASS
+###
+# set the Background:
+map_keepoffthegrass.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN:
+# or if you do not want to use it for this map:
+# just set it to:
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:GREEN
+
+# Next lines represent cells
+# where no tower can be built.
+# Just like a holy land.
+#
+# x y coordinates are seperated by
+# semicolon
+
+# This is the way where creeps walk.
+#
+# x y coordinates are seperated by
+# comma.
+
+4,15
+4,14
+4,13
+5,13
+6,13
+7,13
+8,13
+9,13
+9,14
+10,14
+10,13
+10,12
+11,12
+12,12
+13,12
+14,12
+14,11
+14,10
+14,9
+13,9
+12,9
+11,9
+10,9
+9,9
+9,8
+10,8
+11,8
+11,7
+12,7
+12,8
+13,8
+14,8
+14,7
+14,6
+14,5
+14,4
+15,4

@@ -1,0 +1,138 @@
+###
+### BLUE_PLANET_MAP
+###
+
+# set the Background:
+map_circle.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN
+# or if you do not want to use it for this map
+# just set it to: 
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:OFF
+
+# Next lines represent cells
+# where no tower can be built.
+#  Just like a holy land.
+#
+# x y coordinates are seperated by
+# semicolon
+
+## no one likes this holy_grid in this map
+
+# This is the way where creeps walk.
+# 
+# x y coordinates are seperated by
+# comma.
+
+1,15
+1,14
+1,13
+1,12
+1,11
+1,10
+1,9
+1,8
+1,7
+1,6
+1,5
+1,4
+1,3
+1,2
+1,1
+2,1
+3,1
+4,1
+5,1
+6,1
+7,1
+8,1
+9,1
+10,1
+11,1
+12,1
+13,1
+14,1
+14,2
+14,3
+14,4
+14,5
+14,6
+14,7
+14,8
+14,9
+14,10
+14,11
+14,12
+14,13
+14,14
+13,14
+12,14
+11,14
+10,14
+9,14
+8,14
+7,14
+6,14
+5,14
+4,14
+3,14
+3,13
+3,12
+3,11
+3,10
+3,9
+3,8
+3,7
+3,6
+3,5
+3,4
+3,3
+4,3
+5,3
+6,3
+7,3
+8,3
+9,3
+10,3
+11,3
+12,3
+12,4
+12,5
+12,6
+12,7
+12,8
+12,9
+12,10
+12,11
+12,12
+11,12
+10,12
+9,12
+8,12
+7,12
+6,12
+5,12
+5,11
+5,10
+5,9
+5,8
+5,7
+5,6
+5,5
+6,5
+7,5
+8,5
+9,5
+10,5
+10,6
+10,7
+10,8
+10,9
+10,10
+9,10
+8,10
+7,10
+7,9
+7,8

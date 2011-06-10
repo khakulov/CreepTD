@@ -1,0 +1,132 @@
+###
+### CRYSTAL
+###
+# set the Background:
+map_crystal.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN:
+# or if you do not want to use it for this map:
+# just set it to:
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:OFF
+
+# Next lines represent cells
+# where no tower can be built.
+# Just like a holy land.
+#
+# x y coordinates are seperated by
+# semicolon
+
+# This is the way where creeps walk.
+#
+# x y coordinates are seperated by
+# comma.
+
+0,15
+0,14
+1,14
+2,14
+2,15
+3,15
+4,15
+4,14
+4,13
+4,12
+3,12
+3,13
+2,13
+1,13
+1,12
+1,11
+1,10
+2,10
+3,10
+3,11
+4,11
+5,11
+6,11
+6,12
+6,13
+6,14
+6,15
+7,15
+8,15
+9,15
+10,15
+11,15
+12,15
+13,15
+13,14
+12,14
+11,14
+11,13
+10,13
+9,13
+9,12
+9,11
+9,10
+8,10
+8,9
+7,9
+7,8
+6,8
+6,7
+5,7
+5,6
+4,6
+4,5
+4,4
+5,4
+6,4
+6,5
+7,5
+7,6
+8,6
+8,7
+9,7
+9,8
+10,8
+10,9
+11,9
+12,9
+13,9
+13,10
+13,11
+14,11
+14,12
+14,13
+15,13
+15,12
+15,11
+15,10
+15,9
+15,8
+15,7
+15,6
+14,6
+13,6
+12,6
+11,6
+11,5
+11,4
+11,3
+10,3
+10,2
+10,1
+11,1
+12,1
+13,1
+13,2
+13,3
+12,3
+12,4
+13,4
+14,4
+15,4
+15,3
+15,2
+14,2
+14,1
+14,0
+15,0

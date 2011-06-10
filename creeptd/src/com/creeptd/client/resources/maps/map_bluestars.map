@@ -1,0 +1,73 @@
+###
+### BLUESTARS
+###
+# set the Background:
+map_bluestars.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN:
+# or if you do not want to use it for this map:
+# just set it to:
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:RED
+
+# Next lines represent cells
+# where no tower can be built.
+# Just like a holy land.
+#
+# x y coordinates are seperated by
+# semicolon
+15;15
+
+# This is the way where creeps walk.
+#
+# x y coordinates are seperated by
+# comma.
+
+14,15
+14,14
+14,13
+14,12
+14,11
+14,10
+14,9
+14,8
+14,7
+13,7
+12,7
+11,7
+10,7
+9,7
+8,7
+7,7
+6,7
+5,7
+4,7
+3,7
+3,6
+3,5
+4,5
+4,4
+5,4
+5,3
+6,3
+7,3
+7,4
+7,5
+7,6
+7,7
+7,8
+7,9
+7,10
+7,11
+7,12
+7,13
+7,14
+8,14
+9,14
+10,14
+11,14
+12,14
+13,14
+14,14
+15,14

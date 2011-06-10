@@ -1,0 +1,92 @@
+###
+### STARS_MAP
+###
+
+# set the Background:
+map_stars.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN
+# or if you do not want to use it for this map
+# just set it to: 
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:BLUE
+
+# Next lines represent cells
+# where no tower can be built.
+#  Just like a holy land.
+#
+# x y coordinates are seperated by
+# semicolon
+
+6;6
+6;8
+8;8
+8;10
+
+# This is the way where creeps walk.
+# 
+# x y coordinates are seperated by
+# comma.
+
+1,15
+1,14
+1,13
+1,12
+2,12
+3,12
+3,11
+3,10
+3,9
+2,9
+2,8
+2,7
+2,6
+3,6
+3,5
+3,4
+2,4
+1,4
+1,3
+1,2
+2,2
+2,1
+3,1
+4,1
+4,2
+5,2
+5,3
+5,4
+5,5
+5,6
+5,7
+6,7
+7,7
+7,8
+7,9
+8,9
+9,9
+9,10
+9,11
+9,12
+9,13
+10,13
+11,13
+12,13
+13,13
+14,13
+14,12
+14,11
+14,10
+14,9
+14,8
+14,7
+14,6
+14,5
+13,5
+13,4
+13,3
+13,2
+13,1
+14,1
+15,1

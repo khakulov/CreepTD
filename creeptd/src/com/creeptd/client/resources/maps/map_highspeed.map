@@ -1,0 +1,103 @@
+###
+### HIGHSPEED\MAP_HIGHSPEED
+###
+# set the Background:
+map_highspeed.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN:
+# or if you do not want to use it for this map:
+# just set it to:
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:OFF
+
+# Next lines represent cells
+# where no tower can be built.
+# Just like a holy land.
+#
+# x y coordinates are seperated by
+# semicolon
+8;14
+8;12
+8;10
+8;8
+8;6
+8;4
+8;2
+7;1
+5;1
+2;4
+2;6
+2;10
+3;13
+2;12
+2;8
+2;2
+3;1
+5;13
+6;12
+6;10
+5;9
+4;8
+6;4
+7;3
+9;3
+11;3
+12;4
+12;6
+12;8
+11;9
+10;8
+11;7
+13;7
+5;7
+6;6
+6;8
+
+# This is the way where creeps walk.
+#
+# x y coordinates are seperated by
+# comma.
+
+8,15
+8,13
+8,11
+8,9
+8,7
+8,5
+8,3
+8,1
+6,1
+4,1
+2,1
+2,3
+2,5
+2,7
+2,9
+2,11
+2,13
+4,13
+6,13
+6,11
+6,9
+4,9
+4,7
+6,7
+6,9
+4,9
+4,7
+6,7
+6,5
+6,3
+8,3
+10,3
+12,3
+12,5
+12,7
+12,9
+10,9
+10,7
+12,7
+14,7
+14,8
+15,8

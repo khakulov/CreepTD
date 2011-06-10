@@ -1,0 +1,89 @@
+###
+### CORRODED_MAP
+###
+
+# set the Background:
+map_corroded.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN
+# or if you do not want to use it for this map
+# just set it to: 
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:OFF
+
+# Next lines represent cells
+# where no tower can be built.
+#  Just like a holy land.
+#
+# x y coordinates are seperated by
+# semicolon
+0;0
+0;1
+0;2
+0;5
+0;6
+0;7
+0;8
+1;0
+1;1
+2;0
+3;0
+4;0
+5;0
+6;0
+7;0
+0;10
+0;11
+0;12
+1;10
+1;11
+1;12
+0;13
+0;14
+0;15
+10;7
+11;7
+12;7
+10;8
+11;8
+12;8
+
+# This is the way where creeps walk.
+# 
+# x y coordinates are seperated by
+# comma.
+
+5,15
+5,14
+5,13
+5,12
+5,11
+5,10
+5,9
+5,8
+5,7
+5,6
+5,5
+5,4
+5,3
+5,2
+4,2
+3,2
+2,2
+2,3
+2,4
+2,5
+3,5
+4,5
+5,5
+6,5
+7,5
+8,5
+9,5
+10,5
+11,5
+12,5
+13,5
+14,5
+15,5

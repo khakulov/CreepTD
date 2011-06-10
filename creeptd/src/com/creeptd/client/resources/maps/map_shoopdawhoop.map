@@ -1,0 +1,72 @@
+###
+### MAP_SHOOPDAWHOOP
+###
+# set the Background:
+map_shoopdawhoop.jpg
+
+# mark player context with one of the following colors:
+# GRAY WHITE BLUE RED YELLOW MAGENTA CYAN GREEN:
+# or if you do not want to use it for this map:
+# just set it to:
+# OFF
+SET_ALPHA_BACKGROUND_COLOR:GRAY
+
+# Next lines represent cells
+# where no tower can be built.
+# Just like a holy land.
+#
+# x y coordinates are seperated by
+# semicolon
+1;2
+5;2
+6;2
+7;2
+9;2
+10;2
+11;2
+12;2
+13;2
+14;2
+
+# This is the way where creeps walk.
+#
+# x y coordinates are seperated by
+# comma.
+
+2,15
+2,14
+2,13
+2,12
+2,11
+2,10
+2,9
+2,8
+2,7
+2,6
+2,5
+2,4
+2,3
+2,2
+3,2
+4,2
+4,1
+4,0
+3,0
+2,0
+1,0
+0,0
+0,1
+0,2
+2,2
+4,2
+4,0
+2,0
+0,0
+0,2
+4,2
+4,0
+0,0
+0,2
+4,2
+8,2
+15,2
