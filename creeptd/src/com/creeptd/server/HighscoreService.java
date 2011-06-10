@@ -153,6 +153,7 @@ public class HighscoreService {
                 playerPositions.get(i).getClient().getPlayerModel().setElopoints((int) newElopoints[i]);
                 playerPositions.get(i).getClient().getPlayerModel().setLastgameExperience((int) (newExperience[i] - experience[i]));
                 playerPositions.get(i).getClient().getPlayerModel().setLastgameElopoints((int) (newElopoints[i] - elopoints[i]));
+                playerPositions.get(i).getClient().getPlayerModel().setLastgameId(game.getGameId());
                 entityManager.merge(playerPositions.get(i).getClient().getPlayerModel());
             }
             entityTransaction.commit();

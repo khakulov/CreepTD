@@ -166,11 +166,11 @@ public class Player {
         this.lastgame_experience = lastgame_experience;
     }
 
-    public int getLastgame_id() {
+    public int getLastgameId() {
         return lastgame_id;
     }
 
-    public void setLastgame_id(int lastgame_id) {
+    public void setLastgameId(int lastgame_id) {
         this.lastgame_id = lastgame_id;
     }
 

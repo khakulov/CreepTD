@@ -35,7 +35,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.server.model;
 
+import com.creeptd.server.PersistenceManager;
+import java.util.List;
+import java.util.Random;
+import javax.persistence.Query;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -45,6 +50,7 @@ public class GameJournal {
 
     @Id
     private int id;
+    private String gameKey = null;
     private String name;
     private String map;
     private long start_date;
@@ -83,6 +89,35 @@ public class GameJournal {
     private String mac3;
     private String mac4;
 
+    private static String generateKey(int len) {
+        String chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        String key = "";
+        for (int i=0; i<len; i++) {
+            key += chars.charAt(new Random().nextInt(chars.length()));
+        }
+        return key;
+    }
+
+    private static boolean existsGameKey(String gameKey) {
+        EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
+        String queryString = "SELECT id FROM GameJournal WHERE gameKey='"+gameKey+"'";
+        Query query = entityManager.createNativeQuery(queryString, GameJournal.class);
+        List<?> resultList = query.getResultList();
+        if ((resultList != null) && (resultList.size() > 0)) {
+            return true;
+        }
+        return false;
+    }
+
+    public GameJournal() {
+        super();
+        if (this.gameKey == null) {
+            do {
+                this.gameKey = generateKey(64);
+            } while (existsGameKey(this.gameKey));
+        }
+    }
+
     /**
      * @return the id
      */
@@ -95,6 +130,14 @@ public class GameJournal {
      */
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getGameKey() {
+        return gameKey;
+    }
+
+    public void setGameKey(String gameKey) {
+        this.gameKey = gameKey;
     }
 
     /**

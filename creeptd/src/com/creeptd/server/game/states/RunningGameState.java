@@ -488,6 +488,10 @@ public class RunningGameState extends AbstractGameState implements
                         }
                     }
                 }
+                if (position > this.playerPositions.size()) {
+                    logger.warn("Invalid position detected: submitted="+submitted_position+" calculated to position="+position+" (max="+this.playerPositions.size()+")");
+                    position = this.playerPositions.size();
+                }
                 this.playerPositions.set(position-1, player);
                 logger.info("Game over for " + player + " (position: #" + (position+1) + ")");
             }
@@ -547,9 +551,9 @@ public class RunningGameState extends AbstractGameState implements
         // Sort missing players into position map
         for (PlayerInGame p : this.getGame().getPlayers()) {
             if (!this.playerPositions.contains(p)) {
-                for (int i = this.getGame().getMaxPlayers()-1; i>=0; i--) {
-                    if (this.playerPositions.get(i) == null) {
-                        this.playerPositions.set(i, p);
+                for (int position = this.getGame().getMaxPlayers(); position>=1; position--) {
+                    if (this.playerPositions.get(position-1) == null) {
+                        this.playerPositions.set(position-1, p);
                         break;
                     }
                 }
