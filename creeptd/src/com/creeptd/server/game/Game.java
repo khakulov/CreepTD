@@ -259,6 +259,7 @@ public class Game extends AbstractGame {
     public void shufflePlayersInGame() {
         synchronized (this.playersInGame) {
             Collections.shuffle(this.playersInGame);
+            this.players = new ArrayList(this.playersInGame);
         }
     }
 
