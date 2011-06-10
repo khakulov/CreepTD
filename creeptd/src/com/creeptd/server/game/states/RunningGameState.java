@@ -433,6 +433,7 @@ public class RunningGameState extends AbstractGameState implements
      */
     private AbstractGameState handle(GameOverMessage m, PlayerInGame sender) {
         this.playerGameOver(sender, m.getPosition());
+        logger.info("Player "+sender+" sent winningPosition="+m.getPosition());
         if (this.gameOverForAll()) {
             this.endGame();
             return new EndedGameState(this.getGame());
@@ -481,7 +482,7 @@ public class RunningGameState extends AbstractGameState implements
             if (!this.playerPositions.contains(player)) {
                 if (submitted_position > 0 && submitted_position <= this.playerPositions.size() && this.playerPositions.get(submitted_position-1) == null) {
                     position = submitted_position;
-                    this.playerPositions.set(position, player);
+                    this.playerPositions.set(position-1, player);
                 } else {
                     for (position = this.getGame().getMaxPlayers(); position >= 1; position--) {
                         if (this.playerPositions.get(position-1) == null) {
