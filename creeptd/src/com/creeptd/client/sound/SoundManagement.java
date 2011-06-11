@@ -58,7 +58,6 @@ public class SoundManagement {
     private boolean mute = false;
     private AudioClip clipERROR = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.ERROR));
     private AudioClip clipGAMEOVER = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.GAMEOVER));
-    private AudioClip clipINTRO = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.INTRO));
     private AudioClip clipHOLY = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.HOLY));
     private AudioClip clipSHOOT1 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.SHOOT1));
     private AudioClip clipSHOOT2 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.SHOOT2));
@@ -463,20 +462,6 @@ public class SoundManagement {
             return false;
         }
         Thread won = new Thread(new Sound(this.clipGAMEOVER));
-        won.start();
-        return true;
-    }
-
-    /**
-     * Game intro.
-     *
-     * @return if played or not
-     */
-    public boolean intro() {
-        if (mute) {
-            return false;
-        }
-        Thread won = new Thread(new Sound(this.clipINTRO));
         won.start();
         return true;
     }

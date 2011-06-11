@@ -206,6 +206,7 @@ public interface IConstants {
         BLUEMAGMA("com/creeptd/client/resources/maps/map_bluemagma.map"),
         BLUESTARS("com/creeptd/client/resources/maps/map_bluestars.map"),
         BLUEVECTORWATER("com/creeptd/client/resources/maps/map_bluevectorwater.map"),
+        BLOODLINES("com/creeptd/client/resources/maps/map_bloodlines.map"),
         CHROMOSOMVEKTOR("com/creeptd/client/resources/maps/map_chromosomvektor.map"),
         CIRCLE("com/creeptd/client/resources/maps/map_circle.map"),
         CIRCLEVECTOR("com/creeptd/client/resources/maps/map_circlevector.map"),
@@ -256,6 +257,7 @@ public interface IConstants {
         PLASMAVEKTOR("com/creeptd/client/resources/maps/map_plasmavektor.map"),
         PLOX("com/creeptd/client/resources/maps/map_plox.map"),
         PRISON("com/creeptd/client/resources/maps/map_prison.map"),
+        QUADCORE("com/creeptd/client/resources/maps/map_quadcore.map"),
         RACEWAYS("com/creeptd/client/resources/maps/map_raceways.map"),
         RADIALFADE("com/creeptd/client/resources/maps/map_radialfade.map"),
         RAINBOW("com/creeptd/client/resources/maps/map_rainbow.map"),
@@ -281,8 +283,8 @@ public interface IConstants {
         VORTEX("com/creeptd/client/resources/maps/map_vortex.map"),
         WALDGEIST("com/creeptd/client/resources/maps/map_waldgeist.map"),
         WATERDROPS("com/creeptd/client/resources/maps/map_waterdrops.map"),
-        WHITEVECTOR("com/creeptd/client/resources/maps/map_whitevector.map"),
-        QUADCORE("com/creeptd/client/resources/maps/map_quadcore.map");
+        WHITEVECTOR("com/creeptd/client/resources/maps/map_whitevector.map");
+
         private String filename = "";
 
         /**
