@@ -278,13 +278,12 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             start.setEnabled(false);
         }
 
-        description.setText(
-                "<html><table width=\"180px\"><tr><td>Game Name: </td><td>" + this.getCore().getActiveGame().getGameName() + "</td></tr><tr><td>Map: </td><td>" + IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString() + "</td></tr><tr><td>Minimum Players:  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>Min/Max:  </td><td>" + ((this.getCore().getActiveGame().getMinEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMinEloPoints()) + "/" + ((this.getCore().getActiveGame().getMaxEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMaxEloPoints()) + "</td></tr>" + "<tr><td>Mod:  </td><td>" + this.getCore().getActiveGame().getGameModeString() + "</td></tr>" + "<tr><td>Password:  </td><td>" + ("".equals(this.getCore().getActiveGame().getPasswort()) ? "(not set)" : this.getCore().getActiveGame().getPasswort()) + "</td></tr>" + "</td></tr></table></html>");
+        String gamename = this.getCore().getActiveGame().getGameName();
+        if (gamename.length() > 30) gamename = gamename.substring(0, 27)+"...";
+        description.setText("<html><p style=\"padding-bottom: 3; color: yellow;\"><b>„"+gamename+"”</b></p><table width=\"180px\"><tr><td>Map: </td><td>" + IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString() + "</td></tr><tr><td>Players:  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>Min/Max:  </td><td>" + ((this.getCore().getActiveGame().getMinEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMinEloPoints()) + "/" + ((this.getCore().getActiveGame().getMaxEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMaxEloPoints()) + "</td></tr>" + "<tr><td>Mod:  </td><td>" + this.getCore().getActiveGame().getGameModeString() + "</td></tr>" + "<tr><td>Password:  </td><td>" + ("".equals(this.getCore().getActiveGame().getPasswort()) ? "(not set)" : this.getCore().getActiveGame().getPasswort()) + "</td></tr>" + "</td></tr></table></html>");
 
         try {
-            preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(
-                    IConstants.Map.getPicturePath(
-                    IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString()))));
+            preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(IConstants.Map.getPicturePath(IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString()))));
             if (this.getCore().getActiveGame().getGameMode().equals(IConstants.Mode.TEAM2VS2)) {
                 locationImage = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("com/creeptd/client/resources/panel/boardlocations-team.jpg")));
             } else if (this.getCore().getActiveGame().getShufflePlayers()) {
@@ -292,7 +291,6 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             } else {
                 locationImage = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("com/creeptd/client/resources/panel/boardlocations.jpg")));
             }
-
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
@@ -318,7 +316,6 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
      * with the given number of players
      */
     public void startButtonActionPerformed() {
-
         start.setEnabled(false);
         WaitingGameCountdownThread wgct = new WaitingGameCountdownThread(getCore());
         wgct.start();
@@ -409,10 +406,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
                 UIManager.put("OptionPane.JButton.setForground", Color.BLACK);
                 UIManager.put("Panel.background", Color.BLACK);
                 UIManager.put("OptionPane.messageForeground", Color.GREEN);
-                JOptionPane.showMessageDialog(this,
-                        "Could not start game!",
-                        "error",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Could not start game!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -432,10 +426,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             UIManager.put("OptionPane.JButton.setForground", Color.BLACK);
             UIManager.put("Panel.background", Color.BLACK);
             UIManager.put("OptionPane.messageForeground", Color.GREEN);
-            JOptionPane.showMessageDialog(this,
-                    "You were kicked by the creator of the game",
-                    "Sorry",
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "You were kicked by the creator of the game", "Sorry", JOptionPane.ERROR_MESSAGE);
             getCore().popScreen();
         }
 
