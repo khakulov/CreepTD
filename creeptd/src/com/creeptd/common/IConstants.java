@@ -458,15 +458,15 @@ public interface IConstants {
         creep2(100, 10, 700, 65, 10, 0, "Mako", ""),
         creep3(250, 10, 1400, 80, 25, 0, "Fast Nova", ""),
         creep4(500, 10, 3500, 50, 50, 0, "Large Manta", ""),
-        creep5(1000, 9, 7000, 60, 90, 3, "Demeter", "Regenerates"),
+        creep5(1000, 9, 6000, 60, 90, 3, "Demeter", "Regenerates"), // was: health=7000
         creep6(2000, 9, 14000, 65, 180, 0, "Ray", "Slow immunity"),
         creep7(4000, 9, 30000, 90, 360, 0, "Speedy Raider", "Fast"),
         creep8(8000, 9, 80000, 60, 720, 0, "Big Toucan", "Tough"),
-        creep9(15000, 8, 140000, 70, 1200, 50, "Vulture", "Regenerates"),
+        creep9(15000, 8, 120000, 70, 1200, 50, "Vulture", "Regenerates"), // was: health=1400000
         creep10(25000, 8, 250000, 75, 2000, 0, "Shark", "Slow immunity"),
         creep11(40000, 8, 500000, 100, 3200, 0, "Racing Mamba", "Fast"),
         creep12(60000, 8, 1200000, 65, 4800, 0, "Huge Titan", "Tough"),
-        creep13(100000, 7, 1500000, 65, 7000, 500, "Zeus", "Regenerates"),
+        creep13(100000, 7, 1400000, 65, 7000, 500, "Zeus", "Regenerates"), // was: health=1500000
         creep14(200000, 7, 2500000, 80, 14000, 0, "Phoenix", "Slow immunity"),
         creep15(400000, 7, 6000000, 140, 28000, 0, "Express Raptor", "Super fast"),
         creep16(1000000, 7, 15000000, 70, 56000, 0, "Fat Colossus", "Very tough");
@@ -615,8 +615,8 @@ public interface IConstants {
     public static enum Towers {
         // price | range | speed | damage | Sradius | Sreduction | slowRate %| slowTime | type | next | color
 
-        tower13(300, 65, 13, 100, 0, 0.0, 0, 0, DamageType.normal, null, Color.WHITE, "Basictower lvl 4", "Cheap upgrades"),
-        tower12(200, 55, 13, 75, 0, 0.0, 0, 0, DamageType.normal, tower13, Color.RED, "Basictower lvl 3", "Cheap upgrades"),
+        tower13(200, 65, 13, 100, 0, 0.0, 0, 0, DamageType.normal, null, Color.WHITE, "Basictower lvl 4", "Cheap upgrades"),
+        tower12(150, 55, 13, 75, 0, 0.0, 0, 0, DamageType.normal, tower13, Color.RED, "Basictower lvl 3", "Cheap upgrades"),
         tower11(100, 45, 13, 50, 0, 0.0, 0, 0, DamageType.normal, tower12, Color.BLUE, "Basictower lvl 2", "Cheap upgrades"),
         tower1(50, 35, 13, 25, 0, 0.0, 0, 0, DamageType.normal, tower11, Color.GREEN, "Basictower lvl 1", "Cheap upgrades"),
 

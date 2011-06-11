@@ -350,8 +350,8 @@ public abstract class GameContext {
         if (update_Round <= 0) {
             logger.info("processMessage is out of sync!!!");
             if (managementSound != null) {
-                managementSound.gameOver();
-                managementSound.gameOver();
+                managementSound.error();
+                managementSound.error();
             }
         }
 

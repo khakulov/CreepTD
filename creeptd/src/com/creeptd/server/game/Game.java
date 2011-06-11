@@ -170,12 +170,10 @@ public class Game extends AbstractGame {
             throw new IllegalArgumentException("'newClient' was null!");
         }
         if (!(this.getGameState() instanceof WaitingGameState)) {
-            throw new RuntimeException(
-                    "game has started--no more players can join " + this.getGameState());
+            throw new RuntimeException("Game has started, no more players can join (State is " + this.getGameState()+")");
         }
         if (this.getPlayersInGameSize() >= this.getMaxPlayers()) {
-            throw new RuntimeException(
-                    "max # of players reached--no more players can join");
+            throw new RuntimeException("Maximum number of players reached, no more players can join");
         }
         if (this.findPlayerInGame(client.getClientID()) != null) {
             return;
@@ -186,8 +184,8 @@ public class Game extends AbstractGame {
                 client.send(new PlayerJoinedMessage(p.getClient().getPlayerModel().getName(), p.getClient().getClientID(), p.getClient().getPlayerModel().getExperience(), p.getClient().getPlayerModel().getElopoints()));
             }
             PlayerInGame p = new PlayerInGame(client);
-            this.players.add(p);
             this.playersInGame.add(p);
+            this.players.add(p);
         }
 
         this.sendAll(new PlayerJoinedMessage(client.getPlayerModel().getName(),
@@ -260,6 +258,7 @@ public class Game extends AbstractGame {
         synchronized (this.playersInGame) {
             Collections.shuffle(this.playersInGame);
             this.players = new ArrayList(this.playersInGame);
+            logger.info("Shuffled players ("+this.playersInGame.size()+" in game, "+this.players.size()+" players)");
         }
     }
 
