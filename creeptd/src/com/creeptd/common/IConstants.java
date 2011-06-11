@@ -56,7 +56,7 @@ public interface IConstants {
     /**
      * Default hostname for server (used for webstart).
      */
-    String DEFAULT_HOSTNAME = "creepsmash.code-emitter.com";
+    String DEFAULT_HOSTNAME = "www.creeptd.com";
     /**
      * Default hostname for server (used for webstart).
      */
