@@ -227,7 +227,7 @@ public class AuthenticatedState extends AbstractClientState {
             return true;
         }
         if ("/msg".equalsIgnoreCase(command) && player.hasPermission(Permission.MOD_CHAT)) {
-            message = "<b>" + message + "</b>";
+            message = "<html><b>" + message + "</b></html>";
             Lobby.sendAll(new MessageMessage("System", message));
             return true;
         }
