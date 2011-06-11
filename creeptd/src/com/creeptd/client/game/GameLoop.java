@@ -84,8 +84,8 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
     private boolean gameOver;
     private boolean asynchronous = false;
     // one loop-cycle lasts TICK_INTERVAL time
-    private static final long TICK_INTERVAL = TICK_MS * 1000000;
-    private static final long TICK_INTERVAL_TIME_OUT = ((TICK_MS * USER_ACTION_DELAY) + TICK_MS) * 1000000;
+    // private static final long TICK_INTERVAL = TICK_MS * 1000000;
+    // private static final long TICK_INTERVAL_TIME_OUT = ((TICK_MS * USER_ACTION_DELAY) + TICK_MS) * 1000000;
     private static final int NO_DELAYS_PER_YIELD = 10;
     private static final int MAX_FRAME_SKIPS = 5;
     private SoundManagement soundManagement;
@@ -394,6 +394,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
      * Instatiates the game context for all orderedPlayers.
      */
     private void contextSetup() {
+        logger.info("Creating the context...");
         int cnt = 0;
         GameContext.BoardLocation loc = null;
         GameContext context = null;
@@ -423,7 +424,6 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
                 gamePanel.getBoardPanel().addMouseMotionListener(context.getGameBoard());
                 gamePanel.getBoardPanel().addMouseListener(context.getGameBoard());
                 gamePanel.getGameInfoPanel().addPlayerContext((PlayerContext) context);
-
             } else {
                 context = new OpponentContext(loc, tdNetwork, map, this, id, players.get(id));
                 gamePanel.getGameInfoPanel().addOpponentContext((OpponentContext) context);

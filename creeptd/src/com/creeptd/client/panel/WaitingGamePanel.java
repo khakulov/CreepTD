@@ -279,8 +279,11 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         }
 
         String gamename = this.getCore().getActiveGame().getGameName();
+        if (gamename.equals("Game of")) {
+            gamename += " ("+getCore().getPlayerName()+")";
+        }
         if (gamename.length() > 30) gamename = gamename.substring(0, 27)+"...";
-        description.setText("<html><p style=\"padding-bottom: 3; color: yellow;\"><b>„"+gamename+"”</b></p><table width=\"180px\"><tr><td>Map: </td><td>" + IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString() + "</td></tr><tr><td>Players:  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>Min/Max:  </td><td>" + ((this.getCore().getActiveGame().getMinEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMinEloPoints()) + "/" + ((this.getCore().getActiveGame().getMaxEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMaxEloPoints()) + "</td></tr>" + "<tr><td>Mod:  </td><td>" + this.getCore().getActiveGame().getGameModeString() + "</td></tr>" + "<tr><td>Password:  </td><td>" + ("".equals(this.getCore().getActiveGame().getPasswort()) ? "(not set)" : this.getCore().getActiveGame().getPasswort()) + "</td></tr>" + "</td></tr></table></html>");
+        description.setText("<html><p style=\"padding-bottom: 3; color: yellow;\"><b>„"+gamename+"”</b></p><table width=\"180px\"><tr><td>Map: </td><td>" + IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString() + "</td></tr><tr><td>Players:  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>Min/Max:  </td><td>" + ((this.getCore().getActiveGame().getMinEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMinEloPoints()) + "/" + ((this.getCore().getActiveGame().getMaxEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMaxEloPoints()) + "</td></tr>" + "<tr><td>Mode:  </td><td>" + this.getCore().getActiveGame().getGameModeString() + "</td></tr>" + "<tr><td>Password:  </td><td>" + ("".equals(this.getCore().getActiveGame().getPasswort()) ? "(not set)" : this.getCore().getActiveGame().getPasswort()) + "</td></tr>" + "</td></tr></table></html>");
 
         try {
             preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(IConstants.Map.getPicturePath(IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString()))));
@@ -379,12 +382,10 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             logger.info("PJM received");
 
             if (pjm.getPlayerName().equalsIgnoreCase(getCore().getPlayerName())) {
-
                 players.put(pjm.getPlayerId(), pjm.getPlayerName());
                 this.getCore().setPlayerId(pjm.getPlayerId());
                 this.getCore().setPlayerName(pjm.getPlayerName());
                 ownPlayerIdMessageReceived = true;
-
             } else {
                 players.put(pjm.getPlayerId(), pjm.getPlayerName());
             }

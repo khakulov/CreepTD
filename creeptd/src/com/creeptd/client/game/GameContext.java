@@ -214,14 +214,12 @@ public abstract class GameContext {
     /**
      * Implementation for default init.
      *
-     * @param location
-     *            the boardLocation (GameContext.BoardLocation)
-     * @param network
-     *            the current network connection object
-     * @param mSound
-     *            SoundManagement object for sound
-     * @param map
-     *            the map to play
+     * @param location The boardLocation (GameContext.BoardLocation)
+     * @param network The current network connection object
+     * @param mSound SoundManagement Sound management (null for opponents)
+     * @param map The map to play
+     * @param int The context owner's player id
+     * @param String The context owner's player name
      */
     public GameContext(BoardLocation location, Network network, SoundManagement mSound, IConstants.Map map, GameLoop gameLoop, int player_id, String player_name) {
         this.location = location;
@@ -243,35 +241,6 @@ public abstract class GameContext {
             GameContext.winningPosition++;
         }
     }
-
-    /**
-     * Creates a gameContext without sound.
-     *
-     * @param location
-     *            the boardLocation (GameContext.BoardLocation)
-     * @param network
-     *            the current network connection object
-     * @param map
-     *            the map to play
-     */
-    /* public GameContext(BoardLocation location, Network network, IConstants.Map map, GameLoop gameLoop) {
-        this.location = location;
-        this.network = network;
-        this.mapfile = map;
-        this.gameLoop = gameLoop;
-        this.setGameBoard(new GameBoard(this));
-        this.towers = Collections.synchronizedList(new ArrayList<Tower>());
-        this.creeps = Collections.synchronizedList(new ArrayList<Creep>());
-        this.transfer = Collections.synchronizedList(new ArrayList<Creep>());
-        this.contextListeners = new ArrayList<ContextListener>();
-        this.managementSound = null;
-        this.setCredits(credits);
-        this.setIncome(income);
-        this.setLives(lives);
-        synchronized (GameContext.winningPosition) {
-            GameContext.winningPosition++;
-        }
-    } */
 
     /**
      * A hook for special pre-update work.
