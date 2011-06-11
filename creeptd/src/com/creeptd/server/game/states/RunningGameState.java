@@ -89,9 +89,12 @@ public class RunningGameState extends AbstractGameState implements
         super(game);
         this.nextTowerId = 1;
         this.maxTick = 0;
-        this.playerPositions = new ArrayList();
-        for (int i=0; i<game.getMaxPlayers(); i++) {
-            this.playerPositions.add(null);
+        synchronized(this.playerPositions) {
+            this.playerPositions = new ArrayList();
+            for (int i=0; i<game.getMaxPlayers(); i++) {
+                this.playerPositions.add(null);
+            }
+            logger.info(game+" Initialized with "+this.playerPositions.size()+" players");
         }
         this.startDate = System.currentTimeMillis() / 1000;
         tickThread = new TickThread(this, IConstants.TICK_MS * 1000000);
@@ -475,13 +478,15 @@ public class RunningGameState extends AbstractGameState implements
         int position = 0;
         synchronized (this.playerPositions) {
             if (!this.playerPositions.contains(player)) {
-                if (submitted_position > 0 && submitted_position <= this.playerPositions.size() && this.playerPositions.get(submitted_position-1) == null) {
+                if (submitted_position > 0 && submitted_position <= this.getGame().getMaxPlayers() && this.playerPositions.get(submitted_position-1) == null) {
                     position = submitted_position;
                     this.playerPositions.set(position-1, player);
+                    logger.info(this.getGame()+" Setting player "+player+" to position "+position+" (Submitted by player)");
                 } else {
                     for (position = this.getGame().getMaxPlayers(); position >= 1; position--) {
                         if (this.playerPositions.get(position-1) == null) {
                             this.playerPositions.set(position-1, player);
+                            logger.info(this.getGame()+" Setting player "+player+" to position "+position+" (Automatic sort)");
                             break;
                         }
                     }
@@ -544,11 +549,14 @@ public class RunningGameState extends AbstractGameState implements
         }
         // Sort missing players into position map
         for (PlayerInGame p : this.getGame().getPlayers()) {
-            if (!this.playerPositions.contains(p)) {
-                for (int position = this.getGame().getMaxPlayers(); position>=1; position--) {
-                    if (this.playerPositions.get(position-1) == null) {
-                        this.playerPositions.set(position-1, p);
-                        break;
+            synchronized (this.playerPositions) {
+                if (!this.playerPositions.contains(p)) {
+                    for (int position = this.getGame().getMaxPlayers(); position>=1; position--) {
+                        if (this.playerPositions.get(position-1) == null) {
+                            this.playerPositions.set(position-1, p);
+                            logger.info(this.getGame()+" Added missing player "+p+" at position "+position);
+                            break;
+                        }
                     }
                 }
             }
@@ -557,19 +565,24 @@ public class RunningGameState extends AbstractGameState implements
         // Fix positions for team mode
         if (this.getGame().getMode().equals(IConstants.Mode.TEAM2VS2)) {
             List <PlayerInGame> players = this.getGame().getPlayers();
-            if (this.playerPositions.get(0).equals(players.get(0)) || this.playerPositions.get(0).equals(players.get(1))) {
-                // Team A wins
-                this.playerPositions.set(0, players.get(0));
-                this.playerPositions.set(1, players.get(1));
-                this.playerPositions.set(2, players.get(2));
-                this.playerPositions.set(3, players.get(3));
-            } else {
-                // Team B wins
-                this.playerPositions.set(0, players.get(2));
-                this.playerPositions.set(1, players.get(3));
-                this.playerPositions.set(2, players.get(0));
-                this.playerPositions.set(3, players.get(1));
+            synchronized (this.playerPositions) {
+                if (this.playerPositions.get(0).equals(players.get(0)) || this.playerPositions.get(0).equals(players.get(1))) {
+                    // Team A wins
+                    this.playerPositions.clear();
+                    this.playerPositions.add(players.get(0));
+                    this.playerPositions.add(players.get(1));
+                    this.playerPositions.add(players.get(2));
+                    this.playerPositions.add(players.get(3));
+                } else {
+                    // Team B wins
+                    this.playerPositions.clear();
+                    this.playerPositions.add(players.get(2));
+                    this.playerPositions.add(players.get(3));
+                    this.playerPositions.add(players.get(0));
+                    this.playerPositions.add(players.get(1));
+                }
             }
+            logger.info(this.getGame()+" Set 'Team 2vs2' positions ("+this.playerPositions.size()+" players)");
         }
 
         this.ended = true;
@@ -577,18 +590,22 @@ public class RunningGameState extends AbstractGameState implements
         long endDate = System.currentTimeMillis() / 1000;
         if (endDate - startDate > 60) {
             String positionLog = "";
-            for (int i=0; i<this.playerPositions.size(); i++) {
-                if (!positionLog.equals("")) {
-                    positionLog += ", ";
+            synchronized (this.playerPositions) {
+                for (int i=0; i<this.playerPositions.size(); i++) {
+                    if (!positionLog.equals("")) {
+                        positionLog += ", ";
+                    }
+                    positionLog += ""+this.playerPositions.get(i)+" is #"+(i+1);
                 }
-                positionLog += ""+this.playerPositions.get(i)+" is #"+(i+1);
+                logger.info("Saving scores: "+positionLog);
+                HighscoreService.createHighscoreEntry(this.playerPositions, this.getGame());
             }
-            logger.info("Saving scores: "+positionLog);
-            HighscoreService.createHighscoreEntry(this.playerPositions, this.getGame());
         } else {
             logger.info("Not saving scores, duration of game " + this.getGame() + " was too short ("+(endDate - startDate)+" seconds)");
         }
         // Save Game in DB (player locations, player positions, ...)
-        this.getGame().saveToJournal(this.getGame().getPlayers(), this.playerPositions, startDate, endDate);
+        synchronized (this.playerPositions) {
+            this.getGame().saveToJournal(this.getGame().getPlayers(), this.playerPositions, startDate, endDate);
+        }
     }
 }

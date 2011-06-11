@@ -103,10 +103,10 @@ public class ClientInThread extends Thread {
                 this.inactivityCount = 0;
                 this.client.receive(message);
             } catch (SocketException e) {
-                logger.warn("Client " + this.client.getClientID() + ": disconnected... SocketException");
+                logger.warn("Client " + this.client.getClientID() + ": disconnected (Socket Exception)");
                 this.client.disconnect();
             } catch (NullPointerException e) {
-                logger.warn("Client " + this.client.getClientID() + ": disconnected... NullPointerException");
+                logger.warn("Client " + this.client.getClientID() + ": disconnected (Connection closed)");
                 this.client.disconnect();
             } catch (SocketTimeoutException e) {
                 if (this.inactivityCount > 60) {

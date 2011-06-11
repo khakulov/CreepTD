@@ -138,13 +138,13 @@ public class Game extends AbstractGame {
         }
 
         AbstractGameState oldGameState = this.gameState;
-        logger.debug("Changing state of game " + this + " from " + oldGameState + " to " + newGameState);
         if (oldGameState != null) {
             if (newGameState.getClass().equals(oldGameState.getClass())) {
                 return;
             }
             oldGameState.leave();
         }
+        logger.debug("Changed state of game " + this + " from " + oldGameState + " to " + newGameState);
 
         this.gameState = newGameState;
         this.gameState.enter();
@@ -464,5 +464,10 @@ public class Game extends AbstractGame {
          * = true; } } } }
          */
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "[Game"+this.getGameId()+"/"+this.getGameState()+"]";
     }
 }
