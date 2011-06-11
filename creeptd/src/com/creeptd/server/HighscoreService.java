@@ -1,10 +1,13 @@
 /**
-Creep Smash, a multiplayer towerdefence game
-created as a project at the Hochschule fuer
-Technik Stuttgart (University of Applied Science)
-http://www.hft-stuttgart.de 
+CreepTD is an online multiplayer towerdefense game
+formerly created under the name CreepSmash as a project
+at the Hochschule fuer Technik Stuttgart (University of Applied Science)
 
-Copyright (C) 2008 by      
+CreepTD (Since version 0.7.0+) Copyright (C) 2011 by
+ * Daniel Wirtz, virtunity media
+http://www.creeptd.com
+
+CreepSmash (Till version 0.6.0) Copyright (C) 2008 by
  * Andreas Wittig
  * Bernd Hietler
  * Christoph Fritz
@@ -32,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.server;
 
+import com.creeptd.common.IConstants;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -59,8 +63,6 @@ public class HighscoreService {
 
     private HighscoreService() {
     }
-
-    ;
 
     public static class ExtendedPlayer {
 
@@ -131,7 +133,7 @@ public class HighscoreService {
     public static void createHighscoreEntry(ArrayList<PlayerInGame> playerPositions, Game game) {
         try {
             EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
-            
+
             int[] experience = new int[playerPositions.size()];
             for (int i = 0; i < playerPositions.size(); i++) {
                 experience[i] = playerPositions.get(i).getClient().getPlayerModel().getExperience();
@@ -144,9 +146,9 @@ public class HighscoreService {
 
             EntityTransaction entityTransaction = entityManager.getTransaction();
             entityTransaction.begin();
-            
-            int[] newExperience = (game.getMode() == 3) ? calcExperienceTeam(experience) : calcExperience(experience);
-            int[] newElopoints = (game.getMode() == 3) ? calcElopointsTeam(elopoints) : calcElopoints(elopoints);
+
+            int[] newExperience = (game.getMode().equals(IConstants.Mode.TEAM2VS2)) ? calcExperienceTeam(experience) : calcExperience(experience);
+            int[] newElopoints = (game.getMode().equals(IConstants.Mode.TEAM2VS2)) ? calcElopointsTeam(elopoints) : calcElopoints(elopoints);
 
             for (int i = 0; i < playerPositions.size(); i++) {
                 playerPositions.get(i).getClient().getPlayerModel().setExperience((int) newExperience[i]);
@@ -171,7 +173,7 @@ public class HighscoreService {
      */
     private static int[] calcElopoints(int[] eloPoints) {
         int[] newElopoints = eloPoints.clone();
-        
+
         // Calculation is as following:
         // 2 player game is calculated as normal match
         // 3 player game is calculated as tournament:
@@ -199,22 +201,22 @@ public class HighscoreService {
      */
     private static int[] calcElopointsTeam(int[] eloPoints) {
         int[] newElopoints = eloPoints.clone();
-        
+
         newElopoints[0] += getNewElopoints(eloPoints[0], 1.0, getEloProbability(eloPoints[0], eloPoints[2])); // p1 vs p3
         newElopoints[0] += getNewElopoints(eloPoints[0], 1.0, getEloProbability(eloPoints[0], eloPoints[3])); // p1 vs p4
-        
+
         newElopoints[1] += getNewElopoints(eloPoints[1], 1.0, getEloProbability(eloPoints[1], eloPoints[2])); // p2 vs p3
         newElopoints[1] += getNewElopoints(eloPoints[1], 1.0, getEloProbability(eloPoints[1], eloPoints[2])); // p2 vs p4
-        
+
         newElopoints[2] += getNewElopoints(eloPoints[2], 0.0, getEloProbability(eloPoints[2], eloPoints[0])); // p3 vs p1
         newElopoints[2] += getNewElopoints(eloPoints[2], 0.0, getEloProbability(eloPoints[2], eloPoints[1])); // p3 vs p2
-        
+
         newElopoints[3] += getNewElopoints(eloPoints[3], 0.0, getEloProbability(eloPoints[3], eloPoints[0])); // p4 vs p1
         newElopoints[3] += getNewElopoints(eloPoints[3], 0.0, getEloProbability(eloPoints[3], eloPoints[1])); // p4 vs p2
-        
+
         return newElopoints;
     }
-    
+
     /**
      * Calculate probability for a player to win.
      *
@@ -240,10 +242,12 @@ public class HighscoreService {
         // become less than 2 (eqal enemies receive 1 point) so that there is
         // finally a soft limit
         int k = (int) Math.round((double) 30 - (ro / 100.0));
-        if (k < 2) k = 2;
+        if (k < 2) {
+            k = 2;
+        }
         return (int) (Math.round((sa - ea) * k));
     }
-    
+
     /**
      * Calculate experience with fixed point system.
      *
@@ -252,7 +256,7 @@ public class HighscoreService {
      */
     private static int[] calcExperience(int[] ePoints) {
         int[] newExperience = new int[ePoints.length];
-        
+
         if (ePoints.length == 4) {
             newExperience[0] = ePoints[0] + 8;
             newExperience[1] = ePoints[1] + 4;

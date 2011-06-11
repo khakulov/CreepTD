@@ -216,7 +216,7 @@ public class AuthenticatedState extends AbstractClientState {
             if (msgSplit.length > 1 && !player.getName().equalsIgnoreCase(msgSplit[0])) {
                 Player user = AuthenticationService.getPlayer(msgSplit[0]);
                 if (user != null) {
-                    String messageStr = "<b><span style=\"color:yellow;\">" + player.getName() + " -> " + user.getName() + ": " + msgSplit[1] + "</span></b>";
+                    String messageStr = "<b>" + player.getName() + " -&gt; " + user.getName() + ": " + msgSplit[1] + "</b>";
                     if (!Lobby.sendDirectMessage(this.getClient(), user.getName(), messageStr) && !GameManager.sendDirectMessage(this.getClient(), user.getName(), messageStr)) {
                         sendSystemMessage(user.getName() + " is not online.");
                     }
@@ -227,7 +227,7 @@ public class AuthenticatedState extends AbstractClientState {
             return true;
         }
         if ("/msg".equalsIgnoreCase(command) && player.hasPermission(Permission.MOD_CHAT)) {
-            message = "Message from " + player.getName() + ": <b>" + message + "</b>";
+            message = "<b>" + message + "</b>";
             Lobby.sendAll(new MessageMessage("System", message));
             return true;
         }

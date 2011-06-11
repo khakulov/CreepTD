@@ -58,7 +58,7 @@ public class OptionsPanel extends JDialog {
 
     public OptionsPanel() {
         this.setLayout(null);
-        this.setBounds(100, 100, 400, 200);
+        this.setBounds(Core.getInstance().getCreatorX()+250, Core.getInstance().getCreatorY()+200, 400, 200);
         this.getContentPane().setForeground(Color.GREEN);
         this.getContentPane().setBackground(Color.BLACK);
         this.setTitle("CreepTD - Options");

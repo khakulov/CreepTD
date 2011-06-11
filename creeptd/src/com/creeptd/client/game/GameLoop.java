@@ -74,7 +74,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
     private Network tdNetwork;
     private GamePanel gamePanel;
     private Map map;
-    private int GameMod;
+    private IConstants.Mode gameMode;
     private boolean running = false;
     // we need this to measure the time
     private static long nextTime;
@@ -88,7 +88,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
     private static final long TICK_INTERVAL_TIME_OUT = ((TICK_MS * USER_ACTION_DELAY) + TICK_MS) * 1000000;
     private static final int NO_DELAYS_PER_YIELD = 10;
     private static final int MAX_FRAME_SKIPS = 5;
-    private SoundManagement managementSound;
+    private SoundManagement soundManagement;
 
     /**
      * @return the gameOver
@@ -120,6 +120,10 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
         this.asynchronous = Asynchronous;
     }
 
+    public SoundManagement getSoundManagement() {
+        return this.soundManagement;
+    }
+
     /**
      * Creates a new GameLoop.
      *
@@ -133,7 +137,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
         this.gamePanel = gamePanel;
         tdNetwork = network;
         tdNetwork.addListener(this);
-        this.managementSound = soundM;
+        this.soundManagement = soundM;
 
         network.makeContact();
     }
@@ -156,7 +160,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
         logger.info("GameLoop init...");
         contextSetup();
         findMyContext();
-        gamePanel.setSoundManagementObject(managementSound);
+        gamePanel.setSoundManagementObject(soundManagement);
         gamePanel.getCreepPanel().setContext(myContext);
         gamePanel.getChatPanel().setContext(myContext);
         gamePanel.getTowerPanel().setContext(myContext);
@@ -257,7 +261,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
         for (int i = 0; i < size; i++) {
             ArrayList<Creep> transCopy = new ArrayList<Creep>(contexts.get(i).getTransfer());
             GameContext copyTo = null;
-            if (this.getGameMod() == 3) { // Team 2vs2, send to same team, if dead or not
+            if (this.getGameMode().equals(IConstants.Mode.TEAM2VS2)) {  // Send to same team, if dead or not
                 int playerPosition = playersOrder.get(contexts.get(i).getPlayerId());
                 if (playerPosition == 1) {
                     for (int j = 0; j < contexts.size(); j++) {
@@ -283,7 +287,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
                     copyTo = findNextContext(contexts.get(i));
                 }
                 // Don't check for dead
-            } else if (this.getGameMod() == 1) { // ALL vs ALL, send to self
+            } else if (this.getGameMode().equals(IConstants.Mode.ALLVSALL)) { // ALL vs ALL, send to self
                 if (contexts.get(i).isDead()) {
                     continue; // Discard creeps if dead
                 }
@@ -415,7 +419,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
             cnt++;
             if (id.equals(gamePanel.getCore().getPlayerId())) {
                 logger.info("own context created");
-                context = new PlayerContext(loc, tdNetwork, managementSound,
+                context = new PlayerContext(loc, tdNetwork, soundManagement,
                         map, this);
                 gamePanel.getBoardPanel().addMouseMotionListener(
                         context.getGameBoard());
@@ -479,7 +483,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
         for (GameContext gc : contexts) {
             gc.setCredits(gc.getCredits() + gc.getIncome());
         }
-        this.managementSound.cashSound();
+        this.soundManagement.cashSound();
 
         logger.info("new income");
     }
@@ -507,7 +511,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
             }
         }
 
-        if (this.getGameMod() == 3) {
+        if (this.getGameMode().equals(IConstants.Mode.TEAM2VS2)) {
             GameContext[] ordererdPlayers = this.getOrderedPlayers();
             if (ordererdPlayers != null) { // Becomes != null when context is completely set up
                 if ((ordererdPlayers[0].isDead() && ordererdPlayers[1].isDead()) || (ordererdPlayers[2].isDead() && ordererdPlayers[3].isDead())) {
@@ -624,15 +628,15 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
     /**
      * @param game mod
      */
-    public void setGameMod(int gameMod) {
-        this.GameMod = gameMod;
+    public void setGameMode(IConstants.Mode gameMode) {
+        this.gameMode = gameMode;
     }
 
     /**
      * @return the game mod
      */
-    public int getGameMod() {
-        return this.GameMod;
+    public IConstants.Mode getGameMode() {
+        return this.gameMode;
     }
 
     /**

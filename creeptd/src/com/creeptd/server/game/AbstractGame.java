@@ -45,7 +45,7 @@ public abstract class AbstractGame extends Thread {
     private static AtomicInteger gameCount = new AtomicInteger(0);
     private int gameId;
     private String gameName;
-    private int mode = 0; // 0 = Normal, 1 = All vs. All, 2 = Random
+    private IConstants.Mode mode = IConstants.Mode.ALLVSALL;
     private int mapId;
     private int maxPlayers;
     private String passwort;
@@ -73,7 +73,7 @@ public abstract class AbstractGame extends Thread {
         return gameName;
     }
 
-    public int getMode() {
+    public IConstants.Mode getMode() {
         return mode;
     }
 

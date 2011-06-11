@@ -41,14 +41,18 @@ import java.util.Random;
 import javax.persistence.Query;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "GameJournal")
+// @Table(name = "GameJournal", uniqueConstraints = {@UniqueConstraint(columnNames={"gameKey"})})
 public class GameJournal {
 
     @Id
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String gameKey = null;
     private String name;
@@ -113,7 +117,7 @@ public class GameJournal {
         super();
         if (this.gameKey == null) {
             do {
-                this.gameKey = generateKey(64);
+                this.gameKey = generateKey(32);
             } while (existsGameKey(this.gameKey));
         }
     }

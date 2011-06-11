@@ -175,6 +175,20 @@ public interface IConstants {
         public boolean equals(IConstants.Mode m) {
             return this.value == m.getValue();
         }
+
+        @Override
+        public String toString() {
+            if (this.value == SENDNEXT.getValue()) {
+                return "Send to next";
+            } else if (this.value == ALLVSALL.getValue()) {
+                return "ALL vs ALL";
+            } else if (this.value == SENDRANDOM.getValue()) {
+                return "Send to random";
+            } else if (this.value == TEAM2VS2.getValue()) {
+                return "Team 2vs2";
+            }
+            return "Unknown";
+        }
     }
 
     /**

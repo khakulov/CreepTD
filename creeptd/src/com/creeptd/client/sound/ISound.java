@@ -44,8 +44,9 @@ public interface ISound {
     //TODO ADD/CLEAN SOME SOUNDS
 
     //game
-    String FIN = "fin.wav";
-    String WON = "won.wav";
+    String INTRO = "intro.wav";
+    String ERROR = "error.wav";
+    String GAMEOVER = "gameover.wav";
     String BUTTON = "button.wav";
     //Tower upgrade
     String HOLY = "holy.wav";
@@ -68,7 +69,6 @@ public interface ISound {
     //Creep escape
     String ESCAPE = "dcloak.wav";
     String WARN = "warn.wav";
-    String INTRO = "intro.wav";
     String CLAP = "clap.wav";
     String HORNBEEP = "hornbeep.wav";
     String CASH = "cash.wav";

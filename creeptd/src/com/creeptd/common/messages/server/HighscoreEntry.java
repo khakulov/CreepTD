@@ -1,10 +1,13 @@
 /**
-Creep Smash, a multiplayer towerdefence game
-created as a project at the Hochschule fuer
-Technik Stuttgart (University of Applied Science)
-http://www.hft-stuttgart.de 
+CreepTD is an online multiplayer towerdefense game
+formerly created under the name CreepSmash as a project
+at the Hochschule fuer Technik Stuttgart (University of Applied Science)
 
-Copyright (C) 2008 by      
+CreepTD (Since version 0.7.0+) Copyright (C) 2011 by
+ * Daniel Wirtz, virtunity media
+http://www.creeptd.com
+
+CreepSmash (Till version 0.6.0) Copyright (C) 2008 by
  * Andreas Wittig
  * Bernd Hietler
  * Christoph Fritz
@@ -103,7 +106,7 @@ public class HighscoreEntry {
      */
     @Override
     public String toString() {
-        return "\"" + this.getPlayerName() + "\" " + this.getExperience() + " " + this.getElopoints()+ " " + this.getLastgameExperience() + " " + this.getLastgameElopoints();
+        return "\"" + this.getPlayerName() + "\" " + this.getExperience() + " " + this.getElopoints() + " " + this.getLastgameExperience() + " " + this.getLastgameElopoints();
     }
 
     /**

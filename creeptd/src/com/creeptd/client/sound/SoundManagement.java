@@ -56,11 +56,9 @@ public class SoundManagement {
     private Thread usedThreadTowerShootS = new Thread();
     private Thread usedThreadTowerUpgradeS = new Thread();
     private boolean mute = false;
-    private AudioClip clipFIN = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.FIN));
-    private AudioClip clipWON = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.WON));
-    // private AudioClip clipBUTTON = Applet.newAudioClip(
-    // this.getClass().getClassLoader().getResource(
-    // IConstants.SOUNDS_URL + ISound.BUTTON));
+    private AudioClip clipERROR = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.ERROR));
+    private AudioClip clipGAMEOVER = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.GAMEOVER));
+    private AudioClip clipINTRO = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.INTRO));
     private AudioClip clipHOLY = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.HOLY));
     private AudioClip clipSHOOT1 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.SHOOT1));
     private AudioClip clipSHOOT2 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.SHOOT2));
@@ -71,26 +69,17 @@ public class SoundManagement {
     private AudioClip clipLASER1 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.LASER1));
     private AudioClip clipLASER2 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.LASER2));
     private AudioClip clipLASER3 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.LASER3));
-    private AudioClip clipDEAD1 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(
-            IConstants.SOUNDS_URL + ISound.DEAD1));
-    private AudioClip clipDEAD2 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(
-            IConstants.SOUNDS_URL + ISound.DEAD2));
-    private AudioClip clipDEAD3 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(
-            IConstants.SOUNDS_URL + ISound.DEAD3));
-    private AudioClip clipDEAD4 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(
-            IConstants.SOUNDS_URL + ISound.DEAD4));
-    private AudioClip clipDEAD5 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(
-            IConstants.SOUNDS_URL + ISound.DEAD5));
+    private AudioClip clipDEAD1 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.DEAD1));
+    private AudioClip clipDEAD2 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.DEAD2));
+    private AudioClip clipDEAD3 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.DEAD3));
+    private AudioClip clipDEAD4 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.DEAD4));
+    private AudioClip clipDEAD5 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.DEAD5));
     private AudioClip clipESCAPE = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.ESCAPE));
     private AudioClip clipWARN = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.WARN));
-    private AudioClip clipHORNBEEP = Applet.newAudioClip(this.getClass().getClassLoader().getResource(
-            IConstants.SOUNDS_URL + ISound.HORNBEEP));
+    private AudioClip clipHORNBEEP = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.HORNBEEP));
     private AudioClip clipCLAP = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.CLAP));
     private AudioClip clipCASH = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.CASH));
 
-    // private AudioClip clipINTRO = Applet.newAudioClip(
-    // this.getClass().getClassLoader().getResource(
-    // IConstants.SOUNDS_URL + ISound.INTRO));
     /**
      * @return the thread
      */
@@ -455,11 +444,11 @@ public class SoundManagement {
      *
      * @return if played or not
      */
-    public boolean playerLooseSound() {
+    public boolean error() {
         if (mute) {
             return false;
         }
-        Thread loose = new Thread(new Sound(this.clipFIN));
+        Thread loose = new Thread(new Sound(this.clipERROR));
         loose.start();
         return true;
     }
@@ -469,11 +458,25 @@ public class SoundManagement {
      *
      * @return if played or not
      */
-    public boolean playerWonSound() {
+    public boolean gameOver() {
         if (mute) {
             return false;
         }
-        Thread won = new Thread(new Sound(this.clipWON));
+        Thread won = new Thread(new Sound(this.clipGAMEOVER));
+        won.start();
+        return true;
+    }
+
+    /**
+     * Game intro.
+     *
+     * @return if played or not
+     */
+    public boolean intro() {
+        if (mute) {
+            return false;
+        }
+        Thread won = new Thread(new Sound(this.clipINTRO));
         won.start();
         return true;
     }

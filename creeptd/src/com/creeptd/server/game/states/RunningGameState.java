@@ -97,7 +97,7 @@ public class RunningGameState extends AbstractGameState implements
         }
         this.startDate = System.currentTimeMillis() / 1000;
 
-        if (game.getMode() == 2) {
+        if (game.getMode().equals(IConstants.Mode.SENDRANDOM)) {
             generator = new Random();
         }
 
@@ -338,7 +338,7 @@ public class RunningGameState extends AbstractGameState implements
          * p.anticheat_sentThisCreep(type, m.getRoundId()); break; } }
          */
 
-        if ((this.getGame().getMode() == 1) && (this.getGame().getPlayersInGameSize() > 2)) { // All vs All
+        if ((this.getGame().getMode().equals(IConstants.Mode.ALLVSALL)) && (this.getGame().getPlayersInGameSize() > 2)) {
             for (PlayerInGame p : this.getGame().getPlayersInGame()) {
                 if ((p.getClient().getClientID() != senderId) && (!p.getGameOver())) {
                     BuildCreepRoundMessage n = new BuildCreepRoundMessage();
@@ -351,7 +351,7 @@ public class RunningGameState extends AbstractGameState implements
                     p.anticheat_receivedThisCreep(type, m.getRoundId());
                 }
             }
-        } else if ((this.getGame().getMode() == 2) && (this.getGame().getPlayersInGameSize() > 2)) { // Random send
+        } else if ((this.getGame().getMode().equals(IConstants.Mode.SENDRANDOM)) && (this.getGame().getPlayersInGameSize() > 2)) {
             List<PlayerInGame> pl = this.getGame().getPlayersInGame();
             while (!pl.isEmpty()) {
                 int random = this.generator.nextInt(pl.size());
@@ -373,7 +373,7 @@ public class RunningGameState extends AbstractGameState implements
                     logger.error("Random send mode error. Player was null.");
                 }
             }
-        } else if (this.getGame().getMode() == 3) { // Team 2vs2
+        } else if (this.getGame().getMode().equals(IConstants.Mode.TEAM2VS2)) { // Team 2vs2
             List<PlayerInGame> pl = this.getGame().getPlayersInGame();
             int senderPosition = 0;
             Iterator<PlayerInGame> it = pl.iterator();
@@ -502,7 +502,7 @@ public class RunningGameState extends AbstractGameState implements
         PlayerInGame winplayer = null;
 
         // Team 2vs2
-        if (this.getGame().getGameDescription().getGameMod() == 3) {
+        if (this.getGame().getGameDescription().getGameMode().equals(IConstants.Mode.TEAM2VS2)) {
             boolean isover = false;
             List<PlayerInGame> players = this.getGame().getPlayers();
             if (players.get(0).getGameOver() && players.get(1).getGameOver()) {
@@ -560,7 +560,7 @@ public class RunningGameState extends AbstractGameState implements
         }
 
         // Fix positions for team mode
-        if (this.getGame().getMode() == 3) {
+        if (this.getGame().getMode().equals(IConstants.Mode.TEAM2VS2)) {
             List <PlayerInGame> players = this.getGame().getPlayers();
             if (this.playerPositions.get(0).equals(players.get(0)) || this.playerPositions.get(0).equals(players.get(1))) {
                 // Team A wins

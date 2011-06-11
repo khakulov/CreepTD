@@ -136,7 +136,7 @@ public class GameLobby extends GameScreen implements MessageListener {
     private int Player_Online_gameinfo;
     private int Player_Online_player_list;
     private static JDialog helpFrame = new HelpGamePanel();
-    private static JDialog optionsFrame = new OptionsPanel();
+    public static JDialog optionsFrame = new OptionsPanel();
 
     /**
      * The GameLobby screen.
@@ -515,7 +515,6 @@ public class GameLobby extends GameScreen implements MessageListener {
         this.helpButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                helpFrame.setBounds(getCore().getX() + 152, getCore().getY() + 30, 630, 710);
                 helpFrame.setVisible(true);
             }
         });
@@ -739,7 +738,7 @@ public class GameLobby extends GameScreen implements MessageListener {
                 rowsData.add(IConstants.Map.getMapById(gd.getMapId()).toString());
 
                 //Mod
-                rowsData.add("<html><b>" + gd.getGameModString() + "</b></html>");
+                rowsData.add("<html><b>" + gd.getGameModeString() + "</b></html>");
 
                 rowsData.add(((gd.getMinEloPoints() == 0) ? "all" : gd.getMinEloPoints()) + "/" + ((gd.getMaxEloPoints() == 0) ? "all" : gd.getMaxEloPoints()));
 
@@ -1007,7 +1006,7 @@ public class GameLobby extends GameScreen implements MessageListener {
                 IConstants.Map.getPictureThumbnailPath(IConstants.Map.getMapById(GameRow.getMapId()).toString()));
 
         //Mod
-        String Mod = "<b>" + GameRow.getGameModString() + "</b>";
+        String Mod = "<b>" + GameRow.getGameModeString() + "</b>";
 
         String StateMSG = "";
 
@@ -1120,7 +1119,7 @@ public class GameLobby extends GameScreen implements MessageListener {
                     errorDialog("Cannot join the game!");
                 } else {
                     wgp.setMapId(this.joinGame.getMapId());
-                    wgp.setGameMod(this.joinGame.getGameMod());
+                    wgp.setGameMode(this.joinGame.getGameMode());
                     this.getCore().setActiveGame(this.joinGame);
                     this.getCore().pushScreen(wgp);
                 }

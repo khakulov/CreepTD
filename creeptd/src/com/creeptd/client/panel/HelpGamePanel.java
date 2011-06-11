@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.client.panel;
 
+import com.creeptd.client.Core;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,7 +45,6 @@ import java.net.URL;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
@@ -118,7 +118,7 @@ public class HelpGamePanel extends JDialog {
         this.setLayout(null);
         this.setBackground(Color.BLACK);
         this.setResizable(false);
-        this.setBounds(0, 0, 620, 690);
+        this.setBounds(Core.getInstance().getCreatorX()+140, Core.getInstance().getCreatorY(), 620, 690);
 
         content.setLayout(null);
         content.setBounds(0, 0, 620, 690);

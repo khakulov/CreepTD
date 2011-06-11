@@ -53,6 +53,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Toolkit;
+import javax.swing.JApplet;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -84,11 +86,13 @@ public class Core extends JPanel {
     private Integer playerId;
     private GameDescription activeGame;
     private SoundManagement coreManagementSound;
+    private Object creator;
 
     /**
      * Creates a new core instance.
      */
-    public Core() {
+    public Core(Object creator) {
+        this.creator = creator;
         try {
             UIManager.setLookAndFeel(new MetalLookAndFeel());
         } catch (UnsupportedLookAndFeelException e) {
@@ -104,6 +108,22 @@ public class Core extends JPanel {
 
     public static Core getInstance() {
         return instance;
+    }
+
+    public int getCreatorX() {
+        if (creator instanceof JFrame) {
+            return ((JFrame) creator).getX();
+        } else {
+            return ((JApplet) creator).getX();
+        }
+    }
+
+    public int getCreatorY() {
+        if (creator instanceof JFrame) {
+            return ((JFrame) creator).getY();
+        } else {
+            return ((JApplet) creator).getY();
+        }
     }
 
     public Image getIconImage() {

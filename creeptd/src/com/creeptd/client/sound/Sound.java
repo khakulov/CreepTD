@@ -68,7 +68,6 @@ public class Sound implements ISound, Runnable {
      * @param clip clip
      */
     public void playLoop(AudioClip clip) {
-
         clip.loop();
     }
 
@@ -76,7 +75,6 @@ public class Sound implements ISound, Runnable {
      * {@inheritDoc}
      */
     public void play(AudioClip clip) {
-
         clip.play();
     }
 
@@ -84,9 +82,7 @@ public class Sound implements ISound, Runnable {
      * plays Soundfile.
      */
     public void run() {
-
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-
         if (playAsLoop) {
             this.playLoop(sndc);
         } else {

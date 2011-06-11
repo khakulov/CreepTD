@@ -84,6 +84,7 @@ public class GamePanel extends GameScreen {
     private NoInfoPanel noInfoPanel;
     private JPanel lastTowerInfoPanel;
     private JButton quit;
+    private JButton options;
     private GameContext context;
     private GameLoop loop;
 
@@ -131,11 +132,11 @@ public class GamePanel extends GameScreen {
         this.add(gameInfoPanel);
 
         this.quit = new JButton("Quit");
-        this.quit.setFont(new Font("Helvetica", Font.PLAIN, 8));
-        this.quit.setBounds(163, 10, 60, 20);
+        this.quit.setFont(new Font("Helvetica", Font.PLAIN, 9));
+        this.quit.setBounds(143, 10, 80, 20);
         this.quit.setEnabled(false);
         this.quit.setBackground(Color.BLACK);
-        this.quit.setForeground(Color.GREEN);
+        this.quit.setForeground(Color.RED);
         this.quit.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent e) {
@@ -157,6 +158,19 @@ public class GamePanel extends GameScreen {
                 loop.setGameOver(false);
             }
         });
+
+        this.options = new JButton("Options");
+        this.options.setFont(new Font("Helvetica", Font.PLAIN, 9));
+        this.options.setBounds(143, 35, 80, 20);
+        this.options.setBackground(Color.BLACK);
+        this.options.setForeground(Color.YELLOW);
+        this.options.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                GameLobby.optionsFrame.setVisible(true);
+            }
+        });
+
+        this.gameInfoPanel.add(this.options);
         this.gameInfoPanel.add(this.quit);
 
         // TowerSelPanel

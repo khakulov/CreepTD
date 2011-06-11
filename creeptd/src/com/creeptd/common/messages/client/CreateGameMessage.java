@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.common.messages.client;
 
+import com.creeptd.common.IConstants;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,7 +65,7 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
     private String Passwort = "";
     private Integer MaxEloPoints = 0;
     private Integer MinEloPoints = 0;
-    private Integer gameMode;
+    private IConstants.Mode gameMode;
     private Boolean shufflePlayers = true;
 
     /**
@@ -177,14 +178,14 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
     /**
      * @param gameMode Mode number of game
      */
-    public void setGameMode(Integer gameMode) {
-        this.gameMode = gameMode;
+    public void setGameMode(IConstants.Mode mode) {
+        this.gameMode = mode;
     }
 
     /**
      * @return the Gamemode number
      */
-    public Integer getGameMode() {
+    public IConstants.Mode getGameMode() {
         return gameMode;
     }
 
@@ -209,7 +210,13 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
             this.setMaxEloPoints(Integer.valueOf(matcher.group(4)));
             this.setMinEloPoints(Integer.valueOf(matcher.group(5)));
             this.setPasswort(matcher.group(6));
-            this.setGameMode(Integer.valueOf(matcher.group(7)));
+            IConstants.Mode mode = IConstants.Mode.ALLVSALL;
+            try {
+                int sentModeValue = Integer.valueOf(matcher.group(7));
+                IConstants.Mode sentMode = IConstants.Mode.forValue(sentModeValue);
+                if (sentMode != null) mode = sentMode;
+            } catch (Exception ex) {}
+            this.setGameMode(mode);
             this.setShufflePlayers(matcher.group(8).equals("1"));
         }
     }
@@ -219,6 +226,6 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
      */
     @Override
     public String getMessageString() {
-        return "CREATE_GAME_REQUEST \"" + MessageUtil.prepareToSend(this.getGameName()) + "\" " + this.getMapId() + " " + this.getMaxPlayers() + " " + this.getMaxEloPoints() + " " + this.getMinEloPoints() + " " + "\"" + MessageUtil.prepareToSend(this.getPasswort()) + "\" " + this.getGameMode() + " " + (this.getShufflePlayers() ? "1" : "0");
+        return "CREATE_GAME_REQUEST \"" + MessageUtil.prepareToSend(this.getGameName()) + "\" " + this.getMapId() + " " + this.getMaxPlayers() + " " + this.getMaxEloPoints() + " " + this.getMinEloPoints() + " " + "\"" + MessageUtil.prepareToSend(this.getPasswort()) + "\" " + this.getGameMode().getValue() + " " + (this.getShufflePlayers() ? "1" : "0");
     }
 }

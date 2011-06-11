@@ -1,10 +1,13 @@
 /**
-Creep Smash, a multiplayer towerdefence game
-created as a project at the Hochschule fuer
-Technik Stuttgart (University of Applied Science)
-http://www.hft-stuttgart.de 
+CreepTD is an online multiplayer towerdefense game
+formerly created under the name CreepSmash as a project
+at the Hochschule fuer Technik Stuttgart (University of Applied Science)
 
-Copyright (C) 2008 by      
+CreepTD (Since version 0.7.0+) Copyright (C) 2011 by
+ * Daniel Wirtz, virtunity media
+http://www.creeptd.com
+
+CreepSmash (Till version 0.6.0) Copyright (C) 2008 by
  * Andreas Wittig
  * Bernd Hietler
  * Christoph Fritz
@@ -61,7 +64,7 @@ import com.creeptd.server.model.Player;
 public class AuthenticationService {
 
     private static Logger logger = Logger.getLogger(AuthenticationService.class);
-    private final static HashSet<String> loggedIn = new HashSet<String>();
+    private final static HashSet<Client> loggedIn = new HashSet<Client>();
     private static final String QUERY_PLAYERS_ORDERBY_POINTS = "SELECT player FROM Player AS player ORDER BY player.experience DESC";
     private static final String QUERY_BANLIST = "SELECT * FROM BlackList WHERE data IN ";
 
@@ -160,13 +163,13 @@ public class AuthenticationService {
     public static IConstants.ResponseType delete(Client client) {
         IConstants.ResponseType responseType = IConstants.ResponseType.failed;
         /* if (client.getPlayerModel() != null) {
-            EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
-            EntityTransaction entityTransaction = entityManager.getTransaction();
-            entityTransaction.begin();
-            entityManager.remove(entityManager.find(Player.class, client.getPlayerModel().getName()));
-            entityManager.flush();
-            entityTransaction.commit();
-            responseType = IConstants.ResponseType.ok;
+        EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
+        entityManager.remove(entityManager.find(Player.class, client.getPlayerModel().getName()));
+        entityManager.flush();
+        entityTransaction.commit();
+        responseType = IConstants.ResponseType.ok;
         } */
         return responseType;
     }
@@ -182,14 +185,20 @@ public class AuthenticationService {
         EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
         Player player = entityManager.find(Player.class, loginRequestMessage.getUsername());
         if ((player != null)) {
-            for (String UserName : loggedIn) {
-                if (UserName.equalsIgnoreCase(player.getName())) {
-                    logger.info(player.getName() + " tried to log in twice");
-                    return false;
+            synchronized (loggedIn) {
+                for (Client loggedinClient : loggedIn) {
+                    if (loggedinClient.getPlayerModel().getName().equalsIgnoreCase(player.getName())) {
+                        loggedinClient.disconnect();
+                        loggedIn.remove(loggedinClient);
+                        logger.info(player.getName() + " is already logged in: Closed old connection!");
+                        break;
+                    }
                 }
             }
             if (player.getPassword().equals(loginRequestMessage.getPassword()) && !player.isBlocked()) {
-                loggedIn.add(player.getName().toLowerCase());
+                synchronized (loggedIn) {
+                    loggedIn.add(client);
+                }
                 logger.info(player.getName() + " logged in successfully");
 
                 EntityTransaction entityTransaction = entityManager.getTransaction();
@@ -205,7 +214,7 @@ public class AuthenticationService {
                 return true;
             }
         }
-        logger.info("Login failed for "+loginRequestMessage.getUsername());
+        logger.info("Login failed for " + loginRequestMessage.getUsername());
         return false;
     }
 
@@ -216,10 +225,12 @@ public class AuthenticationService {
      *            the name of the player who wants to log out.
      */
     public static void logout(Client client) {
-        if (loggedIn.remove(client.getPlayerModel().getName())) {
-            logger.info(client + " logged out");
-        } else {
-            logger.warn(client + " tried to log out, but wasn't logged in!");
+        synchronized (loggedIn) {
+            if (loggedIn.remove(client)) {
+                logger.info(client + " logged out");
+            } else {
+                logger.warn(client + " tried to log out, but wasn't logged in!");
+            }
         }
     }
 

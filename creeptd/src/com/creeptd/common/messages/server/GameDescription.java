@@ -1,10 +1,13 @@
 /**
-Creep Smash, a multiplayer towerdefence game
-created as a project at the Hochschule fuer
-Technik Stuttgart (University of Applied Science)
-http://www.hft-stuttgart.de 
+CreepTD is an online multiplayer towerdefense game
+formerly created under the name CreepSmash as a project
+at the Hochschule fuer Technik Stuttgart (University of Applied Science)
 
-Copyright (C) 2008 by      
+CreepTD (Since version 0.7.0+) Copyright (C) 2011 by
+ * Daniel Wirtz, virtunity media
+http://www.creeptd.com
+
+CreepSmash (Till version 0.6.0) Copyright (C) 2008 by
  * Andreas Wittig
  * Bernd Hietler
  * Christoph Fritz
@@ -32,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.common.messages.server;
 
+import com.creeptd.common.IConstants;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,7 +63,7 @@ public class GameDescription {
     private Integer MinEloPoints = 0;
     private Boolean shufflePlayers = true;
     private String state;
-    private Integer GameMod;
+    private IConstants.Mode gameMode;
     private static final String REG_EXP = "(\\s)*([0-9]+)\\s\"([^\"]+)\"\\s" + "([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)" + "\\s\"([^\"]*)\"\\s\"(.*)\"\\s\"(.*)\"\\s\"(.*)\"\\s\"(.*)\"\\s\"([^\"]+)\"\\s(0|1)(\\s)*";
     public static final Pattern PATTERN = Pattern.compile(REG_EXP);
 
@@ -80,7 +84,7 @@ public class GameDescription {
      */
     public GameDescription(Integer gameId, String gameName, Integer mapId,
             Integer maxPlayers, Integer currentPlayers, Integer MaxEloPoints, Integer MinEloPoints, String Passwort,
-            Integer GameMod,
+            IConstants.Mode gameMode,
             String Player1,
             String Player2,
             String Player3,
@@ -95,7 +99,7 @@ public class GameDescription {
         this.MaxEloPoints = MaxEloPoints;
         this.MinEloPoints = MinEloPoints;
         this.Passwort = Passwort = "";
-        this.GameMod = GameMod;
+        this.gameMode = gameMode;
         this.Player1 = Player1;
         this.Player2 = Player2;
         this.Player3 = Player3;
@@ -105,36 +109,21 @@ public class GameDescription {
     }
 
     /**
-     * @return the GameMod
+     * @return the gameMode
      */
-    public Integer getGameMod() {
-        return this.GameMod;
+    public IConstants.Mode getGameMode() {
+        return this.gameMode;
     }
 
-    public String getGameModString() {
-        if (this.GameMod == 0) {
-            return "Send to next";
-        }
-        if (this.GameMod == 1) {
-            return "ALL vs ALL";
-        }
-        if (this.GameMod == 2) {
-            return "Send to random";
-        }
-        if (this.GameMod == 3) {
-            return "Team 2vs2";
-        }
-        if (this.GameMod == 4) {
-            return "Last man standing";
-        }
-        return "Invalid game mod";
+    public String getGameModeString() {
+        return this.gameMode.toString();
     }
 
     /**
-     * @param The GameMod to set
+     * @param The gameMode to set
      */
-    public void setGameMod(Integer GameMod) {
-        this.GameMod = GameMod;
+    public void setGameMode(IConstants.Mode gameMode) {
+        this.gameMode = gameMode;
     }
 
     /**
@@ -332,7 +321,7 @@ public class GameDescription {
      */
     @Override
     public String toString() {
-        return this.gameId.toString() + " " + "\"" + this.gameName + "\" " + this.mapId.toString() + " " + this.numberOfPlayers.toString() + " " + this.currentPlayers + " " + this.getMaxEloPoints() + " " + this.getMinEloPoints() + " " + "" + this.getGameMod() + " " + "\"" + MessageUtil.prepareToSend(this.getPasswort()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer1()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer2()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer3()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer4()) + "\" " + "\"" + this.state + "\"" + " " + (this.getShufflePlayers() ? "1" : "0");
+        return this.gameId.toString() + " " + "\"" + this.gameName + "\" " + this.mapId.toString() + " " + this.numberOfPlayers.toString() + " " + this.currentPlayers + " " + this.getMaxEloPoints() + " " + this.getMinEloPoints() + " " + "" + this.getGameMode().getValue() + " " + "\"" + MessageUtil.prepareToSend(this.getPasswort()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer1()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer2()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer3()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer4()) + "\" " + "\"" + this.state + "\"" + " " + (this.getShufflePlayers() ? "1" : "0");
     }
 
     /**
@@ -348,7 +337,13 @@ public class GameDescription {
             this.setCurrentPlayers(Integer.valueOf(matcher.group(6)));
             this.setMaxEloPoints(Integer.valueOf(matcher.group(7)));
             this.setMinEloPoints(Integer.valueOf(matcher.group(8)));
-            this.setGameMod(Integer.valueOf(matcher.group(9)));
+            IConstants.Mode mode = IConstants.Mode.ALLVSALL;
+            try {
+                int sentModeValue = Integer.valueOf(matcher.group(9));
+                IConstants.Mode sentMode = IConstants.Mode.forValue(sentModeValue);
+                if (sentMode != null) mode = sentMode;
+            } catch (Exception ex) {}
+            this.setGameMode(mode);
             this.setPasswort(matcher.group(10));
             this.setPlyer1(matcher.group(11));
             this.setPlyer2(matcher.group(12));
@@ -371,7 +366,7 @@ public class GameDescription {
             return false;
         }
         GameDescription d = (GameDescription) o;
-        return this.gameId == d.getGameId() && this.gameName.equals(d.getGameName()) && this.mapId == d.getMapId() && this.numberOfPlayers == d.getNumberOfPlayers() && this.currentPlayers == d.getCurrentPlayers() && this.MaxEloPoints == d.getMaxEloPoints() && this.MinEloPoints == d.getMinEloPoints() && this.GameMod == d.getGameMod() && this.Passwort.equals(d.getPasswort()) && this.Player1.equals(d.getPlayer1()) && this.Player2.equals(d.getPlayer2()) && this.Player3.equals(d.getPlayer3()) && this.Player4.equals(d.getPlayer4()) && this.state.equals(d.getState()) && this.shufflePlayers.equals(d.getShufflePlayers());
+        return this.gameId == d.getGameId() && this.gameName.equals(d.getGameName()) && this.mapId == d.getMapId() && this.numberOfPlayers == d.getNumberOfPlayers() && this.currentPlayers == d.getCurrentPlayers() && this.MaxEloPoints == d.getMaxEloPoints() && this.MinEloPoints == d.getMinEloPoints() && this.gameMode == d.getGameMode() && this.Passwort.equals(d.getPasswort()) && this.Player1.equals(d.getPlayer1()) && this.Player2.equals(d.getPlayer2()) && this.Player3.equals(d.getPlayer3()) && this.Player4.equals(d.getPlayer4()) && this.state.equals(d.getState()) && this.shufflePlayers.equals(d.getShufflePlayers());
     }
 
     /**

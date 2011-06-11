@@ -68,7 +68,7 @@ public class Client extends JFrame {
         }
         System.out.println("Using server=" + Core.host + ", port=" + Core.port);
         Client app = new Client();
-        Core core = new Core();
+        Core core = new Core(app);
         app.setTitle("CreepTD - Online Multiplayer TowerDefense");
         app.getContentPane().setPreferredSize(Core.SCREENSIZE);
         app.setIconImage(core.getIconImage());

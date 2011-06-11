@@ -62,7 +62,7 @@ public class ClientApplet extends JApplet {
             Core.port = IConstants.DEFAULT_SERVER_PORT;
         }
 
-        this.core = new Core();
+        this.core = new Core(this);
         this.core.setBounds(0, 0, Core.WIDTH, Core.HEIGHT);
         this.setBounds(0, 0, Core.WIDTH, Core.HEIGHT);
         this.core.init();

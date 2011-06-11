@@ -113,7 +113,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
     private int mapId;
     private int minimumPlayerNumber;
     private SoundManagement managementSound;
-    private int GameMod = 0;
+    private IConstants.Mode gameMode = IConstants.Mode.ALLVSALL;
 
     /**
      * Creates a new instance of CreateGamePanel.
@@ -279,13 +279,13 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         }
 
         description.setText(
-                "<html><table width=\"180px\"><tr><td>Game Name: </td><td>" + this.getCore().getActiveGame().getGameName() + "</td></tr><tr><td>Map: </td><td>" + IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString() + "</td></tr><tr><td>Minimum Players:  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>Min/Max:  </td><td>" + ((this.getCore().getActiveGame().getMinEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMinEloPoints()) + "/" + ((this.getCore().getActiveGame().getMaxEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMaxEloPoints()) + "</td></tr>" + "<tr><td>Mod:  </td><td>" + this.getCore().getActiveGame().getGameModString() + "</td></tr>" + "<tr><td>Password:  </td><td>" + ("".equals(this.getCore().getActiveGame().getPasswort()) ? "(not set)" : this.getCore().getActiveGame().getPasswort()) + "</td></tr>" + "</td></tr></table></html>");
+                "<html><table width=\"180px\"><tr><td>Game Name: </td><td>" + this.getCore().getActiveGame().getGameName() + "</td></tr><tr><td>Map: </td><td>" + IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString() + "</td></tr><tr><td>Minimum Players:  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>Min/Max:  </td><td>" + ((this.getCore().getActiveGame().getMinEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMinEloPoints()) + "/" + ((this.getCore().getActiveGame().getMaxEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMaxEloPoints()) + "</td></tr>" + "<tr><td>Mod:  </td><td>" + this.getCore().getActiveGame().getGameModeString() + "</td></tr>" + "<tr><td>Password:  </td><td>" + ("".equals(this.getCore().getActiveGame().getPasswort()) ? "(not set)" : this.getCore().getActiveGame().getPasswort()) + "</td></tr>" + "</td></tr></table></html>");
 
         try {
             preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(
                     IConstants.Map.getPicturePath(
                     IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString()))));
-            if (this.getCore().getActiveGame().getGameMod() == 3) { // Team 2vs2
+            if (this.getCore().getActiveGame().getGameMode().equals(IConstants.Mode.TEAM2VS2)) {
                 locationImage = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("com/creeptd/client/resources/panel/boardlocations-team.jpg")));
             } else if (this.getCore().getActiveGame().getShufflePlayers()) {
                 locationImage = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("com/creeptd/client/resources/panel/boardlocations-random.jpg")));
@@ -419,8 +419,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         if (m instanceof KickPlayerResponseMessage) {
             KickPlayerResponseMessage kprm = (KickPlayerResponseMessage) m;
             if (kprm.getResponseType().equals(IConstants.ResponseType.ok)) {
-                DefaultListModel dl =
-                        (DefaultListModel) this.playerlist.getModel();
+                DefaultListModel dl = (DefaultListModel) this.playerlist.getModel();
 
                 removePlayer((String) this.playerlist.getSelectedValue());
                 dl.removeElement(this.playerlist.getSelectedValue());
@@ -452,15 +451,14 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             getCore().switchScreen(this.gamePanel);
             gamePanel.getLoop().setPlayersOrder(this.playersOrder);
             gamePanel.getLoop().setPlayers(this.players);
-            gamePanel.getLoop().setGameMod(this.GameMod);
+            gamePanel.getLoop().setGameMode(this.gameMode);
             gamePanel.getLoop().setMap(IConstants.Map.getMapById(this.mapId));
             gamePanel.getLoop().start();
         }
 
         if (m instanceof PlayerQuitMessage) {
             PlayerQuitMessage pqm = (PlayerQuitMessage) m;
-            DefaultListModel dl =
-                    (DefaultListModel) this.playerlist.getModel();
+            DefaultListModel dl = (DefaultListModel) this.playerlist.getModel();
 
             if (managementSound != null) {
                 managementSound.hornbeepSound();
@@ -512,15 +510,15 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
     /**
      * @param game mod
      */
-    public void setGameMod(int gameMod) {
-        this.GameMod = gameMod;
+    public void setGameMode(IConstants.Mode gameMode) {
+        this.gameMode = gameMode;
     }
 
     /**
      * @return the game mod
      */
-    public int getGameMod() {
-        return this.GameMod;
+    public IConstants.Mode getGameMode() {
+        return this.gameMode;
     }
 
     /**

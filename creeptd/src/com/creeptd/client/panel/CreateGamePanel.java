@@ -402,14 +402,13 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
             gM.setMinEloPoints(0);
         }
         gM.setPasswort(tPasswort.getText());
-        int mod = tGamemode.getSelectedIndex();
-        if (mod == 0) {
-            mod = 1; // correct mods
-        } else if (mod == 1) {
-            mod = 0;
-        }
-        gM.setGameMode(mod);
-        if (mod == 3) {
+        int selectedMode = tGamemode.getSelectedIndex();
+        IConstants.Mode mode = IConstants.Mode.ALLVSALL;
+        if (selectedMode == 1) mode = IConstants.Mode.SENDNEXT;
+        if (selectedMode == 2) mode = IConstants.Mode.SENDRANDOM;
+        if (selectedMode == 3) mode = IConstants.Mode.TEAM2VS2;
+        gM.setGameMode(mode);
+        if (selectedMode == 3) {
             gM.setShufflePlayers(false);
         } else {
             gM.setShufflePlayers(shufflePlayers.isSelected());
@@ -442,7 +441,12 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
             } catch (NumberFormatException ex) {
                 gd.setMinEloPoints(0);
             }
-            gd.setGameMod(tGamemode.getSelectedIndex());
+            int selectedMode = tGamemode.getSelectedIndex();
+            IConstants.Mode mode = IConstants.Mode.ALLVSALL;
+            if (selectedMode == 1) mode = IConstants.Mode.SENDNEXT;
+            if (selectedMode == 2) mode = IConstants.Mode.SENDRANDOM;
+            if (selectedMode == 3) mode = IConstants.Mode.TEAM2VS2;
+            gd.setGameMode(mode);
             gd.setPasswort(tPasswort.getText());
             gd.setShufflePlayers(shufflePlayers.isSelected());
 
@@ -450,13 +454,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
 
             WaitingGamePanel wgp = new WaitingGamePanel(gd.getNumberOfPlayers());
             wgp.setMapId(this.selectMap);
-            int mod = tGamemode.getSelectedIndex();
-            if (mod == 0) {
-                mod = 1;
-            } else if (mod == 1) {
-                mod = 0;
-            }
-            wgp.setGameMod(mod);
+            wgp.setGameMode(mode);
             getCore().switchScreen(wgp);
         }
 

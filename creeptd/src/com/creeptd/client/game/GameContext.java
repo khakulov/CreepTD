@@ -193,6 +193,7 @@ public abstract class GameContext {
     private long lastWaveSent = 0;
     private long lastWaveDelay = 0;
     public int takedlives;
+    private boolean endSoundPlayed = false;
 
     /**
      * @return the startCounter
@@ -301,7 +302,7 @@ public abstract class GameContext {
         } else {
             if (!deathsoundPlayed) {
                 if (managementSound != null) {
-                    managementSound.playerLooseSound();
+                    managementSound.error();
                 }
                 deathsoundPlayed = true;
             }
@@ -349,8 +350,8 @@ public abstract class GameContext {
         if (update_Round <= 0) {
             logger.info("processMessage is out of sync!!!");
             if (managementSound != null) {
-                managementSound.playerWonSound();
-                managementSound.playerWonSound();
+                managementSound.gameOver();
+                managementSound.gameOver();
             }
         }
 
@@ -417,7 +418,7 @@ public abstract class GameContext {
             c.setSenderId(bcrm.getSenderId());
             c.setPlayerID(bcrm.getPlayerId());
 
-            if (!this.isDead()) { //  || this.getGameLoop().getGameMod() == 3
+            if (!this.isDead()) { //  || this.getGameLoop().getGameMode().equals(IConstants.Mode.TEAM2VS2)
                 this.getCreeps().add(c);
             } else {
                 this.getTransfer().add(c);
@@ -484,7 +485,7 @@ public abstract class GameContext {
         boolean drawDead = false;
 
         // Team 2vs2 mode
-        if (this.getGameLoop().getGameMod() == 3) {
+        if (this.getGameLoop().getGameMode().equals(IConstants.Mode.TEAM2VS2)) {
             GameContext[] players = this.getGameLoop().getOrderedPlayers();
 
             // Check if Team A is dead
@@ -526,6 +527,10 @@ public abstract class GameContext {
             if (this instanceof PlayerContext) {
                 g.setFont(new Font("Verdana", Font.BOLD, 15));
                 g.drawString("Press ESC to leave", 90, 180);
+                if (!this.endSoundPlayed) {
+                    this.getGameLoop().getSoundManagement().gameOver();
+                    this.endSoundPlayed = true;
+                }
             }
         } else if (drawGameover) {
             g.setColor(Color.WHITE);
@@ -534,7 +539,12 @@ public abstract class GameContext {
             if (this instanceof PlayerContext) {
                 g.setFont(new Font("Verdana", Font.BOLD, 15));
                 g.drawString("Sad but true", 100, 180);
+                if (!this.endSoundPlayed) {
+                    this.getGameLoop().getSoundManagement().gameOver();
+                    this.endSoundPlayed = true;
+                }
             }
+
         } else if (drawDead) {
             g.setColor(Color.WHITE);
             g.setFont(new Font("Verdana", Font.BOLD, 45));
