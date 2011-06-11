@@ -50,9 +50,8 @@ public class OpponentContext extends GameContext {
      * @param network the current network object
      * @param map the map
      */
-    public OpponentContext(BoardLocation location, Network network,
-            IConstants.Map map, GameLoop gameLoop) {
-        super(location, network, map, gameLoop);
+    public OpponentContext(BoardLocation location, Network network, IConstants.Map map, GameLoop gameLoop, int player_id, String player_name) {
+        super(location, network, null, map, gameLoop, player_id, player_name);
     }
 
     /**

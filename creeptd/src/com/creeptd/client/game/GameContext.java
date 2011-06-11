@@ -57,6 +57,7 @@ import com.creeptd.client.tower.StrategyFactory;
 import com.creeptd.client.tower.Tower;
 import com.creeptd.client.tower.TowerFactory;
 import com.creeptd.common.IConstants;
+import com.creeptd.common.Password;
 import com.creeptd.common.messages.client.BuildCreepMessage;
 import com.creeptd.common.messages.client.ChangeStrategyMessage;
 import com.creeptd.common.messages.client.ExitGameMessage;
@@ -169,11 +170,11 @@ public abstract class GameContext {
     private List<Creep> transfer; // creeps for context switch
     // private List<Integer> towerIDs; //builded tower IDs
     private int credits = IConstants.CREDITS;
-    private String _credits = Integer.toBinaryString(IConstants.CREDITS);
+    private String credits_hash = null;
     private int income = IConstants.START_INCOME;
-    private String _income = Integer.toBinaryString(IConstants.START_INCOME);
+    private String income_hash = null;
     private int lives = IConstants.LIVES;
-    private String _lives = Integer.toBinaryString(IConstants.LIVES);
+    private String lives_hash = null;
     private GameBoard gameBoard;
     private BoardLocation location;
     private AffineTransform save = null;
@@ -222,7 +223,7 @@ public abstract class GameContext {
      * @param map
      *            the map to play
      */
-    public GameContext(BoardLocation location, Network network, SoundManagement mSound, IConstants.Map map, GameLoop gameLoop) {
+    public GameContext(BoardLocation location, Network network, SoundManagement mSound, IConstants.Map map, GameLoop gameLoop, int player_id, String player_name) {
         this.location = location;
         this.network = network;
         this.mapfile = map;
@@ -233,6 +234,11 @@ public abstract class GameContext {
         this.transfer = Collections.synchronizedList(new ArrayList<Creep>());
         this.contextListeners = new ArrayList<ContextListener>();
         this.managementSound = mSound;
+        this.setPlayerId(player_id);
+        this.setPlayerName(player_name);
+        this.setCredits(credits);
+        this.setIncome(income);
+        this.setLives(lives);
         synchronized (GameContext.winningPosition) {
             GameContext.winningPosition++;
         }
@@ -248,7 +254,7 @@ public abstract class GameContext {
      * @param map
      *            the map to play
      */
-    public GameContext(BoardLocation location, Network network, IConstants.Map map, GameLoop gameLoop) {
+    /* public GameContext(BoardLocation location, Network network, IConstants.Map map, GameLoop gameLoop) {
         this.location = location;
         this.network = network;
         this.mapfile = map;
@@ -259,10 +265,13 @@ public abstract class GameContext {
         this.transfer = Collections.synchronizedList(new ArrayList<Creep>());
         this.contextListeners = new ArrayList<ContextListener>();
         this.managementSound = null;
+        this.setCredits(credits);
+        this.setIncome(income);
+        this.setLives(lives);
         synchronized (GameContext.winningPosition) {
             GameContext.winningPosition++;
         }
-    }
+    } */
 
     /**
      * A hook for special pre-update work.
@@ -350,7 +359,6 @@ public abstract class GameContext {
         if (update_Round <= 0) {
             logger.info("processMessage is out of sync!!!");
             if (managementSound != null) {
-                managementSound.error();
                 managementSound.error();
             }
         }
@@ -617,7 +625,6 @@ public abstract class GameContext {
      */
     public synchronized boolean sendCreep(IConstants.Creeps type) {
         if (this.getCredits() >= type.getPrice() && startCounter < 0 && !this.isDead()) {
-
             BuildCreepMessage bcm = new BuildCreepMessage();
             bcm.setClientId(this.getPlayerId());
             bcm.setCreepType(type.toString());
@@ -626,7 +633,6 @@ public abstract class GameContext {
             this.setCredits(this.getCredits() - type.getPrice());
             this.setIncome(this.getIncome() + type.getIncome());
             lastCreepSent = System.nanoTime();
-
             return true;
         }
         return false;
@@ -891,10 +897,9 @@ public abstract class GameContext {
         if (this.isDead()) {
             return;
         }
-        cheaterCheck();
-
+        checkIntegrity();
         this.credits = credits;
-        this._credits = Integer.toBinaryString(this.credits);
+        this.credits_hash = Password.md5(""+credits, this.getPlayerName());
         fireCreditsChangedEvent();
     }
 
@@ -909,11 +914,9 @@ public abstract class GameContext {
      * Removes one live from the context.
      */
     public void removeLive() {
-        cheaterCheck();
-
+        checkIntegrity();
         if (lives > 0) {
-            this.lives--;
-            this._lives = Integer.toBinaryString(this.lives);
+            this.setLives(this.lives-1);
             fireLivesChangedEvent();
         }
     }
@@ -925,10 +928,9 @@ public abstract class GameContext {
      *            the lives to set
      */
     public void setLives(int lives) {
-
-        cheaterCheck();
+        checkIntegrity();
         this.lives = lives;
-        this._lives = Integer.toBinaryString(this.lives);
+        this.lives_hash = Password.md5(""+this.lives, this.getPlayerName());
     }
 
     /**
@@ -1063,52 +1065,32 @@ public abstract class GameContext {
      *            the new income
      */
     public synchronized void setIncome(int income) {
-
-        cheaterCheck();
+        checkIntegrity();
         this.income = income;
-        this._income = Integer.toBinaryString(this.income);
+        this.income_hash = Password.md5(""+this.income, this.getPlayerName());
         fireIncomeChangedEvent();
     }
 
-    public boolean cheaterCheck() {
-
+    public boolean checkIntegrity() {
         if (this.getPlayerId() != getNetwork().getCore().getPlayerId()) {
             return true;
         }
-
         String message = null;
-        //Income
-        if (!this._income.equals(Integer.toBinaryString(this.income))) {
-            message = "I am a big cheater!!! Income cheated. My income is " + this.income;
+        if (
+                (this.income_hash == null || Password.md5(""+this.income, this.getPlayerName()).equals(this.income_hash)) &&
+                (this.lives_hash == null || Password.md5(""+this.lives, this.getPlayerName()).equals(this.lives_hash)) &&
+                (this.credits_hash == null || Password.md5(""+this.credits, this.getPlayerName()).equals(this.credits_hash))
+        ) {
+            return true;
         }
-        //Lives
-        if (!this._lives.equals(Integer.toBinaryString(this.lives))) {
-            message = "I am a big cheater!!! Live cheated. My live is " + this.lives;
-        }
-        //Credits
-        if (!this._credits.equals(Integer.toBinaryString(this.credits))) {
-            message = "I am a big cheater!!! Credits cheated. New credit is " + this.credits;
-        }
-
-        if (message != null) {
-
-            SendMessageMessage mes = new SendMessageMessage();
-            mes.setClientId(getPlayerId());
-            mes.setMessage(message);
-            getNetwork().sendMessage(mes);
-
-            // sends a messages to all players that we have left
-            SendMessageMessage chatMsg = new SendMessageMessage();
-            chatMsg.setClientId(getPlayerId());
-            chatMsg.setMessage("has left the game");
-            getNetwork().sendMessage(chatMsg);
-
-            getNetwork().sendMessage(new ExitGameMessage());
-            System.exit(1);
-            return false;
-        }
-
-        return true;
+        // Sends a messages to all players that we have left
+        SendMessageMessage chatMsg = new SendMessageMessage();
+        chatMsg.setClientId(getPlayerId());
+        chatMsg.setMessage("has cheated, sorry.");
+        getNetwork().sendMessage(chatMsg);
+        getNetwork().sendMessage(new ExitGameMessage());
+        System.exit(1);
+        return false;
     }
 
     /**

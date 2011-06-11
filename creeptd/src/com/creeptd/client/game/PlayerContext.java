@@ -56,10 +56,8 @@ public class PlayerContext extends GameContext {
      * @param managementSound Sound object for sound
      * @param map the map
      */
-    public PlayerContext(BoardLocation location, Network network,
-            SoundManagement managementSound,
-            IConstants.Map map, GameLoop gameLoop) {
-        super(location, network, managementSound, map, gameLoop);
+    public PlayerContext(BoardLocation location, Network network, SoundManagement managementSound, IConstants.Map map, GameLoop gameLoop, int player_id, String player_name) {
+        super(location, network, managementSound, map, gameLoop, player_id, player_name);
 
     }
 

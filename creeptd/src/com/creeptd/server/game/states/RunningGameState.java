@@ -89,8 +89,8 @@ public class RunningGameState extends AbstractGameState implements
         super(game);
         this.nextTowerId = 1;
         this.maxTick = 0;
+        this.playerPositions = new ArrayList();
         synchronized(this.playerPositions) {
-            this.playerPositions = new ArrayList();
             for (int i=0; i<game.getMaxPlayers(); i++) {
                 this.playerPositions.add(null);
             }

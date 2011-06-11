@@ -58,8 +58,8 @@ public class PlayerInGame {
     private boolean gameOver;
     private int takedLive = 0;
     private int live = 20;
-    private int anticheatCurrentMoney;
-    private int anticheatCurrentIncome;
+    private int credits;
+    private int income;
     private HashMap<Integer, String> anticheatTowerId = new HashMap<Integer, String>();
     private HashMap<Integer, Integer> anticheatTowerIdPrices = new HashMap<Integer, Integer>();
     private List<AnticheatItem> items = new ArrayList<AnticheatItem>();
@@ -96,8 +96,8 @@ public class PlayerInGame {
         this.client = client;
         this.gameOver = false;
 
-        this.anticheatCurrentMoney = IConstants.CREDITS;
-        this.anticheatCurrentIncome = IConstants.START_INCOME;
+        this.credits = IConstants.CREDITS;
+        this.income = IConstants.START_INCOME;
 
     }
 
@@ -177,17 +177,15 @@ public class PlayerInGame {
      * If this return value plus tolerance is less than zero, this client is
      * pretty sure cheating!
      *
-     * @param atTick
-     *            the current tick-time
      * @return money the client has at this tick-time (with error!)
      *
      */
     public synchronized int anticheat_getCurrentMoney() {
-        return this.anticheatCurrentMoney;
+        return this.credits;
     }
 
     public synchronized int anticheat_getCurrentIncome() {
-        return this.anticheatCurrentIncome;
+        return this.income;
     }
 
     /**
@@ -200,11 +198,11 @@ public class PlayerInGame {
                 for (AnticheatItem item : this.items) {
                     if (item.tick <= tick) {
                         if (item.type == AnticheatType.CREDIT) {
-                            this.anticheatCurrentMoney += item.value;
+                            this.credits += item.value;
                             removedItems.add(item);
                         }
                         if (item.type == AnticheatType.INCOME) {
-                            this.anticheatCurrentIncome += item.value;
+                            this.income += item.value;
                             removedItems.add(item);
                         }
                     }
@@ -230,7 +228,7 @@ public class PlayerInGame {
             long checkTick = tick - (IConstants.INCOME_TIME / IConstants.TICK_MS);
             if (checkTick + 1 > 0) {
                 this.anticheat_updateItems(checkTick);
-                this.anticheatCurrentMoney += this.anticheatCurrentIncome;
+                this.credits += this.income;
             }
         }
 
@@ -300,8 +298,8 @@ public class PlayerInGame {
     /**
      * Handles creeps this client sent.
      *
-     * It decreases the anticheatCurrentMoney with the price of the creep from
-     * this client and increases anticheatCurrentIncome according to the type of
+     * It decreases the credits with the price of the creep from
+     * this client and increases income according to the type of
      * creep.
      *
      * @param creepType
@@ -320,7 +318,7 @@ public class PlayerInGame {
      *
      * Every smashed creep gives money.
      *
-     * This increases the anticheatCurrentMoney according to the type of creep.
+     * This increases the credits according to the type of creep.
      * It is purposed that the client always kills all enemies an gets the
      * bounty of it. Because the server doesn't know when a creep walks through
      * the client's game context (map). This leads to a small error in the
