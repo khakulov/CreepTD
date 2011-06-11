@@ -98,7 +98,7 @@ public class RunningGameState extends AbstractGameState implements
     }
 
     /**
-     * Advance the maxTick counter and send a "ROUND bcrm OK" message to all
+     * Advance the maxTick counter and send a "ROUND n OK" message to all
      * players.
      */
     public void tick() {
@@ -365,6 +365,7 @@ public class RunningGameState extends AbstractGameState implements
                     }
                 } else {
                     logger.error("Random send mode error. Player was null.");
+                    break;
                 }
             }
         } else if (this.getGame().getMode().equals(IConstants.Mode.TEAM2VS2)) { // Team 2vs2

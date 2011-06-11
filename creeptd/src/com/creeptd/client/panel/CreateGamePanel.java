@@ -109,7 +109,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
 
         name = new JLabel("Name: ");
         name.setBounds(200, 200, 200, 30);
-        name.setForeground(Color.GREEN);
+        name.setForeground(Color.GRAY);
         name.setFont(new Font("Arial", Font.PLAIN, 12));
 
         tName = new JTextField();
@@ -120,7 +120,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
 
         player = new JLabel("Players: ");
         player.setBounds(200, 250, 200, 25);
-        player.setForeground(Color.green);
+        player.setForeground(Color.GRAY);
         player.setFont(new Font("Arial", Font.PLAIN, 12));
 
         tPlayer = new JComboBox();
@@ -131,7 +131,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
 
         lGamemode = new JLabel("Game mode: ");
         lGamemode.setBounds(200, 450, 200, 25);
-        lGamemode.setForeground(Color.green);
+        lGamemode.setForeground(Color.GRAY);
         lGamemode.setFont(new Font("Arial", Font.PLAIN, 12));
 
         tGamemode = new JComboBox();
@@ -142,7 +142,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
 
         map = new JLabel("Map: ");
         map.setBounds(200, 300, 200, 25);
-        map.setForeground(Color.green);
+        map.setForeground(Color.GRAY);
         map.setFont(new Font("Arial", Font.PLAIN, 12));
 
         tMap = new JButton("Select Map");
@@ -152,16 +152,16 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
 
         Passwort = new JLabel("Password: ");
         Passwort.setBounds(200, 350, 200, 25);
-        Passwort.setForeground(Color.green);
+        Passwort.setForeground(Color.GRAY);
         Passwort.setFont(new Font("Arial", Font.PLAIN, 12));
 
         tPasswort = new JPasswordField();
         tPasswort.setBounds(300, 350, 200, 25);
         tPasswort.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        MaxEloPoints = new JLabel("min/max Skill: ");
+        MaxEloPoints = new JLabel("Min/max skill: ");
         MaxEloPoints.setBounds(200, 400, 200, 25);
-        MaxEloPoints.setForeground(Color.green);
+        MaxEloPoints.setForeground(Color.GRAY);
         MaxEloPoints.setFont(new Font("Arial", Font.PLAIN, 12));
 
         tMinEloPoints = new JTextField();
@@ -185,7 +185,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         previewDescription = new JLabel("preview");
         previewDescription.setBounds(600, 200, 250, 25);
         previewDescription.setHorizontalAlignment(SwingConstants.CENTER);
-        previewDescription.setText("Random Map");
+        previewDescription.setText("Random map");
         previewDescription.setBackground(Color.BLACK);
         previewDescription.setForeground(Color.GREEN);
 
@@ -202,7 +202,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
 
             public void actionPerformed(ActionEvent e) {
                 JComboBox tGamemode = (JComboBox) e.getSource();
-                if (tGamemode.getSelectedIndex() == 3) {
+                if (tGamemode.getSelectedIndex() == 3) { // Team 2vs2
                     shufflePlayers.setVisible(false);
                 } else {
                     shufflePlayers.setVisible(true);
@@ -350,7 +350,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
             }
 
             if (maxEloPoints < minEloPoints) {
-                errorDialog("'Max Elo Points' must be larger than 'min Elo Points'.!");
+                errorDialog("Maximum skill must be larger than minimum skill!");
                 StartGame = false;
 
             } else {
@@ -359,13 +359,13 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         }
         if (tGamemode.getSelectedIndex() == 1 || tGamemode.getSelectedIndex() == 2) {
             if (tPlayer.getSelectedIndex() == 0) {
-                errorDialog("This game mod works only with 3 ore 4 players!");
+                errorDialog("This game mode requires 3 or 4 players!");
                 StartGame = false;
             }
         }
         if (tGamemode.getSelectedIndex() == 3) {
             if (tPlayer.getSelectedIndex() != 2) {
-                errorDialog("This game mod works only with 4 players!");
+                errorDialog("This game mode requires 4 players!");
                 StartGame = false;
             }
         }
