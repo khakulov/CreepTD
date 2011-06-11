@@ -33,7 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.creeptd.server.game.states;
 
 import java.awt.Point;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -76,7 +75,6 @@ public class RunningGameState extends AbstractGameState implements
     private long maxTick;
     private ArrayList<PlayerInGame> playerPositions;
     private long startDate;
-    Random generator = null;
     TickThread tickThread;
     private static Logger logger = Logger.getLogger(RunningGameState.class);
     private List<List> incomeLog = new LinkedList<List>(); // Round1(Player1 inc, ...), Round2(Player1 inc, ...)
@@ -96,16 +94,11 @@ public class RunningGameState extends AbstractGameState implements
             this.playerPositions.add(null);
         }
         this.startDate = System.currentTimeMillis() / 1000;
-
-        if (game.getMode().equals(IConstants.Mode.SENDRANDOM)) {
-            generator = new Random();
-        }
-
         tickThread = new TickThread(this, IConstants.TICK_MS * 1000000);
     }
 
     /**
-     * Advance the maxTick counter and send a "ROUND n OK" message to all
+     * Advance the maxTick counter and send a "ROUND bcrm OK" message to all
      * players.
      */
     public void tick() {
@@ -258,7 +251,7 @@ public class RunningGameState extends AbstractGameState implements
         /*
          * for (PlayerInGame p : this.getGame().getClients()) { if
          * (p.getClient().getClientID() == senderId) {
-         * p.anticheat_TowerBuilt(type, n.getTowerId(), m.getRoundId()); break;
+         * p.anticheat_TowerBuilt(type, bcrm.getTowerId(), m.getRoundId()); break;
          * } }
          */
     }
@@ -354,20 +347,21 @@ public class RunningGameState extends AbstractGameState implements
         } else if ((this.getGame().getMode().equals(IConstants.Mode.SENDRANDOM)) && (this.getGame().getPlayersInGameSize() > 2)) {
             List<PlayerInGame> pl = this.getGame().getPlayersInGame();
             while (!pl.isEmpty()) {
-                int random = this.generator.nextInt(pl.size());
-                PlayerInGame p = pl.get(random);
+                PlayerInGame p = pl.get(new Random().nextInt(pl.size()));
                 if (p != null) {
-                    if ((p.getClient().getClientID() != senderId) && (!p.getGameOver())) {
-                        BuildCreepRoundMessage n = new BuildCreepRoundMessage();
-                        n.setRoundId(roundID);
-                        n.setCreepType(type);
-                        n.setSenderId(senderId);
-                        n.setPlayerId(p.getClient().getClientID());
-                        this.getGame().sendAll(n);
-                        p.anticheat_receivedThisCreep(type, m.getRoundId());
-                        return;
-                    } else {
-                        pl.remove(p.getClient().getClientID());
+                    if ((p.getClient().getClientID() != senderId)) {
+                        if (!p.getGameOver()) {
+                            BuildCreepRoundMessage bcrm = new BuildCreepRoundMessage();
+                            bcrm.setRoundId(roundID);
+                            bcrm.setCreepType(type);
+                            bcrm.setSenderId(senderId);
+                            bcrm.setPlayerId(p.getClient().getClientID());
+                            this.getGame().sendAll(bcrm);
+                            p.anticheat_receivedThisCreep(type, m.getRoundId());
+                            break;
+                        } else {
+                            pl.remove(p);
+                        }
                     }
                 } else {
                     logger.error("Random send mode error. Player was null.");

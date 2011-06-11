@@ -321,15 +321,15 @@ public class GameLobby extends GameScreen implements MessageListener {
                     return;
                 }
                 if (GameLobby.this.joinGame.getMinEloPoints() > getCore().getPlayerElopoints() && GameLobby.this.joinGame.getMinEloPoints() != 0) {
-                    errorDialog(GameLobby.this.joinGame.getMinEloPoints() + " Score-Points required for this Game.");
+                    errorDialog("A minimum skill of "+GameLobby.this.joinGame.getMinEloPoints() + " is required for this game.");
                     return;
                 }
                 if (GameLobby.this.joinGame.getMaxEloPoints() < getCore().getPlayerElopoints() && GameLobby.this.joinGame.getMaxEloPoints() != 0) {
-                    errorDialog("max." + GameLobby.this.joinGame.getMaxEloPoints() + " Score-Points required for this Game.");
+                    errorDialog("A maximum skill of " + GameLobby.this.joinGame.getMaxEloPoints() + " is required for this game.");
                     return;
                 }
                 if (!GameLobby.this.joinGame.getState().equals("waiting")) {
-                    errorDialog("they can join only waiting game...");
+                    errorDialog("Sorry, this game has already started.");
                     return;
                 }
                 if (GameLobby.this.joinGame.getPasswort().equals("yes")) {
@@ -337,7 +337,7 @@ public class GameLobby extends GameScreen implements MessageListener {
                     UIManager.put("OptionPane.background", Color.BLACK);
                     UIManager.put("Panel.background", Color.BLACK);
                     UIManager.put("OptionPane.messageForeground", Color.GREEN);
-                    pw = JOptionPane.showInputDialog(null, "please enter a valid password for this game:");
+                    pw = JOptionPane.showInputDialog(null, "Please enter the game's password:");
                     if (pw != null) {
                         if (pw.equals("")) {
                             return;
@@ -366,15 +366,15 @@ public class GameLobby extends GameScreen implements MessageListener {
                     return;
                 }
                 if (GameLobby.this.joinGame.getMinEloPoints() > getCore().getPlayerElopoints() && GameLobby.this.joinGame.getMinEloPoints() != 0) {
-                    errorDialog(GameLobby.this.joinGame.getMinEloPoints() + " Score-Points required for this Game.");
+                    errorDialog("A minimum skill of "+GameLobby.this.joinGame.getMinEloPoints() + " is required for this game.");
                     return;
                 }
                 if (GameLobby.this.joinGame.getMaxEloPoints() < getCore().getPlayerElopoints() && GameLobby.this.joinGame.getMaxEloPoints() != 0) {
-                    errorDialog("max." + GameLobby.this.joinGame.getMaxEloPoints() + " Score-Points required for this Game.");
+                    errorDialog("A maximum skill of " + GameLobby.this.joinGame.getMaxEloPoints() + " is required for this game.");
                     return;
                 }
                 if (!GameLobby.this.joinGame.getState().equals("waiting")) {
-                    errorDialog("they can join only waiting game...");
+                    errorDialog("Sorry, this game has already started.");
                     return;
                 }
                 if (GameLobby.this.joinGame.getPasswort().equals("yes")) {
@@ -382,7 +382,7 @@ public class GameLobby extends GameScreen implements MessageListener {
                     UIManager.put("OptionPane.background", Color.BLACK);
                     UIManager.put("Panel.background", Color.BLACK);
                     UIManager.put("OptionPane.messageForeground", Color.GREEN);
-                    pw = JOptionPane.showInputDialog(null, "please enter a valid password for this game:");
+                    pw = JOptionPane.showInputDialog(null, "Please enter the game's password:");
                     if (pw.equals("")) {
                         return;
                     }
@@ -706,8 +706,7 @@ public class GameLobby extends GameScreen implements MessageListener {
         int oldSelectionWaiting = this.gameinfoWaiting.getSelectedRow();
         int oldSelectionRunning = this.gameinfoRunning.getSelectedRow();
 
-        final Object[] headerNames = new Object[]{"Name", "Players", "Map", "Mod",
-            "Min/Max", "PW", "State", "GameID"};
+        final Object[] headerNames = new Object[]{"Name", "Players", "Map", "Mode", "Min/Max", "PW", "State", "GameID"};
 
         final Vector<Vector<String>> rowsWaiting = new Vector<Vector<String>>();
         final Vector<Vector<String>> rowsRunning = new Vector<Vector<String>>();
@@ -757,7 +756,7 @@ public class GameLobby extends GameScreen implements MessageListener {
                 rowsData.add(StateMSG);
 
                 rowsData.add("" + count);
-
+                
                 if (State.equals("waiting")) {
                     rowsWaiting.add(rowsData);
                 } else {
@@ -799,9 +798,9 @@ public class GameLobby extends GameScreen implements MessageListener {
             gameinfoWaiting.setRowHeight(gameinfoRunning.getRowHeight());
             this.gameinfoWaiting.setEnabled(true);
             col = gameinfoWaiting.getColumnModel().getColumn(0);
-            col.setPreferredWidth(225);
-            col.setMinWidth(225);
-            col.setMaxWidth(225);
+            col.setPreferredWidth(205);
+            col.setMinWidth(205);
+            col.setMaxWidth(205);
 
             col = gameinfoWaiting.getColumnModel().getColumn(1);
             col.setPreferredWidth(50);
@@ -814,9 +813,9 @@ public class GameLobby extends GameScreen implements MessageListener {
             col.setMaxWidth(100);
 
             col = gameinfoWaiting.getColumnModel().getColumn(3);
-            col.setPreferredWidth(80);
-            col.setMinWidth(80);
-            col.setMaxWidth(80);
+            col.setPreferredWidth(100);
+            col.setMinWidth(100);
+            col.setMaxWidth(100);
 
             col = gameinfoWaiting.getColumnModel().getColumn(4);
             col.setPreferredWidth(65);
@@ -829,9 +828,9 @@ public class GameLobby extends GameScreen implements MessageListener {
             col.setMaxWidth(30);
 
             col = gameinfoWaiting.getColumnModel().getColumn(6);
-            col.setPreferredWidth(50);
-            col.setMinWidth(50);
-            col.setMaxWidth(50);
+            col.setPreferredWidth(0);
+            col.setMinWidth(0);
+            col.setMaxWidth(0);
 
             col = gameinfoWaiting.getColumnModel().getColumn(7);
             col.setPreferredWidth(0);
@@ -840,14 +839,13 @@ public class GameLobby extends GameScreen implements MessageListener {
             col.setWidth(0);
         }
 
-
         modelRunning.setDataVector(rowsRunning, new Vector<Object>(Arrays.asList(headerNames)));
         modelRunning.fireTableDataChanged();
 
         col = gameinfoRunning.getColumnModel().getColumn(0);
-        col.setPreferredWidth(225);
-        col.setMinWidth(225);
-        col.setMaxWidth(225);
+        col.setPreferredWidth(205);
+        col.setMinWidth(205);
+        col.setMaxWidth(205);
 
         col = gameinfoRunning.getColumnModel().getColumn(1);
         col.setPreferredWidth(50);
