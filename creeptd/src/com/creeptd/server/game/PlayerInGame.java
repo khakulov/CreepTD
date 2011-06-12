@@ -43,7 +43,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
 import com.creeptd.common.IConstants;
-import com.creeptd.common.messages.server.MessageMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.server.PersistenceManager;
 import com.creeptd.server.client.Client;
 import com.creeptd.server.game.states.RunningGameState;
@@ -64,6 +64,7 @@ public class PlayerInGame {
     private HashMap<Integer, Integer> anticheatTowerIdPrices = new HashMap<Integer, Integer>();
     private List<AnticheatItem> items = new ArrayList<AnticheatItem>();
     private long anticheatLastTick = 300L;
+    private boolean connected = true;
 
     private static enum AnticheatType {
 
@@ -95,7 +96,6 @@ public class PlayerInGame {
         }
         this.client = client;
         this.gameOver = false;
-
         this.credits = IConstants.CREDITS;
         this.income = IConstants.START_INCOME;
 
@@ -146,6 +146,14 @@ public class PlayerInGame {
 
     public int getTakedLive() {
         return this.takedLive;
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
     }
 
     @Override
@@ -351,9 +359,9 @@ public class PlayerInGame {
          * KICK
          */
         state.getGame().sendAll(
-                new MessageMessage("Server", "<span style=\"color:red;\">" + this.getClient().getPlayerModel().getName() + " was kicked by <b>System</b></span>"));
+                new ServerChatMessage("Server", "<span style=\"color:red;\">" + this.getClient().getPlayerModel().getName() + " was kicked by <b>System</b></span>"));
         state.getGame().sendAll(
-                new MessageMessage("Server", this.getClient().getPlayerModel().getName() + " has left..."));
+                new ServerChatMessage("Server", this.getClient().getPlayerModel().getName() + " has left..."));
         // TODO state.removeClient(this.getClient(), "Kick");
         this.getClient().disconnect();
 

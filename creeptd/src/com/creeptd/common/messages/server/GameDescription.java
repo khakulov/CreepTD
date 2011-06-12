@@ -54,7 +54,7 @@ public class GameDescription {
     private Integer mapId;
     private Integer numberOfPlayers;
     private Integer currentPlayers;
-    private String Passwort = "";
+    private String Password = "";
     private String Player1;
     private String Player2;
     private String Player3;
@@ -83,7 +83,8 @@ public class GameDescription {
      * @param state the state of the game
      */
     public GameDescription(Integer gameId, String gameName, Integer mapId,
-            Integer maxPlayers, Integer currentPlayers, Integer MaxEloPoints, Integer MinEloPoints, String Passwort,
+            Integer maxPlayers, Integer currentPlayers, Integer MaxEloPoints, Integer MinEloPoints,
+            String Password,
             IConstants.Mode gameMode,
             String Player1,
             String Player2,
@@ -98,7 +99,7 @@ public class GameDescription {
         this.currentPlayers = currentPlayers;
         this.MaxEloPoints = MaxEloPoints;
         this.MinEloPoints = MinEloPoints;
-        this.Passwort = Passwort = "";
+        this.Password = Password;
         this.gameMode = gameMode;
         this.Player1 = Player1;
         this.Player2 = Player2;
@@ -178,7 +179,7 @@ public class GameDescription {
     /**
      * @param  Player to set Player1
      */
-    public void setPlyer1(String Player) {
+    public void setPlayer1(String Player) {
         this.Player1 = Player;
     }
 
@@ -192,7 +193,7 @@ public class GameDescription {
     /**
      * @param  Player to set Player2
      */
-    public void setPlyer2(String Player) {
+    public void setPlayer2(String Player) {
         this.Player2 = Player;
     }
 
@@ -206,7 +207,7 @@ public class GameDescription {
     /**
      * @param  Player to set Player3
      */
-    public void setPlyer3(String Player) {
+    public void setPlayer3(String Player) {
         this.Player3 = Player;
     }
 
@@ -220,7 +221,7 @@ public class GameDescription {
     /**
      * @param  Player to set Player4
      */
-    public void setPlyer4(String Player) {
+    public void setPlayer4(String Player) {
         this.Player4 = Player;
     }
 
@@ -260,17 +261,17 @@ public class GameDescription {
     }
 
     /**
-     * @param Passwort the Passwort of this game
+     * @param Password the Password of this game
      */
-    public void setPasswort(String Passwort) {
-        this.Passwort = Passwort;
+    public void setPassword(String Passwort) {
+        this.Password = Passwort;
     }
 
     /**
-     * @return Game Passwort
+     * @return Game Password
      */
-    public String getPasswort() {
-        return this.Passwort;
+    public String getPassword() {
+        return this.Password;
     }
 
     /**
@@ -321,7 +322,7 @@ public class GameDescription {
      */
     @Override
     public String toString() {
-        return this.gameId.toString() + " " + "\"" + this.gameName + "\" " + this.mapId.toString() + " " + this.numberOfPlayers.toString() + " " + this.currentPlayers + " " + this.getMaxEloPoints() + " " + this.getMinEloPoints() + " " + "" + this.getGameMode().getValue() + " " + "\"" + MessageUtil.prepareToSend(this.getPasswort()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer1()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer2()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer3()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer4()) + "\" " + "\"" + this.state + "\"" + " " + (this.getShufflePlayers() ? "1" : "0");
+        return this.gameId.toString() + " " + "\"" + this.gameName + "\" " + this.mapId.toString() + " " + this.numberOfPlayers + " " + this.currentPlayers + " " + this.getMaxEloPoints() + " " + this.getMinEloPoints() + " " + "" + this.getGameMode().getValue() + " " + "\"" + MessageUtil.prepareToSend(this.getPassword()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer1()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer2()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer3()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer4()) + "\" " + "\"" + this.state + "\"" + " " + (this.getShufflePlayers() ? "1" : "0");
     }
 
     /**
@@ -344,11 +345,11 @@ public class GameDescription {
                 if (sentMode != null) mode = sentMode;
             } catch (Exception ex) {}
             this.setGameMode(mode);
-            this.setPasswort(matcher.group(10));
-            this.setPlyer1(matcher.group(11));
-            this.setPlyer2(matcher.group(12));
-            this.setPlyer3(matcher.group(13));
-            this.setPlyer4(matcher.group(14));
+            this.setPassword(matcher.group(10));
+            this.setPlayer1(matcher.group(11));
+            this.setPlayer2(matcher.group(12));
+            this.setPlayer3(matcher.group(13));
+            this.setPlayer4(matcher.group(14));
             this.setState(matcher.group(15));
             this.setShufflePlayers(matcher.group(16).equals("1"));
         }
@@ -366,7 +367,7 @@ public class GameDescription {
             return false;
         }
         GameDescription d = (GameDescription) o;
-        return this.gameId == d.getGameId() && this.gameName.equals(d.getGameName()) && this.mapId == d.getMapId() && this.numberOfPlayers == d.getNumberOfPlayers() && this.currentPlayers == d.getCurrentPlayers() && this.MaxEloPoints == d.getMaxEloPoints() && this.MinEloPoints == d.getMinEloPoints() && this.gameMode == d.getGameMode() && this.Passwort.equals(d.getPasswort()) && this.Player1.equals(d.getPlayer1()) && this.Player2.equals(d.getPlayer2()) && this.Player3.equals(d.getPlayer3()) && this.Player4.equals(d.getPlayer4()) && this.state.equals(d.getState()) && this.shufflePlayers.equals(d.getShufflePlayers());
+        return this.gameId == d.getGameId() && this.gameName.equals(d.getGameName()) && this.mapId == d.getMapId() && this.numberOfPlayers == d.getNumberOfPlayers() && this.currentPlayers == d.getCurrentPlayers() && this.MaxEloPoints == d.getMaxEloPoints() && this.MinEloPoints == d.getMinEloPoints() && this.gameMode == d.getGameMode() && this.Password.equals(d.getPassword()) && this.Player1.equals(d.getPlayer1()) && this.Player2.equals(d.getPlayer2()) && this.Player3.equals(d.getPlayer3()) && this.Player4.equals(d.getPlayer4()) && this.state.equals(d.getState()) && this.shufflePlayers.equals(d.getShufflePlayers());
     }
 
     /**

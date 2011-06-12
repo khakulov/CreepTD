@@ -47,12 +47,12 @@ import com.creeptd.common.messages.client.JoinGameRequestMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
 import com.creeptd.common.messages.client.RefreshMessage;
 import com.creeptd.common.messages.client.ScoreRequestMessage;
-import com.creeptd.common.messages.client.SendMessageMessage;
+import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.common.messages.client.UpdateDataRequestMessage;
 import com.creeptd.common.messages.server.CreateGameResponseMessage;
 import com.creeptd.common.messages.server.DeleteResponseMessage;
 import com.creeptd.common.messages.server.JoinGameResponseMessage;
-import com.creeptd.common.messages.server.MessageMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.common.messages.server.ScoreResponseMessage;
 import com.creeptd.common.messages.server.UpdateDataResponseMessage;
 import com.creeptd.server.AuthenticationService;
@@ -118,8 +118,8 @@ public class AuthenticatedState extends AbstractClientState {
             this.getClient().send(m);
             return this;
         }
-        if (message instanceof SendMessageMessage) {
-            handleChatMessage(((SendMessageMessage) message).getMessage());
+        if (message instanceof ClientChatMessage) {
+            handleChatMessage(((ClientChatMessage) message).getMessage());
             return this;
         }
         if (message instanceof RefreshMessage) {
@@ -141,7 +141,7 @@ public class AuthenticatedState extends AbstractClientState {
         if (message instanceof CreateGameMessage) {
             Game game = new Game(this.getClient(), (CreateGameMessage) message);
             if (game == null) {
-                logger.error("failed to create game " + ((CreateGameMessage) message).getGameName());
+                logger.error("Failed to create game " + ((CreateGameMessage) message).getGameName());
                 this.getClient().send(new CreateGameResponseMessage(ResponseType.failed));
                 return this;
             }
@@ -197,7 +197,7 @@ public class AuthenticatedState extends AbstractClientState {
                 return;
             }
         }
-        Lobby.sendAll(new MessageMessage(getClient().getPlayerModel().getName(), message));
+        Lobby.sendAll(new ServerChatMessage(getClient().getPlayerModel().getName(), message));
     }
 
     /**
@@ -228,7 +228,7 @@ public class AuthenticatedState extends AbstractClientState {
         }
         if ("/msg".equalsIgnoreCase(command) && player.hasPermission(Permission.MOD_CHAT)) {
             message = "<html><b>" + message + "</b></html>";
-            Lobby.sendAll(new MessageMessage("System", message));
+            Lobby.sendAll(new ServerChatMessage("System", message));
             return true;
         }
         if ("/kick".equalsIgnoreCase(command) && player.hasPermission(Permission.KICK)) {
@@ -275,7 +275,7 @@ public class AuthenticatedState extends AbstractClientState {
      * @param message The message
      */
     private void sendSystemMessage(String message) {
-        this.getClient().send(new MessageMessage("System", message));
+        this.getClient().send(new ServerChatMessage("System", message));
     }
 
     @Override

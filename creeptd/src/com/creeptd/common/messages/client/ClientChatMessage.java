@@ -47,7 +47,7 @@ import com.creeptd.common.messages.MessageUtil;
  * @author andreas
  *
  */
-public class SendMessageMessage extends ClientMessage
+public class ClientChatMessage extends ClientMessage
         implements GameMessage, LobbyMessage {
 
     /**

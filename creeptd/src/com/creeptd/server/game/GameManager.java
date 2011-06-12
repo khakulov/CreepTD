@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 
 import com.creeptd.common.messages.server.GameDescription;
 import com.creeptd.common.messages.server.GamesMessage;
-import com.creeptd.common.messages.server.MessageMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.server.Lobby;
 import com.creeptd.server.client.Client;
 
@@ -115,13 +115,17 @@ public class GameManager implements GameObserverInterface {
     public static boolean sendDirectMessage(Client sender, String receiverName, String message) {
         synchronized (games) {
             for (Game game : games) {
-                List<PlayerInGame> players = game.getPlayersInGame();
+                List<PlayerInGame> players = game.getPlayers();
                 synchronized (players) {
                     for (PlayerInGame player : players) {
                         if (player.getClient().getPlayerModel().getName().equalsIgnoreCase(receiverName)) {
-                            player.getClient().send(new MessageMessage("Server", message));
-                            sender.send(new MessageMessage("Server", message));
-                            return true;
+                            if (player.isConnected()) {
+                                player.getClient().send(new ServerChatMessage("Server", message));
+                                sender.send(new ServerChatMessage("Server", message));
+                                return true;
+                            } else {
+                                return false;
+                            }
                         }
                     }
                 }
@@ -136,13 +140,13 @@ public class GameManager implements GameObserverInterface {
         for (PlayerInGame player : game.getClients()) {
         if (player.getClient().getPlayerModel().getName().equals(username)) {
         logger.info("Kick Player inGame: " + player.getClient().getPlayerModel().getName());
-        game.sendAll(new MessageMessage("Server",
+        game.sendAll(new ServerChatMessage("Server",
         "<span style=\"color:red;\">"
         + player.getClient().getPlayerModel().getName()
         + " was kicked by <b>"
         + adminClient.getPlayerModel().getName()
         + "</b></span>"));
-        game.sendAll(new MessageMessage("Server", player
+        game.sendAll(new ServerChatMessage("Server", player
         .getClient().getPlayerModel().getName()
         + " has left..."));
         //game.removeClient(player.getClient());
@@ -159,7 +163,7 @@ public class GameManager implements GameObserverInterface {
         player.getClient().disconnect();
 
         adminClient
-        .send(new MessageMessage("Server",
+        .send(new ServerChatMessage("Server",
         "<span style=\"color:red;\">"
         + player.getClient().getPlayerModel().getName()
         + " was kicked by <b>"

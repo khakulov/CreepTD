@@ -45,7 +45,7 @@ import com.creeptd.common.messages.client.ExitGameMessage;
 import com.creeptd.common.messages.client.GameMessage;
 import com.creeptd.common.messages.client.KickPlayerRequestMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
-import com.creeptd.common.messages.client.SendMessageMessage;
+import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.common.messages.client.StartGameRequestMessage;
 import com.creeptd.common.messages.server.KickPlayerResponseMessage;
 import com.creeptd.common.messages.server.KickedMessage;
@@ -68,10 +68,8 @@ public class WaitingGameState extends AbstractGameState {
     /**
      * Creates a new one, initially with zero players.
      *
-     * @param game
-     *            the game. Must not be null.
-     * @param creator
-     *            the client who created the game.
+     * @param game the game. Must not be null.
+     * @param creator the client who created the game.
      */
     public WaitingGameState(Game game, Client creator) {
         super(game);
@@ -81,10 +79,8 @@ public class WaitingGameState extends AbstractGameState {
     /**
      * Handle a message (from a client, presumably).
      *
-     * @param message
-     *            the message. Must not be null.
-     * @param sender
-     *            the player who sent the message. Must not be null.
+     * @param message the message. Must not be null.
+     * @param sender the player who sent the message. Must not be null.
      * @return the new state
      */
     public AbstractGameState consume(GameMessage message, PlayerInGame sender) {
@@ -94,7 +90,6 @@ public class WaitingGameState extends AbstractGameState {
         if (sender == null) {
             throw new IllegalArgumentException("'sender' was null!");
         }
-
         if (message instanceof StartGameRequestMessage) {
             return handle((StartGameRequestMessage) message, sender);
         } else if (message instanceof KickPlayerRequestMessage) {
@@ -103,10 +98,10 @@ public class WaitingGameState extends AbstractGameState {
             return this.removePlayer(sender);
         } else if (message instanceof LogoutMessage) {
             return this.removePlayer(sender);
-        } else if (message instanceof SendMessageMessage) {
-            handle((SendMessageMessage) message, sender);
+        } else if (message instanceof ClientChatMessage) {
+            handle((ClientChatMessage) message, sender);
         } else {
-            logger.error("cannot handle message: " + message);
+            logger.error("Cannot handle message: " + message);
         }
         return this;
     }
@@ -120,32 +115,26 @@ public class WaitingGameState extends AbstractGameState {
      *            the player who sent the message.
      * @return the new state
      */
-    private AbstractGameState handle(StartGameRequestMessage m,
-            PlayerInGame sender) {
+    private AbstractGameState handle(StartGameRequestMessage m, PlayerInGame sender) {
         if (this.creator != sender.getClient()) {
             logger.info(sender.getClient() + " tried to start game, but he isn't creator.");
-            sender.getClient().send(
-                    new StartGameResponseMessage(ResponseType.failed));
+            sender.getClient().send(new StartGameResponseMessage(ResponseType.failed));
             return this;
         }
-        if (this.getGame().getPlayersInGameSize() < this.getGame().getMaxPlayers()) {
-            sender.getClient().send(
-                    new StartGameResponseMessage(ResponseType.failed));
+        if (this.getGame().getPlayers().size() < this.getGame().getMaxPlayers()) {
+            sender.getClient().send(new StartGameResponseMessage(ResponseType.failed));
             return this;
         }
-
         if (this.getGame().getShufflePlayers()) {
-            this.getGame().shufflePlayersInGame();
+            this.getGame().shufflePlayers();
         }
-
         if (this.getGame().getMapId() == 0) {
             this.getGame().setRandomMap();
         }
-
         // Create and send the StartGameMessage to all users.
         StartGameMessage sgm = new StartGameMessage();
         List<Integer> list = new LinkedList<Integer>();
-        for (PlayerInGame p : this.getGame().getPlayersInGame()) {
+        for (PlayerInGame p : this.getGame().getPlayers()) {
             list.add(p.getClient().getClientID());
         }
         sgm.setPlayers(list);
@@ -166,30 +155,28 @@ public class WaitingGameState extends AbstractGameState {
      *            the player who sent the message.
      */
     private void handle(KickPlayerRequestMessage m, PlayerInGame sender) {
-        PlayerInGame player = this.getGame().findPlayerInGame(m.getPlayerName());
+        PlayerInGame player = this.getGame().findPlayer(m.getPlayerName());
         if (player == null) {
-            logger.warn("cannot find player '" + m.getPlayerName() + "'");
-            sender.getClient().send(
-                    new KickPlayerResponseMessage(ResponseType.failed));
+            logger.warn("Cannot find player '" + m.getPlayerName() + "'");
+            sender.getClient().send(new KickPlayerResponseMessage(ResponseType.failed));
             return;
         }
-        logger.info("kicking " + player.getClient() + " from game '" + this.getGame() + "'");
+        logger.info("Kicking " + player.getClient() + " from game '" + this.getGame() + "'");
         player.getClient().send(new KickedMessage());
-        this.getGame().removePlayerInGame(player);
+        this.getGame().removePlayer(player);
         sender.getClient().send(new KickPlayerResponseMessage(ResponseType.ok));
     }
 
     private AbstractGameState removePlayer(PlayerInGame sender) {
-        this.getGame().removePlayerInGame(sender);
+        this.getGame().removePlayer(sender);
         if (sender.getClient() == this.creator) {
-            for (PlayerInGame p : this.getGame().getPlayersInGame()) {
+            for (PlayerInGame p : this.getGame().getPlayers()) {
                 p.getClient().send(new KickedMessage());
-                this.getGame().removePlayerInGame(p);
+                this.getGame().removePlayer(p);
             }
         }
-        this.getGame().sendAll(
-                new PlayerQuitMessage(sender.getClient().getPlayerModel().getName(), "", sender.getClient().getClientID()));
-        if (this.getGame().getPlayersInGameSize() == 0) {
+        this.getGame().sendAll(new PlayerQuitMessage(sender.getClient().getPlayerModel().getName(), "", sender.getClient().getClientID()));
+        if (this.getGame().getPlayers().size() == 0) {
             return new TerminatedGameState(this.getGame());
         }
         return this;

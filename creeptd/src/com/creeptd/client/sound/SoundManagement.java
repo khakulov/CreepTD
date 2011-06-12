@@ -74,7 +74,10 @@ public class SoundManagement {
     private AudioClip clipDEAD4 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.DEAD4));
     private AudioClip clipDEAD5 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.DEAD5));
     private AudioClip clipESCAPE = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.ESCAPE));
-    private AudioClip clipWARN = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.WARN));
+    private AudioClip clipWARN1 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.WARN1));
+    private AudioClip clipWARN2 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.WARN2));
+    private AudioClip clipWARN3 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.WARN3));
+    private AudioClip clipWARN4 = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.WARN4));
     private AudioClip clipHORNBEEP = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.HORNBEEP));
     private AudioClip clipCLAP = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.CLAP));
     private AudioClip clipCASH = Applet.newAudioClip(this.getClass().getClassLoader().getResource(IConstants.SOUNDS_URL + ISound.CASH));
@@ -118,7 +121,6 @@ public class SoundManagement {
      * Constructor plays a sound to welcome each other.
      */
     public SoundManagement() {
-        // Thread t = new Thread(new Sound(this.clipWARN));
         Thread t = new Thread(new Sound(this.clipHORNBEEP));
         this.usedThreadCreepDiesS = t;
         this.usedThreadCreepStartsS = t;
@@ -191,31 +193,28 @@ public class SoundManagement {
     }
 
     /**
-     * Use this for a creep that is just born.
+     * Use this for a creep that that enters the own board.
      *
-     * @param t
-     *            Type of creep
-     * @return true if the last thread terminated false if the last thread not
-     *         terminated
+     * @param t Type of creep
+     * @return true if the last thread terminated false if the last thread not terminated
      */
-    public boolean creepStartsSound(IConstants.Creeps t) {
-
+    public boolean creepWarnSound(IConstants.Creeps t) {
         if (usedThreadCreepStartsS.getState() != Thread.State.TERMINATED || mute) {
             return false;
         }
-
-        switch (t) {
-            case creep1:
-                Thread creeps1 = new Thread(new Sound(this.clipWARN));
-                usedThreadCreepStartsS = creeps1;
-                creeps1.start();
-                break;
-            default:
-                Thread creepsDef = new Thread(new Sound(this.clipWARN));
-                usedThreadCreepStartsS = creepsDef;
-                creepsDef.start();
-                break;
+        AudioClip c = null;
+        if (t.equals(t.creep1) || t.equals(t.creep2) || t.equals(t.creep3) || t.equals(t.creep4)) {
+            c = this.clipWARN1;
+        } else if (t.equals(t.creep5) || t.equals(t.creep6) || t.equals(t.creep7) || t.equals(t.creep8)) {
+            c = this.clipWARN2;
+        } else if (t.equals(t.creep9) || t.equals(t.creep10) || t.equals(t.creep11) || t.equals(t.creep12)) {
+            c = this.clipWARN3;
+        } else if (t.equals(t.creep13) || t.equals(t.creep14) || t.equals(t.creep15) || t.equals(t.creep16)) {
+            c = this.clipWARN4;
         }
+        Thread creepsDef = new Thread(new Sound(c));
+        usedThreadCreepStartsS = creepsDef;
+        creepsDef.start();
         return true;
     }
 

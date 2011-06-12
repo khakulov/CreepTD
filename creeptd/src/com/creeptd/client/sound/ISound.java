@@ -68,7 +68,10 @@ public interface ISound {
     String DEAD5 = "dead5.wav";
     //Creep escape
     String ESCAPE = "dcloak.wav";
-    String WARN = "warn.wav";
+    String WARN1 = "warn1.wav";
+    String WARN2 = "warn2.wav";
+    String WARN3 = "warn3.wav";
+    String WARN4 = "warn4.wav";
     String CLAP = "clap.wav";
     String HORNBEEP = "hornbeep.wav";
     String CASH = "cash.wav";

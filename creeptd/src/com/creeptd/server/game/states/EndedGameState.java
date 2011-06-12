@@ -39,11 +39,13 @@ import org.apache.log4j.Logger;
 
 import com.creeptd.common.messages.client.ExitGameMessage;
 import com.creeptd.common.messages.client.GameMessage;
+import com.creeptd.common.messages.client.GameOverMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
-import com.creeptd.common.messages.client.SendMessageMessage;
+import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.server.game.Game;
 import com.creeptd.server.game.PlayerInGame;
+import java.util.List;
 
 /**
  * GameState for a game that has ended, meaning that all clients have sent
@@ -80,15 +82,16 @@ public class EndedGameState extends AbstractGameState {
         if (sender == null) {
             throw new IllegalArgumentException("'sender' was null!");
         }
-
         if (message instanceof ExitGameMessage) {
             return removePlayer(sender);
-        } else if (message instanceof SendMessageMessage) {
-            handle((SendMessageMessage) message, sender);
+        } else if (message instanceof ClientChatMessage) {
+            handle((ClientChatMessage) message, sender);
         } else if (message instanceof LogoutMessage) {
             return removePlayer(sender);
+        } else if (message instanceof GameOverMessage) {
+            return this; // Silently ignore GameOverMessage
         } else {
-            logger.error("cannot handle message: " + message);
+            logger.error("Cannot handle message: " + message);
         }
         return this;
     }
@@ -104,6 +107,14 @@ public class EndedGameState extends AbstractGameState {
 
     @Override
     public void enter() {
+        // Remove players who left the game while it was running
+        List<PlayerInGame> pl = this.getGame().getPlayers();
+        for (int i=0; i<pl.size(); i++) {
+            PlayerInGame p = pl.get(i);
+            if (!p.isConnected()) {
+                this.getGame().removePlayer(p);
+            }
+        }
     }
 
     @Override
@@ -111,10 +122,9 @@ public class EndedGameState extends AbstractGameState {
     }
 
     private AbstractGameState removePlayer(PlayerInGame sender) {
-        this.getGame().removePlayerInGame(sender);
-        this.getGame().sendAll(
-                new PlayerQuitMessage(sender.getClient().getPlayerModel().getName(), "", sender.getClient().getClientID()));
-        if (this.getGame().getPlayersInGameSize() == 0) {
+        this.getGame().removePlayer(sender);
+        this.getGame().sendAll(new PlayerQuitMessage(sender.getClient().getPlayerModel().getName(), "", sender.getClient().getClientID()));
+        if (this.getGame().getPlayers().size() == 0) {
             return new TerminatedGameState(this.getGame());
         }
         return this;

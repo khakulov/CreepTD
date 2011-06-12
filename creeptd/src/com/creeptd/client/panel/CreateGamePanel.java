@@ -447,7 +447,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
             if (selectedMode == 2) mode = IConstants.Mode.SENDRANDOM;
             if (selectedMode == 3) mode = IConstants.Mode.TEAM2VS2;
             gd.setGameMode(mode);
-            gd.setPasswort(tPasswort.getText());
+            gd.setPassword(tPasswort.getText());
             gd.setShufflePlayers(shufflePlayers.isSelected());
 
             getCore().setActiveGame(gd);

@@ -45,7 +45,7 @@ import java.util.Hashtable;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
-import com.creeptd.common.messages.server.MessageMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.common.messages.server.PlayersMessage;
 import com.creeptd.common.messages.server.ServerMessage;
 import com.creeptd.server.client.Client;
@@ -161,8 +161,8 @@ public class Lobby {
 		synchronized(clients) {
 			for (Client client : clients) {
 				if (client.getPlayerModel().getName().equalsIgnoreCase(receiverName)) {
-					client.send(new MessageMessage("Server", message));
-					sender.send(new MessageMessage("Server", message));
+					client.send(new ServerChatMessage("Server", message));
+					sender.send(new ServerChatMessage("Server", message));
 					return true;
 				}
 			}
@@ -193,7 +193,7 @@ public class Lobby {
 			}
 			if (kickedClient != null) {
 				logger.info("Kick Player inLobby: " + kickedClient);
-				sendAll(new MessageMessage("Server", "<span style=\"color:red;\">"
+				sendAll(new ServerChatMessage("Server", "<span style=\"color:red;\">"
 								+ kickedClient.getPlayerModel().getName()
 								+ " was kicked by <b>"
 								+ adminClient.getPlayerModel().getName() + "</b></span>"));
@@ -202,7 +202,7 @@ public class Lobby {
 			}
 		}
 		if (kik == false) {
-			adminClient.send(new MessageMessage("Server",
+			adminClient.send(new ServerChatMessage("Server",
 					"<span style=\"color:red;\"> " + player.getName() + " is not Online!</span>"));
 		} 
 		if (banUser == true) {
@@ -216,7 +216,7 @@ public class Lobby {
 				entityManager.merge(player);
 				entityManager.flush();
 				entityTransaction.commit();	
-				adminClient.send(new MessageMessage("Server","<span style=\"color:red;\">"
+				adminClient.send(new ServerChatMessage("Server","<span style=\"color:red;\">"
 													+ player.getName()
 													+ " (Account) has been banned!</span>"));
 				
@@ -228,7 +228,7 @@ public class Lobby {
 			}
 		}
 		if (banUserAndMac == true) {
-				adminClient.send(new MessageMessage("Server","<span style=\"color:red;\">"
+				adminClient.send(new ServerChatMessage("Server","<span style=\"color:red;\">"
 						+ player.getName()
 						+ " (Mac) has been blacklisted!</span>"));
 				
@@ -270,7 +270,7 @@ public class Lobby {
 
 			if (blacklist != null) {
 				entityManager.remove(blacklist);
-				adminClient.send(new MessageMessage("Server","<span style=\"color:red;\">"
+				adminClient.send(new ServerChatMessage("Server","<span style=\"color:red;\">"
 						+ player.getName()
 						+ " (Mac) has been unbanned !</span>"));
 				retrun = true;
@@ -291,7 +291,7 @@ public class Lobby {
 			entityManager.merge(player);
 			entityManager.flush();
 			entityTransaction.commit();	
-			adminClient.send(new MessageMessage("Server","<span style=\"color:red;\">"
+			adminClient.send(new ServerChatMessage("Server","<span style=\"color:red;\">"
 					+ player.getName()
 					+ " (User) has been unbanned !</span>"));
 			

@@ -9,7 +9,7 @@ map_quadcore.jpg
 # or if you do not want to use it for this map:
 # just set it to:
 # OFF
-SET_ALPHA_BACKGROUND_COLOR:WHITE
+SET_ALPHA_BACKGROUND_COLOR:OFF
 
 # Next lines represent cells
 # where no tower can be built.

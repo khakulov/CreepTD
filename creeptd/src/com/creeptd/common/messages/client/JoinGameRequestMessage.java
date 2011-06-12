@@ -58,9 +58,8 @@ public class JoinGameRequestMessage extends ClientMessage
     /**
      * pattern for regular expression.
      */
-    public static final Pattern PATTERN =
-            Pattern.compile(REGEXP_JOIN_GAME_REQUEST);
-    private String Passwort;
+    public static final Pattern PATTERN = Pattern.compile(REGEXP_JOIN_GAME_REQUEST);
+    private String Password;
     private Integer gameId;
 
     /**
@@ -80,15 +79,15 @@ public class JoinGameRequestMessage extends ClientMessage
     /**
      * @return the game id
      */
-    public String getPasswort() {
-        return this.Passwort;
+    public String getPassword() {
+        return this.Password;
     }
 
     /**
      * @param gameId the game id
      */
-    public void setPasswort(String Passwort) {
-        this.Passwort = Passwort;
+    public void setPassword(String Passwort) {
+        this.Password = Passwort;
     }
 
     /**
@@ -99,7 +98,7 @@ public class JoinGameRequestMessage extends ClientMessage
         Matcher matcher = PATTERN.matcher(messageString);
         if (matcher.matches()) {
             this.setGameId(Integer.valueOf(matcher.group(1)));
-            this.setPasswort(String.valueOf(matcher.group(2)));
+            this.setPassword(String.valueOf(matcher.group(2)));
         }
     }
 
@@ -108,6 +107,6 @@ public class JoinGameRequestMessage extends ClientMessage
      */
     @Override
     public String getMessageString() {
-        return "JOIN_GAME_REQUEST " + this.getGameId() + " " + "\"" + MessageUtil.prepareToSend(this.getPasswort()) + "\"";
+        return "JOIN_GAME_REQUEST " + this.getGameId() + " " + "\"" + MessageUtil.prepareToSend(this.getPassword()) + "\"";
     }
 }

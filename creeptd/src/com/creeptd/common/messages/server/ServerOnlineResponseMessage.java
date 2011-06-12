@@ -45,12 +45,12 @@ import java.util.regex.Pattern;
  *
  */
 public class ServerOnlineResponseMessage extends ServerMessage {
+    private boolean correct_version = true;
 
     /**
      * 	regular expression for message-parsing.
      */
-    private static final String REGEXP_ERROR =
-            "SERVER_ONLINE";
+    private static final String REGEXP_ERROR = "SERVER_ONLINE (0|1)";
     /**
      * pattern for regular expression.
      */
@@ -63,8 +63,16 @@ public class ServerOnlineResponseMessage extends ServerMessage {
     public void initWithMessage(String messageString) {
         Matcher matcher = PATTERN.matcher(messageString);
         if (matcher.matches()) {
+            this.correct_version = matcher.group(1).equals("1");
         }
+    }
 
+    public boolean isCorrectVersion() {
+        return correct_version;
+    }
+
+    public void setCorrectVersion(boolean correct_version) {
+        this.correct_version = correct_version;
     }
 
     /**
@@ -72,6 +80,6 @@ public class ServerOnlineResponseMessage extends ServerMessage {
      */
     @Override
     public String getMessageString() {
-        return "SERVER_ONLINE";
+        return "SERVER_ONLINE "+(this.correct_version ? "1" : "0");
     }
 }

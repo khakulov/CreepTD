@@ -54,7 +54,7 @@ import com.creeptd.common.messages.server.JoinGameResponseMessage;
 import com.creeptd.common.messages.server.KickPlayerResponseMessage;
 import com.creeptd.common.messages.server.KickedMessage;
 import com.creeptd.common.messages.server.LoginResponseMessage;
-import com.creeptd.common.messages.server.MessageMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.common.messages.server.PasswordResetResponseMessage;
 import com.creeptd.common.messages.server.PingMessage;
 import com.creeptd.common.messages.server.PlayerJoinedMessage;
@@ -129,8 +129,8 @@ public class InTranslator {
             messageObject = new JoinGameResponseMessage();
         } else if (LoginResponseMessage.PATTERN.matcher(messageString).matches()) {
             messageObject = new LoginResponseMessage();
-        } else if (MessageMessage.PATTERN.matcher(messageString).matches()) {
-            messageObject = new MessageMessage();
+        } else if (ServerChatMessage.PATTERN.matcher(messageString).matches()) {
+            messageObject = new ServerChatMessage();
         } else if (PlayerJoinedMessage.PATTERN.matcher(messageString).matches()) {
             messageObject = new PlayerJoinedMessage();
         } else if (PlayerQuitMessage.PATTERN.matcher(messageString).matches()) {

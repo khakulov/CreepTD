@@ -62,7 +62,7 @@ import com.creeptd.common.messages.client.BuildCreepMessage;
 import com.creeptd.common.messages.client.ChangeStrategyMessage;
 import com.creeptd.common.messages.client.ExitGameMessage;
 import com.creeptd.common.messages.client.SellTowerMessage;
-import com.creeptd.common.messages.client.SendMessageMessage;
+import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.common.messages.client.UpgradeTowerMessage;
 import com.creeptd.common.messages.server.BuildCreepRoundMessage;
 import com.creeptd.common.messages.server.BuildTowerRoundMessage;
@@ -387,7 +387,6 @@ public abstract class GameContext {
                 }
             }
         } else if (gm instanceof BuildCreepRoundMessage) {
-
             BuildCreepRoundMessage bcrm = (BuildCreepRoundMessage) gm;
             Creep c = CreepFactory.createCreep(this, IConstants.Creeps.valueOf(
                     IConstants.Creeps.class, bcrm.getCreepType()));
@@ -403,7 +402,7 @@ public abstract class GameContext {
 
             // play sound now
             if (managementSound != null) {
-                managementSound.creepStartsSound(c.getType());
+                managementSound.creepWarnSound(c.getType());
             }
         }
     }
@@ -1052,12 +1051,9 @@ public abstract class GameContext {
         ) {
             return true;
         }
-        // Sends a messages to all players that we have left
-        SendMessageMessage chatMsg = new SendMessageMessage();
-        chatMsg.setClientId(getPlayerId());
-        chatMsg.setMessage("has cheated, sorry.");
-        getNetwork().sendMessage(chatMsg);
-        getNetwork().sendMessage(new ExitGameMessage());
+        ExitGameMessage exitMsg = new ExitGameMessage();
+        exitMsg.setMessage("integrity");
+        getNetwork().sendMessage(exitMsg);
         System.exit(1);
         return false;
     }

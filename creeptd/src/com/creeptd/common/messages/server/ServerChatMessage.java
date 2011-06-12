@@ -46,7 +46,7 @@ import com.creeptd.common.messages.MessageUtil;
  * @author andreas
  *
  */
-public class MessageMessage extends ServerMessage {
+public class ServerChatMessage extends ServerMessage {
 
     private static final String REG_EXP = "MSG\\s\"([^\"]+)\"\\s\"([^\"]+)\"";
     /**
@@ -59,7 +59,7 @@ public class MessageMessage extends ServerMessage {
     /**
      * Default constructor.
      */
-    public MessageMessage() {
+    public ServerChatMessage() {
         super();
     }
 
@@ -67,7 +67,7 @@ public class MessageMessage extends ServerMessage {
      * @param playerName the name of the sender
      * @param message the message
      */
-    public MessageMessage(String playerName, String message) {
+    public ServerChatMessage(String playerName, String message) {
         super();
         this.playerName = playerName;
         this.message = message;
@@ -123,17 +123,17 @@ public class MessageMessage extends ServerMessage {
     }
 
     /**
-     * Returns true if o is a MessageMessage with the same contents
+     * Returns true if o is a ServerChatMessage with the same contents
      * as this one.
      * @param o the object to compare to.
      * @return true if o is equal to this object.
      */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof MessageMessage)) {
+        if (!(o instanceof ServerChatMessage)) {
             return false;
         }
-        MessageMessage m = (MessageMessage) o;
+        ServerChatMessage m = (ServerChatMessage) o;
         return this.playerName.equals(m.getPlayerName()) && this.message.equals(m.getMessage());
     }
 

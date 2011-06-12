@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.server.client.states;
 
+import com.creeptd.client.Core;
 import org.apache.log4j.Logger;
 
 import com.creeptd.common.IConstants;
@@ -121,7 +122,9 @@ public class AnonymousState extends AbstractClientState {
             return new AuthenticatedState(this.getClient(), this);
 
         } else if (message instanceof ServerOnlineRequestMessage) {
+            ServerOnlineRequestMessage sor = (ServerOnlineRequestMessage) message;
             ServerOnlineResponseMessage sorm = new ServerOnlineResponseMessage();
+            sorm.setCorrectVersion(Core.getVersion().equals(sor.getVersion()));
             this.getClient().send(sorm);
             return this;
         }

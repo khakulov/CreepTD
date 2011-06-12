@@ -61,7 +61,7 @@ import com.creeptd.client.tower.FindWeakestCreep;
 import com.creeptd.client.tower.StrategyFactory;
 import com.creeptd.common.IConstants;
 import com.creeptd.common.messages.client.ExitGameMessage;
-import com.creeptd.common.messages.client.SendMessageMessage;
+import com.creeptd.common.messages.client.ClientChatMessage;
 
 /**
  * The GamePanel class is the container for all other game related panels.
@@ -140,12 +140,6 @@ public class GamePanel extends GameScreen {
         this.quit.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent e) {
-                // sends a messages to all players that we have left
-                SendMessageMessage chatMsg = new SendMessageMessage();
-                chatMsg.setClientId(context.getPlayerId());
-                chatMsg.setMessage("has left the game");
-                getCore().getNetwork().sendMessage(chatMsg);
-
                 getCore().getNetwork().sendMessage(new ExitGameMessage());
                 if (!loop.isRunning()) {
                     getCore().switchScreen(new GameResultPanel(loop.getPlayers()));
@@ -391,12 +385,6 @@ public class GamePanel extends GameScreen {
      */
     private void leave() {
         if (!loop.isRunning()) {
-            // sends a messages to all players that we have left
-            SendMessageMessage chatMsg = new SendMessageMessage();
-            chatMsg.setClientId(context.getPlayerId());
-            chatMsg.setMessage("has left the game");
-            getCore().getNetwork().sendMessage(chatMsg);
-
             loop.setGameOver(false);
             this.getCore().getNetwork().sendMessage(new ExitGameMessage());
             this.getCore().switchScreen(new GameResultPanel(loop.getPlayers()));

@@ -181,7 +181,7 @@ public class Network implements MessageSubject {
     public void sendMessage(ClientMessage message) {
         if (message != null) {
             this.out.println(message.getMessageString());
-            // logger.info("Sent: " + message.getMessageString());
+            logger.info("Sent: " + message.getMessageString());
         }
     }
 

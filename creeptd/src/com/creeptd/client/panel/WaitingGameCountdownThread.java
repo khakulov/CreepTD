@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.creeptd.client.panel;
 
 import com.creeptd.client.Core;
-import com.creeptd.common.messages.client.SendMessageMessage;
+import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.common.messages.client.StartGameRequestMessage;
 
 /**
@@ -58,7 +58,7 @@ public class WaitingGameCountdownThread extends Thread {
      *
      */
     public void run() {
-        SendMessageMessage m = new SendMessageMessage();
+        ClientChatMessage m = new ClientChatMessage();
 
         m.setMessage("GAME START COUNTDOWN 3");
         core.getNetwork().sendMessage(m);

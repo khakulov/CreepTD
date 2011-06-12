@@ -82,11 +82,11 @@ import com.creeptd.common.IConstants;
 import com.creeptd.common.messages.client.JoinGameRequestMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
 import com.creeptd.common.messages.client.RefreshMessage;
-import com.creeptd.common.messages.client.SendMessageMessage;
+import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.common.messages.server.GameDescription;
 import com.creeptd.common.messages.server.GamesMessage;
 import com.creeptd.common.messages.server.JoinGameResponseMessage;
-import com.creeptd.common.messages.server.MessageMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.common.messages.server.PlayersMessage;
 import com.creeptd.common.messages.server.ServerMessage;
 import java.net.URL;
@@ -332,7 +332,7 @@ public class GameLobby extends GameScreen implements MessageListener {
                     errorDialog("Sorry, this game has already started.");
                     return;
                 }
-                if (GameLobby.this.joinGame.getPasswort().equals("yes")) {
+                if (GameLobby.this.joinGame.getPassword().equals("yes")) {
 
                     UIManager.put("OptionPane.background", Color.BLACK);
                     UIManager.put("Panel.background", Color.BLACK);
@@ -347,9 +347,8 @@ public class GameLobby extends GameScreen implements MessageListener {
                     }
                 }
                 GameLobby.this.joinGameId = GameLobby.this.joinGame.getGameId();
-
                 grm.setGameId(GameLobby.this.joinGameId);
-                grm.setPasswort(pw);
+                grm.setPassword(pw);
                 GameLobby.this.getCore().getNetwork().sendMessage(grm);
                 GameLobby.this.joinButton.setEnabled(false);
             }
@@ -377,7 +376,7 @@ public class GameLobby extends GameScreen implements MessageListener {
                     errorDialog("Sorry, this game has already started.");
                     return;
                 }
-                if (GameLobby.this.joinGame.getPasswort().equals("yes")) {
+                if (GameLobby.this.joinGame.getPassword().equals("yes")) {
 
                     UIManager.put("OptionPane.background", Color.BLACK);
                     UIManager.put("Panel.background", Color.BLACK);
@@ -390,7 +389,7 @@ public class GameLobby extends GameScreen implements MessageListener {
                 GameLobby.this.joinGameId = GameLobby.this.joinGame.getGameId();
 
                 grm.setGameId(GameLobby.this.joinGameId);
-                grm.setPasswort(pw);
+                grm.setPassword(pw);
                 GameLobby.this.getCore().getNetwork().sendMessage(grm);
                 GameLobby.this.joinButton.setEnabled(false);
             }
@@ -434,7 +433,7 @@ public class GameLobby extends GameScreen implements MessageListener {
                         GameLobby.this.errorDialog("Please don't enter more then 180 keystrokes.");
                         return;
                     } else {
-                        SendMessageMessage m = new SendMessageMessage();
+                        ClientChatMessage m = new ClientChatMessage();
                         m.setMessage(GameLobby.this.message.getText());
                         GameLobby.this.message.setText("");
                         m.setClientId(GameLobby.this.getCore().getPlayerId());
@@ -560,7 +559,6 @@ public class GameLobby extends GameScreen implements MessageListener {
 
         if (this.gameinfoWaiting == null) {
             this.gameinfoWaiting = new JTable() {
-
                 private static final long serialVersionUID = -5995847295484708948L;
             };
             this.gameinfoWaiting.setBackground(Color.BLACK);
@@ -568,7 +566,6 @@ public class GameLobby extends GameScreen implements MessageListener {
             this.gameinfoWaiting.setSelectionBackground(Color.GREEN);
             this.gameinfoWaiting.setSelectionForeground(Color.BLACK);
             this.gameinfoWaiting.setModel(new DefaultTableModel() {
-
                 private static final long serialVersionUID = -5995847295484708948L;
 
                 @Override
@@ -585,33 +582,25 @@ public class GameLobby extends GameScreen implements MessageListener {
             this.gameinfoWaiting.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             this.gameinfoWaiting.getSelectionModel().addListSelectionListener(
                     new ListSelectionListener() {
-
                         public void valueChanged(ListSelectionEvent e) {
-
                             int index = GameLobby.this.gameinfoWaiting.getSelectedRow();
 
                             if (index < 0) {
                                 GameLobby.this.joinButton.setEnabled(false);
                             } else {
-
                                 int indeX = GameLobby.this.gameinfoRunning.getSelectedRow();
-
                                 if (indeX != -1) {
                                     GameLobby.this.gameinfoRunning.removeRowSelectionInterval(indeX, indeX);
                                 }
-
                                 int GameID = Integer.parseInt(GameLobby.this.gameinfoWaiting.getValueAt(index, 7).toString());
-
                                 GameLobby.this.joinGame = GameLobby.this.games.get(GameID);
                                 GameLobby.this.joinButton.setEnabled(true);
-
                                 // Set Game info label
                                 GameLobby.this.setGameInfoEditorPaneSelectGame(GameID);
                             }
                         }
                     });
             this.gameinfoWaiting.addMouseListener(new MouseAdapter() {
-
                 @Override
                 public void mouseClicked(MouseEvent e) {
 
@@ -623,7 +612,6 @@ public class GameLobby extends GameScreen implements MessageListener {
                 }
             });
         }
-
         this.gamesScrollPaneWaiting.setViewportView(this.gameinfoWaiting);
         return this.gamesScrollPaneWaiting;
     }
@@ -637,7 +625,6 @@ public class GameLobby extends GameScreen implements MessageListener {
 
         if (this.gameinfoRunning == null) {
             this.gameinfoRunning = new JTable() {
-
                 private static final long serialVersionUID = -5995847295484708948L;
             };
             this.gameinfoRunning.setBackground(Color.BLACK);
@@ -645,7 +632,6 @@ public class GameLobby extends GameScreen implements MessageListener {
             this.gameinfoRunning.setSelectionBackground(Color.GREEN);
             this.gameinfoRunning.setSelectionForeground(Color.BLACK);
             this.gameinfoRunning.setModel(new DefaultTableModel() {
-
                 private static final long serialVersionUID = -5995847295484708948L;
 
                 @Override
@@ -658,39 +644,27 @@ public class GameLobby extends GameScreen implements MessageListener {
             this.gameinfoRunning.setIntercellSpacing(new Dimension(0, 0));
             this.gameinfoRunning.setShowVerticalLines(false);
             this.gameinfoRunning.setShowHorizontalLines(false);
-
             this.gameinfoRunning.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             this.gameinfoRunning.getSelectionModel().addListSelectionListener(
                     new ListSelectionListener() {
-
                         public void valueChanged(ListSelectionEvent e) {
-
-
                             int index = GameLobby.this.gameinfoRunning.getSelectedRow();
 
                             if (index < 0) {
                                 GameLobby.this.joinButton.setEnabled(false);
                             } else {
-
                                 int indeX = GameLobby.this.gameinfoWaiting.getSelectedRow();
-
                                 if (indeX != -1) {
                                     GameLobby.this.gameinfoWaiting.removeRowSelectionInterval(indeX, indeX);
                                 }
-
                                 int GameID = Integer.parseInt(GameLobby.this.gameinfoRunning.getValueAt(index, 7).toString());
-
                                 GameLobby.this.joinButton.setEnabled(false);
-
                                 // Set Game info label
                                 GameLobby.this.setGameInfoEditorPaneSelectGame(GameID);
-
                             }
                         }
                     });
-
         }
-
         this.gamesScrollPaneRunning.setViewportView(this.gameinfoRunning);
         return this.gamesScrollPaneRunning;
     }
@@ -736,25 +710,24 @@ public class GameLobby extends GameScreen implements MessageListener {
                 rowsData.add(String.valueOf(playerCount) + "/" + String.valueOf(fullCount));
                 rowsData.add(IConstants.Map.getMapById(gd.getMapId()).toString());
 
-                //Mod
+                // Mode
                 rowsData.add("<html><b>" + gd.getGameModeString() + "</b></html>");
-
                 rowsData.add(((gd.getMinEloPoints() == 0) ? "all" : gd.getMinEloPoints()) + "/" + ((gd.getMaxEloPoints() == 0) ? "all" : gd.getMaxEloPoints()));
+                rowsData.add((gd.getPassword().equals("yes") ? "<html><DIV style=\"color:red;\"><b>" + gd.getPassword() + "</DIV></HTML>" : gd.getPassword()));
 
-                rowsData.add((gd.getPasswort().equals("yes") ? "<html><DIV style=\"color:red;\"><b>" + gd.getPasswort() + "</DIV></HTML>" : gd.getPasswort()));
-
+                // State
                 String State = gd.getState();
                 String StateMSG = "";
-
                 if (State.compareToIgnoreCase("waiting") == 0) {
                     StateMSG = "<html><DIV style=\"color:red;\"><b>" + State + "</DIV></HTML>";
                 } else if (State.compareToIgnoreCase("ended") == 0) {
                     StateMSG = "<html><DIV style=\"color:yellow;\">" + State + "</DIV></HTML>";
                 } else {
-                    StateMSG = State;
+                    StateMSG = ""+State;
                 }
                 rowsData.add(StateMSG);
 
+                // GameID (not visible)
                 rowsData.add("" + count);
                 
                 if (State.equals("waiting")) {
@@ -762,24 +735,22 @@ public class GameLobby extends GameScreen implements MessageListener {
                 } else {
                     rowsRunning.add(rowsData);
                 }
-
                 count++;
             }
         }
 
-
         TableColumn col = null;
-        if (rowsWaiting.size() == 0) {
 
+        // Show information message if there are no games waiting for players
+        if (rowsWaiting.size() == 0) {
             int selectedRow = this.gameinfoWaiting.getSelectedRow();
             if (selectedRow != -1) {
                 this.gameinfoWaiting.removeRowSelectionInterval(selectedRow, selectedRow);
                 oldSelectionWaiting = -1;
             }
-
             final Object[] Info = new Object[]{"information"};
             final Vector<String> rowsData = new Vector<String>();
-            rowsData.add("<html><DIV style='color:red;'><h3>&nbsp;There are currently no games waiting for players.<br>&nbsp;Feel free to provide a new. (Create Game)</h3></div></html>");
+            rowsData.add("<html><DIV style='color:red;'><h3>&nbsp;There are currently no games waiting for players.<br>&nbsp;Please provide a new. (Create Game)</h3></div></html>");
             rowsWaiting.add(rowsData);
             modelWaiting.setDataVector(rowsWaiting, new Vector<Object>(Arrays.asList(Info)));
             modelWaiting.fireTableDataChanged();
@@ -791,48 +762,49 @@ public class GameLobby extends GameScreen implements MessageListener {
             col.setMaxWidth(gamesTabbedPane.getWidth());
             gameinfoWaiting.setRowHeight(50);
 
-        } else {
 
+        // Show games waiting for players
+        } else {
             modelWaiting.setDataVector(rowsWaiting, new Vector<Object>(Arrays.asList(headerNames)));
             modelWaiting.fireTableDataChanged();
             gameinfoWaiting.setRowHeight(gameinfoRunning.getRowHeight());
             this.gameinfoWaiting.setEnabled(true);
-            col = gameinfoWaiting.getColumnModel().getColumn(0);
+            col = gameinfoWaiting.getColumnModel().getColumn(0); // Game name
             col.setPreferredWidth(205);
             col.setMinWidth(205);
             col.setMaxWidth(205);
 
-            col = gameinfoWaiting.getColumnModel().getColumn(1);
+            col = gameinfoWaiting.getColumnModel().getColumn(1); // Players
             col.setPreferredWidth(50);
             col.setMinWidth(50);
             col.setMaxWidth(50);
 
-            col = gameinfoWaiting.getColumnModel().getColumn(2);
+            col = gameinfoWaiting.getColumnModel().getColumn(2); // Map
             col.setPreferredWidth(100);
             col.setMinWidth(100);
             col.setMaxWidth(100);
 
-            col = gameinfoWaiting.getColumnModel().getColumn(3);
+            col = gameinfoWaiting.getColumnModel().getColumn(3); // Mode
             col.setPreferredWidth(100);
             col.setMinWidth(100);
             col.setMaxWidth(100);
 
-            col = gameinfoWaiting.getColumnModel().getColumn(4);
+            col = gameinfoWaiting.getColumnModel().getColumn(4); // Min/max
             col.setPreferredWidth(65);
             col.setMinWidth(65);
             col.setMaxWidth(65);
 
-            col = gameinfoWaiting.getColumnModel().getColumn(5);
+            col = gameinfoWaiting.getColumnModel().getColumn(5); // PW
             col.setPreferredWidth(30);
             col.setMinWidth(30);
             col.setMaxWidth(30);
 
-            col = gameinfoWaiting.getColumnModel().getColumn(6);
-            col.setPreferredWidth(0);
-            col.setMinWidth(0);
-            col.setMaxWidth(0);
+            col = gameinfoWaiting.getColumnModel().getColumn(6); // State
+            col.setPreferredWidth(50);
+            col.setMinWidth(50);
+            col.setMaxWidth(50);
 
-            col = gameinfoWaiting.getColumnModel().getColumn(7);
+            col = gameinfoWaiting.getColumnModel().getColumn(7); // gameId
             col.setPreferredWidth(0);
             col.setMinWidth(0);
             col.setMaxWidth(0);
@@ -842,42 +814,42 @@ public class GameLobby extends GameScreen implements MessageListener {
         modelRunning.setDataVector(rowsRunning, new Vector<Object>(Arrays.asList(headerNames)));
         modelRunning.fireTableDataChanged();
 
-        col = gameinfoRunning.getColumnModel().getColumn(0);
+        col = gameinfoRunning.getColumnModel().getColumn(0); // Game name
         col.setPreferredWidth(205);
         col.setMinWidth(205);
         col.setMaxWidth(205);
 
-        col = gameinfoRunning.getColumnModel().getColumn(1);
+        col = gameinfoRunning.getColumnModel().getColumn(1); // PLayers
         col.setPreferredWidth(50);
         col.setMinWidth(50);
         col.setMaxWidth(50);
 
-        col = gameinfoRunning.getColumnModel().getColumn(2);
+        col = gameinfoRunning.getColumnModel().getColumn(2); // Map
         col.setPreferredWidth(100);
         col.setMinWidth(100);
         col.setMaxWidth(100);
 
-        col = gameinfoRunning.getColumnModel().getColumn(3);
-        col.setPreferredWidth(80);
-        col.setMinWidth(80);
-        col.setMaxWidth(80);
+        col = gameinfoRunning.getColumnModel().getColumn(3); // Mode
+        col.setPreferredWidth(100);
+        col.setMinWidth(100);
+        col.setMaxWidth(100);
 
-        col = gameinfoRunning.getColumnModel().getColumn(4);
+        col = gameinfoRunning.getColumnModel().getColumn(4); // Min/max
         col.setPreferredWidth(65);
         col.setMinWidth(65);
         col.setMaxWidth(65);
 
-        col = gameinfoRunning.getColumnModel().getColumn(5);
+        col = gameinfoRunning.getColumnModel().getColumn(5); // PW
         col.setPreferredWidth(30);
         col.setMinWidth(30);
         col.setMaxWidth(30);
 
-        col = gameinfoRunning.getColumnModel().getColumn(6);
+        col = gameinfoRunning.getColumnModel().getColumn(6); // State
         col.setPreferredWidth(50);
         col.setMinWidth(50);
         col.setMaxWidth(50);
 
-        col = gameinfoRunning.getColumnModel().getColumn(7);
+        col = gameinfoRunning.getColumnModel().getColumn(7); // gameId
         col.setPreferredWidth(0);
         col.setMinWidth(0);
         col.setMaxWidth(0);
@@ -885,18 +857,14 @@ public class GameLobby extends GameScreen implements MessageListener {
 
         if (oldSelectionWaiting != -1) {
             try {
-
                 this.gameinfoWaiting.setRowSelectionInterval(oldSelectionWaiting, oldSelectionWaiting);
-
             } catch (IllegalArgumentException e) {
                 GameLobby.this.logger.info("setRowSelectionInterval illegal argument");
                 this.setGameInfoEditorPaneHTML(null);
             }
         } else if (oldSelectionRunning != -1) {
             try {
-
                 this.gameinfoRunning.setRowSelectionInterval(oldSelectionRunning, oldSelectionRunning);
-
             } catch (IllegalArgumentException e) {
                 GameLobby.this.logger.info("setRowSelectionInterval illegal argument");
                 this.setGameInfoEditorPaneHTML(null);
@@ -920,7 +888,6 @@ public class GameLobby extends GameScreen implements MessageListener {
         if (this.playersScrollPane == null) {
             this.playersScrollPane = new JScrollPane(this.playerList);
             //this.playersScrollPane.setPreferredSize(new Dimension(150, 80));
-
         }
         return this.playersScrollPane;
 
@@ -1017,7 +984,7 @@ public class GameLobby extends GameScreen implements MessageListener {
         }
 
 
-        String txt = "<div align=\"center\"><div style=\"background: gray; color: white; margin-bottom: 5\"><b>" + GameRow.getGameName() + "</b><br>(" + IConstants.Map.getMapById(GameRow.getMapId()).toString() + ")<br> </div>" + "<table border='0' style='border-collapse: collapse' width='270' height='102' cellpadding='3'>" + "<tr>" + "<td width='122' valign='top' height='102'>" + "<center>" + "	<img src='" + imageURL + "' width='100' height='100'></center></td>" + "	<td valign='top' width='150' height='102'>" + "	Players: " + GameRow.getCurrentPlayers() + " of " + GameRow.getNumberOfPlayers() + "<br>" + "	Mode: " + Mod + "<br>" + "	Status: " + StateMSG + "<br>" + "	Min/Max: " + GameRow.getMinEloPoints() + " / " + GameRow.getMaxEloPoints() + "<br>" + "	Password: " + ("".equals(GameRow.getPasswort()) ? "no" : "yes") + "<br>" + "  </td>" + "</tr>" + "</table>" + "</div><div style=\"margin-top: 5\">" + "<b>Players:</b> " + GameRow.getPlayer1() + " " + GameRow.getPlayer2() + " " + GameRow.getPlayer3() + " " + GameRow.getPlayer4() + "<br>" + "</div></font>";
+        String txt = "<div align=\"center\"><div style=\"background: gray; color: white; margin-bottom: 5\"><b>" + GameRow.getGameName() + "</b><br>(" + IConstants.Map.getMapById(GameRow.getMapId()).toString() + ")<br> </div>" + "<table border='0' style='border-collapse: collapse' width='270' height='102' cellpadding='3'>" + "<tr>" + "<td width='122' valign='top' height='102'>" + "<center>" + "	<img src='" + imageURL + "' width='100' height='100'></center></td>" + "	<td valign='top' width='150' height='102'>" + "	Players: " + GameRow.getCurrentPlayers() + " of " + GameRow.getNumberOfPlayers() + "<br>" + "	Mode: " + Mod + "<br>" + "	Status: " + StateMSG + "<br>" + "	Min/Max: " + GameRow.getMinEloPoints() + " / " + GameRow.getMaxEloPoints() + "<br>" + "	Password: " + ("".equals(GameRow.getPassword()) ? "no" : "yes") + "<br>" + "  </td>" + "</tr>" + "</table>" + "</div><div style=\"margin-top: 5\">" + "<b>Players:</b> " + GameRow.getPlayer1() + " " + GameRow.getPlayer2() + " " + GameRow.getPlayer3() + " " + GameRow.getPlayer4() + "<br>" + "</div></font>";
 
         this.setGameInfoEditorPaneHTML(txt);
 
@@ -1097,8 +1064,8 @@ public class GameLobby extends GameScreen implements MessageListener {
             this.setPlayerCountLabel();
         }
 
-        if (m instanceof MessageMessage) {
-            MessageMessage mm = (MessageMessage) m;
+        if (m instanceof ServerChatMessage) {
+            ServerChatMessage mm = (ServerChatMessage) m;
 
             this.chatdialog.sendChatText(mm.getPlayerName(), mm.getMessage(), getCore());
 

@@ -49,7 +49,7 @@ import com.creeptd.client.panel.GamePanel;
 import com.creeptd.client.sound.SoundManagement;
 import com.creeptd.client.tower.Tower;
 import com.creeptd.common.IConstants;
-import com.creeptd.common.messages.server.MessageMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.common.messages.server.RoundMessage;
 import com.creeptd.common.messages.server.ServerMessage;
@@ -76,8 +76,6 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
     private Map map;
     private IConstants.Mode gameMode;
     private boolean running = false;
-    // we need this to measure the time
-    private static long nextTime;
     private long roundID = 0;
     private long maxRound = 0;
     private int incomeCounter = 0;
@@ -133,7 +131,6 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
      *            the network instance
      */
     public GameLoop(GamePanel gamePanel, Network network, SoundManagement soundM) {
-
         this.gamePanel = gamePanel;
         tdNetwork = network;
         tdNetwork.addListener(this);
@@ -312,6 +309,11 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
                 } else {
                     copy.setPlayerID(copyTo.getPlayerId());
                     copyTo.getCreeps().add(copy);
+                    if (this.myContext.equals(copyTo)) {
+                        if (this.myContext.getSoundManagement() != null) {
+                            this.myContext.getSoundManagement().creepWarnSound(copy.getType());
+                        }
+                    }
 
                     /********************************
                      * Here is calculating of taked * lives from each Player *
@@ -447,13 +449,12 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
             if (!this.isAlive()) {
                 this.start();
             }
-        } else if (m instanceof MessageMessage) {
-            MessageMessage mMChat = (MessageMessage) m;
+        } else if (m instanceof ServerChatMessage) {
+            ServerChatMessage mMChat = (ServerChatMessage) m;
             gamePanel.getChatPanel().setMessage(mMChat.getPlayerName(),
                     mMChat.getMessage());
         } else if (m instanceof PlayerQuitMessage) {
             PlayerQuitMessage pqm = (PlayerQuitMessage) m;
-
             for (GameContext con : contexts) {
                 if (pqm.getPlayerName().equals(con.getPlayerName())) {
                     con.setLives(0);

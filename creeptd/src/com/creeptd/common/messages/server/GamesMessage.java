@@ -111,7 +111,6 @@ public class GamesMessage extends ServerMessage {
             this.getGames().clear();
             String[] splitGamesMessagePart = gamesMessagePart.split("GAME");
             for (String gameDescriptionString : splitGamesMessagePart) {
-
                 if (!gameDescriptionString.equals(" ")) {
                     if (GameDescription.PATTERN.matcher(gameDescriptionString).matches()) {
                         GameDescription gameDescription = new GameDescription();

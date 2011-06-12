@@ -35,6 +35,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.common.messages.client;
 
+import com.creeptd.common.messages.MessageUtil;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -44,11 +46,12 @@ import java.util.regex.Pattern;
  *
  */
 public class ExitGameMessage extends ClientMessage implements GameMessage {
+    private String message = "";
 
     /**
      * regular expression for message-parsing.
      */
-    private static final String REGEXP_EXIT_GAME = "EXIT_GAME";
+    private static final String REGEXP_EXIT_GAME = "EXIT_GAME \"([^\"]*)\"";
     /**
      * pattern for regular expression.
      */
@@ -59,7 +62,18 @@ public class ExitGameMessage extends ClientMessage implements GameMessage {
      */
     @Override
     public void initWithMessage(String messageString) {
-        //do nothing!
+        Matcher matcher = PATTERN.matcher(messageString);
+        if (matcher.matches()) {
+            this.setMessage(matcher.group(1));
+        }
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     /**
@@ -67,6 +81,6 @@ public class ExitGameMessage extends ClientMessage implements GameMessage {
      */
     @Override
     public String getMessageString() {
-        return "EXIT_GAME";
+        return "EXIT_GAME \""+MessageUtil.prepareToSend(this.message)+"\"";
     }
 }

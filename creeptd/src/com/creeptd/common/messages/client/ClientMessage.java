@@ -102,8 +102,8 @@ public abstract class ClientMessage extends Message {
             message = new ScoreRequestMessage();
         } else if (SellTowerMessage.PATTERN.matcher(messageString).matches()) {
             message = new SellTowerMessage();
-        } else if (SendMessageMessage.PATTERN.matcher(messageString).matches()) {
-            message = new SendMessageMessage();
+        } else if (ClientChatMessage.PATTERN.matcher(messageString).matches()) {
+            message = new ClientChatMessage();
         } else if (StartGameRequestMessage.PATTERN.matcher(messageString).matches()) {
             message = new StartGameRequestMessage();
         } else if (UpdateDataRequestMessage.PATTERN.matcher(messageString).matches()) {

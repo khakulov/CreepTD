@@ -41,7 +41,7 @@ import com.creeptd.common.messages.client.ClientMessage;
 import com.creeptd.common.messages.client.ExitGameMessage;
 import com.creeptd.common.messages.client.GameMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
-import com.creeptd.common.messages.client.SendMessageMessage;
+import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.server.AuthenticationService;
 import com.creeptd.server.client.Client;
 import com.creeptd.server.game.Game;
@@ -92,8 +92,8 @@ public class InGameState extends AbstractClientState {
             return null;
         }
         if (message instanceof GameMessage) {
-            if (message instanceof SendMessageMessage) {
-                String[] msgSplit = ((SendMessageMessage) message).getMessage().split(" ");
+            if (message instanceof ClientChatMessage) {
+                String[] msgSplit = ((ClientChatMessage) message).getMessage().split(" ");
                 if (msgSplit.length >= 1) {
                     if ((msgSplit.length > 2) && msgSplit[0].equalsIgnoreCase("/to") && !this.getClient().getPlayerModel().getName().equalsIgnoreCase(msgSplit[1])) {
                         authenticatedState.receiveMessage(message);

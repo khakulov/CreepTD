@@ -82,7 +82,6 @@ public class GameOverMessage extends ClientMessage implements GameMessage {
         if (matcher.matches()) {
             this.setPosition(Integer.valueOf(matcher.group(1)));
         }
-
     }
 
     /**

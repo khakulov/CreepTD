@@ -70,7 +70,6 @@ public class Game extends AbstractGame {
     private static Logger logger = Logger.getLogger(Game.class);
     private AbstractGameState gameState;
     private List<PlayerInGame> players;
-    private List<PlayerInGame> playersInGame;
     private List<GameObserverInterface> observers;
     private BlockingQueue<GameMessage> queue;
     private volatile boolean terminate = false;
@@ -85,7 +84,6 @@ public class Game extends AbstractGame {
     public Game(Client client, CreateGameMessage message) {
         super(message);
 
-        this.playersInGame = new ArrayList<PlayerInGame>();
         this.players = new ArrayList<PlayerInGame>();
         this.observers = new LinkedList<GameObserverInterface>();
         this.queue = new LinkedBlockingQueue<GameMessage>();
@@ -106,7 +104,7 @@ public class Game extends AbstractGame {
                     logger.error("Game " + this + ": shutdown...");
                     this.terminate();
                 }
-                PlayerInGame p = this.findPlayerInGame(message.getClientId());
+                PlayerInGame p = this.findPlayer(message.getClientId());
                 this.changeState(this.getGameState().consume(message, p));
             } catch (InterruptedException e) {
                 // do nothing
@@ -124,7 +122,7 @@ public class Game extends AbstractGame {
             throw new IllegalArgumentException("'message' was null!");
         }
 
-        PlayerInGame sender = this.findPlayerInGame(message.getClientId());
+        PlayerInGame sender = this.findPlayer(message.getClientId());
         if (sender == null) {
             logger.error("got message from client " + message.getClientId() + ", but that client is not in the game.");
             return;
@@ -158,9 +156,9 @@ public class Game extends AbstractGame {
     }
 
     public void sendAll(ServerMessage message) {
-        synchronized (this.playersInGame) {
-            for (PlayerInGame p : this.playersInGame) {
-                p.getClient().send(message);
+        synchronized (this.players) {
+            for (PlayerInGame p : this.players) {
+                if (p.isConnected()) p.getClient().send(message);
             }
         }
     }
@@ -172,19 +170,18 @@ public class Game extends AbstractGame {
         if (!(this.getGameState() instanceof WaitingGameState)) {
             throw new RuntimeException("Game has started, no more players can join (State is " + this.getGameState()+")");
         }
-        if (this.getPlayersInGameSize() >= this.getMaxPlayers()) {
+        if (this.players.size() >= this.getMaxPlayers()) {
             throw new RuntimeException("Maximum number of players reached, no more players can join");
         }
-        if (this.findPlayerInGame(client.getClientID()) != null) {
+        if (this.findPlayer(client.getClientID()) != null) {
             return;
         }
 
-        synchronized (this.playersInGame) {
-            for (PlayerInGame p : this.playersInGame) {
+        synchronized (this.players) {
+            for (PlayerInGame p : this.players) {
                 client.send(new PlayerJoinedMessage(p.getClient().getPlayerModel().getName(), p.getClient().getClientID(), p.getClient().getPlayerModel().getExperience(), p.getClient().getPlayerModel().getElopoints()));
             }
             PlayerInGame p = new PlayerInGame(client);
-            this.playersInGame.add(p);
             this.players.add(p);
         }
 
@@ -195,46 +192,38 @@ public class Game extends AbstractGame {
         logger.debug("Player joined to the game");
     }
 
-    public void removePlayerInGame(PlayerInGame player) {
+    public void removePlayer(PlayerInGame player) {
         if (player == null) {
             throw new IllegalArgumentException("'player' was null!");
         }
-        synchronized (this.playersInGame) {
-            this.playersInGame.remove(player);
+        synchronized (this.players) {
+            this.players.remove(player);
         }
         gamePlayersChanged();
     }
 
-    public void removePlayerInGame(Client client) {
+    public void removePlayer(Client client) {
         if (client == null) {
             throw new IllegalArgumentException("'client' was null!");
         }
-        this.removePlayerInGame(this.findPlayerInGame(client.getClientID()));
+        this.removePlayer(this.findPlayer(client.getClientID()));
     }
 
-    public int getPlayersInGameSize() {
-        synchronized (this.playersInGame) {
-            return this.playersInGame.size();
+    public int numConnectedPlayers() {
+        int num = 0;
+        for (PlayerInGame p : this.players) {
+            if (p.isConnected()) num++;
         }
+        return num;
     }
-
+    
     public List<PlayerInGame> getPlayers() {
         return this.players;
     }
 
-    public List<PlayerInGame> getPlayersInGame() {
-        List<PlayerInGame> list = new ArrayList<PlayerInGame>();
-        synchronized (this.playersInGame) {
-            for (PlayerInGame p : this.playersInGame) {
-                list.add(p);
-            }
-        }
-        return list;
-    }
-
-    public PlayerInGame findPlayerInGame(int clientId) {
-        synchronized (this.playersInGame) {
-            for (PlayerInGame p : this.playersInGame) {
+    public PlayerInGame findPlayer(int clientId) {
+        synchronized (this.players) {
+            for (PlayerInGame p : this.players) {
                 if (p.getClient().getClientID() == clientId) {
                     return p;
                 }
@@ -243,9 +232,9 @@ public class Game extends AbstractGame {
         return null;
     }
 
-    public PlayerInGame findPlayerInGame(String playerName) {
-        synchronized (this.playersInGame) {
-            for (PlayerInGame p : this.playersInGame) {
+    public PlayerInGame findPlayer(String playerName) {
+        synchronized (this.players) {
+            for (PlayerInGame p : this.players) {
                 if (p.getClient().getPlayerModel().getName().equals(playerName)) {
                     return p;
                 }
@@ -254,11 +243,10 @@ public class Game extends AbstractGame {
         return null;
     }
 
-    public void shufflePlayersInGame() {
-        synchronized (this.playersInGame) {
-            Collections.shuffle(this.playersInGame);
-            this.players = new ArrayList(this.playersInGame);
-            logger.info("Shuffled players ("+this.playersInGame.size()+" in game, "+this.players.size()+" players)");
+    public void shufflePlayers() {
+        synchronized (this.players) {
+            Collections.shuffle(this.players);
+            this.players = new ArrayList(this.players);
         }
     }
 
@@ -270,8 +258,8 @@ public class Game extends AbstractGame {
 
         int count = 0;
         int score = 0;
-        synchronized (this.playersInGame) {
-            for (PlayerInGame p : this.playersInGame) {
+        synchronized (this.players) {
+            for (PlayerInGame p : this.players) {
                 if (count == 0) {
                     player1 = p.getClient().getPlayerModel().getName();
                 } else if (count == 1) {
@@ -288,19 +276,18 @@ public class Game extends AbstractGame {
                 score = (int) (score / count);
             }
         }
-
-        return new GameDescription(this.getGameId(), "[" + score + "]" + this.getGameName(), this.getMapId(), this.getMaxPlayers(),
-                count, this.getMaxPoints(), this.getMinPoints(), this.getPasswort().length() > 0 ? "yes" : "no", this.getMode(), player1, player2, player3, player4, this.getGameState().toString(), this.getShufflePlayers());
+        return new GameDescription(this.getGameId(), this.getGameName(), this.getMapId(), this.getMaxPlayers(),
+                count, this.getMaxPoints(), this.getMinPoints(), this.getPassword().length() > 0 ? "yes" : "no", this.getMode(), player1, player2, player3, player4, this.getGameState().toString(), this.getShufflePlayers());
     }
 
     public boolean canPlayerJoin(Client client, JoinGameRequestMessage jgrm) {
         if (!(this.getGameState() instanceof WaitingGameState)) {
             return false;
         }
-        if (this.getPlayersInGameSize() >= this.getMaxPlayers()) {
+        if (this.getPlayers().size() >= this.getMaxPlayers()) {
             return false;
         }
-        if ((!this.getPasswort().equals("")) && (!this.getPasswort().equals(jgrm.getPasswort()))) {
+        if ((!this.getPassword().equals("")) && (!this.getPassword().equals(jgrm.getPassword()))) {
             return false;
         }
         if (this.getMinPoints() > 0 && client.getPlayerModel().getElopoints() < this.getMinPoints()) {
@@ -309,22 +296,6 @@ public class Game extends AbstractGame {
         if (this.getMaxPoints() > 0 && client.getPlayerModel().getElopoints() > this.getMaxPoints()) {
             return false;
         }
-        /* int points = client.getPlayerModel().getElopoints() - 500; // oldEloPoints
-        if (points > 1000) {
-        synchronized (this.getPlayersInGame) {
-        for (PlayerInGame p : this.getPlayersInGame) {
-        if (p.getClient().getPlayerModel().getElopoints() < (points-500))
-        return false;
-        }
-        }
-        }
-        synchronized (this.getPlayersInGame) {
-        for (PlayerInGame p : this.getPlayersInGame) {
-        if ((p.getClient().getPlayerModel().getElopoints() > 1500) &&
-        (points < p.getClient().getPlayerModel().getElopoints()-1500))
-        return false;
-        }
-        } */
         return true;
     }
 

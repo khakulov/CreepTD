@@ -49,11 +49,12 @@ import com.creeptd.common.messages.client.GameOverMessage;
 import com.creeptd.common.messages.client.LiveTakedMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
 import com.creeptd.common.messages.client.SellTowerMessage;
-import com.creeptd.common.messages.client.SendMessageMessage;
+import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.common.messages.client.UpgradeTowerMessage;
 import com.creeptd.common.messages.server.BuildCreepRoundMessage;
 import com.creeptd.common.messages.server.BuildTowerRoundMessage;
 import com.creeptd.common.messages.server.ChangeStrategyRoundMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.common.messages.server.RoundMessage;
 import com.creeptd.common.messages.server.SellTowerRoundMessage;
@@ -127,18 +128,14 @@ public class RunningGameState extends AbstractGameState implements
 
         if (this.maxTick % (IConstants.INCOME_TIME / IConstants.TICK_MS) == 0) {
             List<Integer> incomeLogEntry = new LinkedList<Integer>();
-            for (PlayerInGame p : this.getGame().getPlayersInGame()) {
-                p.anticheat_updateMoney(this.maxTick);
-                if (p.anticheat_getCurrentMoney() < 0) {
-                    logger.warn("Cheater Detected!!! Username is " + p.getClient().getPlayerModel().getName() + " and current money is " + p.anticheat_getCurrentMoney());
-                    p.anticheat_kickAndBan(this);
-                    incomeLogEntry.add(p.anticheat_getCurrentIncome());
-                }/*
-                 * else { logger.info("User " + p.getClient().getUserName() +
-                 * " hatte in tick " + (this.maxTick - 300) + " " +
-                 * p.anticheat_getCurrentMoney() + " Credits und " +
-                 * p.anticheat_getCurrentIncome() + " Income."); }
-                 */
+            for (PlayerInGame p : this.getGame().getPlayers()) {
+                if (p.isConnected()) {
+                    p.anticheat_updateMoney(this.maxTick);
+                    if (p.anticheat_getCurrentMoney() < 0) {
+                        processIntegrity(p.getClient().getClientID());
+                        incomeLogEntry.add(p.anticheat_getCurrentIncome());
+                    }
+                }
             }
             incomeLog.add(incomeLogEntry);
         }
@@ -176,11 +173,15 @@ public class RunningGameState extends AbstractGameState implements
         } else if (message instanceof GameOverMessage) {
             this.handle((GameOverMessage) message, sender);
         } else if (message instanceof ExitGameMessage) {
+            ExitGameMessage exitMsg = (ExitGameMessage) message;
+            if ("integrity".equals(exitMsg.getMessage())) {
+                processIntegrity(exitMsg.getClientId());
+            }
             return this.removePlayer(sender);
         } else if (message instanceof LogoutMessage) {
             return this.removePlayer(sender);
-        } else if (message instanceof SendMessageMessage) {
-            handle((SendMessageMessage) message, sender);
+        } else if (message instanceof ClientChatMessage) {
+            handle((ClientChatMessage) message, sender);
         } else {
             logger.error("cannot handle message: " + message);
         }
@@ -215,9 +216,9 @@ public class RunningGameState extends AbstractGameState implements
     }
 
     private void handle(LiveTakedMessage m) {
-        PlayerInGame from = this.getGame().findPlayerInGame(m.getFromPlayerId());
-        PlayerInGame to = this.getGame().findPlayerInGame(m.getToPlayerId());
-        PlayerInGame sender = this.getGame().findPlayerInGame(m.getSenderId());
+        PlayerInGame from = this.getGame().findPlayer(m.getFromPlayerId());
+        PlayerInGame to = this.getGame().findPlayer(m.getToPlayerId());
+        PlayerInGame sender = this.getGame().findPlayer(m.getSenderId());
 
         if (from != null) {
             from.takeLive();
@@ -328,14 +329,8 @@ public class RunningGameState extends AbstractGameState implements
         int senderId = m.getClientId();
         long roundID = this.maxTick + IConstants.USER_ACTION_DELAY;
 
-        /*
-         * for (PlayerInGame p : this.getGame().getClients()) { if
-         * (p.getClient().getClientID() == senderId) {
-         * p.anticheat_sentThisCreep(type, m.getRoundId()); break; } }
-         */
-
-        if ((this.getGame().getMode().equals(IConstants.Mode.ALLVSALL)) && (this.getGame().getPlayersInGameSize() > 2)) {
-            for (PlayerInGame p : this.getGame().getPlayersInGame()) {
+        if ((this.getGame().getMode().equals(IConstants.Mode.ALLVSALL)) && (this.getGame().getPlayers().size() >= 2)) {
+            for (PlayerInGame p : this.getGame().getPlayers()) {
                 if ((p.getClient().getClientID() != senderId) && (!p.getGameOver())) {
                     BuildCreepRoundMessage n = new BuildCreepRoundMessage();
                     n.setRoundId(roundID);
@@ -343,12 +338,11 @@ public class RunningGameState extends AbstractGameState implements
                     n.setSenderId(senderId);
                     n.setPlayerId(p.getClient().getClientID());
                     this.getGame().sendAll(n);
-
                     p.anticheat_receivedThisCreep(type, m.getRoundId());
                 }
             }
-        } else if ((this.getGame().getMode().equals(IConstants.Mode.SENDRANDOM)) && (this.getGame().getPlayersInGameSize() > 2)) {
-            List<PlayerInGame> pl = this.getGame().getPlayersInGame();
+        } else if ((this.getGame().getMode().equals(IConstants.Mode.SENDRANDOM)) && (this.getGame().getPlayers().size() > 2)) {
+            List<PlayerInGame> pl = new ArrayList(this.getGame().getPlayers()); // Work with a copy
             while (!pl.isEmpty()) {
                 PlayerInGame p = pl.get(new Random().nextInt(pl.size()));
                 if (p != null) {
@@ -365,6 +359,8 @@ public class RunningGameState extends AbstractGameState implements
                         } else {
                             pl.remove(p);
                         }
+                    } else {
+                        pl.remove(p);
                     }
                 } else {
                     logger.error("Random send mode error. Player was null.");
@@ -372,7 +368,7 @@ public class RunningGameState extends AbstractGameState implements
                 }
             }
         } else if (this.getGame().getMode().equals(IConstants.Mode.TEAM2VS2)) { // Team 2vs2
-            List<PlayerInGame> pl = this.getGame().getPlayersInGame();
+            List<PlayerInGame> pl = this.getGame().getPlayers();
             int senderPosition = 0;
             Iterator<PlayerInGame> it = pl.iterator();
             while (it.hasNext()) {
@@ -395,9 +391,10 @@ public class RunningGameState extends AbstractGameState implements
             this.getGame().sendAll(n);
 
             receiver.anticheat_receivedThisCreep(type, m.getRoundId());
+            
         } else {
-            // Normal
-            List<PlayerInGame> pl = this.getGame().getPlayersInGame();
+            // Send next
+            List<PlayerInGame> pl = this.getGame().getPlayers();
             Iterator<PlayerInGame> it = pl.iterator();
             PlayerInGame receiver = null;
             while (it.hasNext()) {
@@ -461,14 +458,19 @@ public class RunningGameState extends AbstractGameState implements
 
     private AbstractGameState removePlayer(PlayerInGame player) {
         this.playerGameOver(player, 0); // sort automatically
-        this.getGame().removePlayerInGame(player);
-        this.getGame().sendAll(
-                new PlayerQuitMessage(player.getClient().getPlayerModel().getName(), "", player.getClient().getClientID()));
+        // Don't remove, set disconnected. We'll need the complete players array!
+        // Removal of players is done when entering EndedGameState
+        player.setConnected(false);
+        ServerChatMessage chatMsg = new ServerChatMessage();
+        chatMsg.setPlayerName(player.getClient().getPlayerModel().getName());
+        chatMsg.setMessage("has left the game");
+        this.getGame().sendAll(chatMsg);
+        this.getGame().sendAll(new PlayerQuitMessage(player.getClient().getPlayerModel().getName(), "", player.getClient().getClientID()));
         if (this.gameOverForAll()) {
             this.endGame();
             return new EndedGameState(this.getGame());
         }
-        if (this.getGame().getPlayersInGameSize() == 0) {
+        if (this.getGame().numConnectedPlayers() == 0) {
             return new TerminatedGameState(this.getGame());
         }
         return this;
@@ -527,7 +529,7 @@ public class RunningGameState extends AbstractGameState implements
         }
 
         // Other modes
-        for (PlayerInGame p : this.getGame().getPlayersInGame()) {
+        for (PlayerInGame p : this.getGame().getPlayers()) {
             if (!p.getGameOver()) {
                 if (winplayer == null) {
                     winplayer = p;
@@ -606,6 +608,16 @@ public class RunningGameState extends AbstractGameState implements
         // Save Game in DB (player locations, player positions, ...)
         synchronized (this.playerPositions) {
             this.getGame().saveToJournal(this.getGame().getPlayers(), this.playerPositions, startDate, endDate);
+        }
+    }
+
+    public void processIntegrity(int clientId) {
+        List<PlayerInGame> pl = this.getGame().getPlayers();
+        for (PlayerInGame p : pl) {
+            if (p.getClient().getClientID() == clientId) {
+                logger.warn("Integrity missmatch: " + p.getClient().getPlayerModel().getName());
+                p.anticheat_kickAndBan(this);
+            }
         }
     }
 }

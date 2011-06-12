@@ -46,7 +46,7 @@ import javax.swing.JTextField;
 
 import com.creeptd.client.game.GameContext;
 import com.creeptd.client.sound.SoundManagement;
-import com.creeptd.common.messages.client.SendMessageMessage;
+import com.creeptd.common.messages.client.ClientChatMessage;
 
 /**
  * ChatPanel to send and receive messages to the other players in
@@ -124,7 +124,7 @@ public class ChatPanel extends JPanel {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             // send Message
             if (context != null) {
-                SendMessageMessage chatMsg = new SendMessageMessage();
+                ClientChatMessage chatMsg = new ClientChatMessage();
                 chatMsg.setClientId(context.getPlayerId());
                 chatMsg.setMessage(getText());
                 gamepanel.getCore().getNetwork().sendMessage(chatMsg);

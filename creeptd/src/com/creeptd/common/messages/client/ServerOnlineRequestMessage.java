@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.common.messages.client;
 
+import com.creeptd.client.Core;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,12 +46,12 @@ import java.util.regex.Pattern;
  *
  */
 public class ServerOnlineRequestMessage extends ClientMessage {
+    private String version = null;
 
     /**
      * 	regular expression for message-parsing.
      */
-    private static final String REGEXP_ERROR =
-            "SERVER_ONLINE_REQUEST";
+    private static final String REGEXP_ERROR = "SERVER_ONLINE_REQUEST \"([^\"]+)\"";
     /**
      * pattern for regular expression.
      */
@@ -63,8 +64,17 @@ public class ServerOnlineRequestMessage extends ClientMessage {
     public void initWithMessage(String messageString) {
         Matcher matcher = PATTERN.matcher(messageString);
         if (matcher.matches()) {
+            this.version = matcher.group(1);
         }
 
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     /**
@@ -72,6 +82,6 @@ public class ServerOnlineRequestMessage extends ClientMessage {
      */
     @Override
     public String getMessageString() {
-        return "SERVER_ONLINE_REQUEST";
+        return "SERVER_ONLINE_REQUEST \""+Core.getVersion()+"\"";
     }
 }

@@ -228,15 +228,21 @@ public class LoginPanel extends GameScreen implements MessageListener {
             if (response.getResponseType() == IConstants.ResponseType.ok) {
                 getCore().pushScreen(new GameLobby());
             } else if (response.getResponseType() == IConstants.ResponseType.version) {
-                errorDialog("Wrong version \u2013 please download the latest version." + "\n\n" + "If that doesn't work, you may need to clear the Java WebStart cache.");
+                errorDialog("Wrong version \u2013 Please download the latest version." + "\n\n" + "If that doesn't work, you may need to clear the Java WebStart cache. Go to your system panel, select \"Java\", \"Show temporary files\" and clear your copy of the game.");
                 loginButton.setEnabled(true);
             } else {
                 errorDialog("Login failed");
                 loginButton.setEnabled(true);
             }
         } else if (m instanceof ServerOnlineResponseMessage) {
-            this.serverOnlineLabel.setText("Server is up and running!");
-            this.serverOnlineLabel.setForeground(Color.GREEN);
+            ServerOnlineResponseMessage sorm = (ServerOnlineResponseMessage) m;
+            if (sorm.isCorrectVersion()) {
+                this.serverOnlineLabel.setText("Server is up and running!");
+                this.serverOnlineLabel.setForeground(Color.GREEN);
+            } else {
+                this.serverOnlineLabel.setText("Server is up but your version differs!");
+                this.serverOnlineLabel.setForeground(Color.YELLOW);
+            }
             getCore().getNetwork().shutdown();
         }
 
@@ -279,6 +285,7 @@ public class LoginPanel extends GameScreen implements MessageListener {
     public void serverOnlineProcess() {
         if (getCore().getNetwork().makeContact()) {
             ServerOnlineRequestMessage sorm = new ServerOnlineRequestMessage();
+            sorm.setVersion(Core.getVersion());
             getCore().getNetwork().sendMessage(sorm);
         } else {
             serverOnlineLabel.setText("Sorry, the server seems to be offline. Please try again later!");

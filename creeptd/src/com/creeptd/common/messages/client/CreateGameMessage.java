@@ -143,7 +143,7 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
     /**
      * @return Game Passwort
      */
-    public String getPasswort() {
+    public String getPassword() {
         return this.Passwort;
     }
 
@@ -226,6 +226,6 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
      */
     @Override
     public String getMessageString() {
-        return "CREATE_GAME_REQUEST \"" + MessageUtil.prepareToSend(this.getGameName()) + "\" " + this.getMapId() + " " + this.getMaxPlayers() + " " + this.getMaxEloPoints() + " " + this.getMinEloPoints() + " " + "\"" + MessageUtil.prepareToSend(this.getPasswort()) + "\" " + this.getGameMode().getValue() + " " + (this.getShufflePlayers() ? "1" : "0");
+        return "CREATE_GAME_REQUEST \"" + MessageUtil.prepareToSend(this.getGameName()) + "\" " + this.getMapId() + " " + this.getMaxPlayers() + " " + this.getMaxEloPoints() + " " + this.getMinEloPoints() + " " + "\"" + MessageUtil.prepareToSend(this.getPassword()) + "\" " + this.getGameMode().getValue() + " " + (this.getShufflePlayers() ? "1" : "0");
     }
 }

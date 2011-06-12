@@ -36,8 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.creeptd.server.game.states;
 
 import com.creeptd.common.messages.client.GameMessage;
-import com.creeptd.common.messages.client.SendMessageMessage;
-import com.creeptd.common.messages.server.MessageMessage;
+import com.creeptd.common.messages.client.ClientChatMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.server.game.Game;
 import com.creeptd.server.game.PlayerInGame;
 
@@ -94,7 +94,7 @@ public abstract class AbstractGameState {
      * @param m
      *            the message.
      */
-    protected void handle(SendMessageMessage m, PlayerInGame player) {
-        this.game.sendAll(new MessageMessage(player.getClient().getPlayerModel().getName(), m.getMessage()));
+    protected void handle(ClientChatMessage m, PlayerInGame player) {
+        this.game.sendAll(new ServerChatMessage(player.getClient().getPlayerModel().getName(), m.getMessage()));
     }
 }
