@@ -45,6 +45,7 @@ import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.server.game.Game;
 import com.creeptd.server.game.PlayerInGame;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -124,7 +125,7 @@ public class EndedGameState extends AbstractGameState {
     private AbstractGameState removePlayer(PlayerInGame sender) {
         this.getGame().removePlayer(sender);
         this.getGame().sendAll(new PlayerQuitMessage(sender.getClient().getPlayerModel().getName(), "", sender.getClient().getClientID()));
-        if (this.getGame().getPlayers().size() == 0) {
+        if (this.getGame().numPlayers() == 0) {
             return new TerminatedGameState(this.getGame());
         }
         return this;

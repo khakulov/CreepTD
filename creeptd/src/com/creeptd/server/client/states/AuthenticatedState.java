@@ -141,7 +141,7 @@ public class AuthenticatedState extends AbstractClientState {
         if (message instanceof CreateGameMessage) {
             Game game = new Game(this.getClient(), (CreateGameMessage) message);
             if (game == null) {
-                logger.error("Failed to create game " + ((CreateGameMessage) message).getGameName());
+                logger.info("Failed to create game " + ((CreateGameMessage) message).getGameName());
                 this.getClient().send(new CreateGameResponseMessage(ResponseType.failed));
                 return this;
             }
@@ -153,11 +153,11 @@ public class AuthenticatedState extends AbstractClientState {
             JoinGameRequestMessage jgrm = (JoinGameRequestMessage) message;
             Game game = GameManager.find(jgrm.getGameId());
             if ((game == null) || (!game.canPlayerJoin(this.getClient(), jgrm))) {
-                logger.error("failed to join to game " + jgrm.getGameId());
+                logger.info("Failed to join to game " + jgrm.getGameId());
                 this.getClient().send(new JoinGameResponseMessage(ResponseType.failed));
                 return this;
             }
-            logger.info("client " + this.getClient() + " joined to game " + game);
+            logger.info("Client " + this.getClient() + " joined to game " + game);
             this.getClient().send(new JoinGameResponseMessage(ResponseType.ok));
             game.addPlayer(this.getClient());
             return new InGameState(this.getClient(), game, this);

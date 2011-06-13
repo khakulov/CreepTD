@@ -329,7 +329,7 @@ public class RunningGameState extends AbstractGameState implements
         int senderId = m.getClientId();
         long roundID = this.maxTick + IConstants.USER_ACTION_DELAY;
 
-        if ((this.getGame().getMode().equals(IConstants.Mode.ALLVSALL)) && (this.getGame().getPlayers().size() >= 2)) {
+        if ((this.getGame().getMode().equals(IConstants.Mode.ALLVSALL)) && (this.getGame().numPlayers() >= 2)) {
             for (PlayerInGame p : this.getGame().getPlayers()) {
                 if ((p.getClient().getClientID() != senderId) && (!p.getGameOver())) {
                     BuildCreepRoundMessage n = new BuildCreepRoundMessage();
@@ -341,7 +341,7 @@ public class RunningGameState extends AbstractGameState implements
                     p.anticheat_receivedThisCreep(type, m.getRoundId());
                 }
             }
-        } else if ((this.getGame().getMode().equals(IConstants.Mode.SENDRANDOM)) && (this.getGame().getPlayers().size() > 2)) {
+        } else if ((this.getGame().getMode().equals(IConstants.Mode.SENDRANDOM)) && (this.getGame().numPlayers() > 2)) {
             List<PlayerInGame> pl = new ArrayList(this.getGame().getPlayers()); // Work with a copy
             while (!pl.isEmpty()) {
                 PlayerInGame p = pl.get(new Random().nextInt(pl.size()));

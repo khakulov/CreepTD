@@ -56,6 +56,7 @@ import com.creeptd.server.client.Client;
 import com.creeptd.server.game.Game;
 import com.creeptd.server.game.GameManager;
 import com.creeptd.server.game.PlayerInGame;
+import java.util.ArrayList;
 
 /**
  * GameState for a game that has not yet started.
@@ -121,7 +122,7 @@ public class WaitingGameState extends AbstractGameState {
             sender.getClient().send(new StartGameResponseMessage(ResponseType.failed));
             return this;
         }
-        if (this.getGame().getPlayers().size() < this.getGame().getMaxPlayers()) {
+        if (this.getGame().numPlayers() < this.getGame().getMaxPlayers()) {
             sender.getClient().send(new StartGameResponseMessage(ResponseType.failed));
             return this;
         }
@@ -176,7 +177,7 @@ public class WaitingGameState extends AbstractGameState {
             }
         }
         this.getGame().sendAll(new PlayerQuitMessage(sender.getClient().getPlayerModel().getName(), "", sender.getClient().getClientID()));
-        if (this.getGame().getPlayers().size() == 0) {
+        if (this.getGame().numPlayers() == 0) {
             return new TerminatedGameState(this.getGame());
         }
         return this;

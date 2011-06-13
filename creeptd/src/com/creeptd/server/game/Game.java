@@ -209,6 +209,11 @@ public class Game extends AbstractGame {
         this.removePlayer(this.findPlayer(client.getClientID()));
     }
 
+    /**
+     * Returns the number of still connected players.
+     *
+     * @return
+     */
     public int numConnectedPlayers() {
         int num = 0;
         for (PlayerInGame p : this.players) {
@@ -218,7 +223,16 @@ public class Game extends AbstractGame {
     }
     
     public List<PlayerInGame> getPlayers() {
-        return this.players;
+        return new ArrayList(this.players);
+    }
+
+    /**
+     * Returns the number of players (including somewhen disconnected players)
+     *
+     * @return
+     */
+    public int numPlayers() {
+        return this.players.size();
     }
 
     public PlayerInGame findPlayer(int clientId) {
@@ -284,7 +298,7 @@ public class Game extends AbstractGame {
         if (!(this.getGameState() instanceof WaitingGameState)) {
             return false;
         }
-        if (this.getPlayers().size() >= this.getMaxPlayers()) {
+        if (this.numPlayers() >= this.getMaxPlayers()) {
             return false;
         }
         if ((!this.getPassword().equals("")) && (!this.getPassword().equals(jgrm.getPassword()))) {
@@ -438,6 +452,6 @@ public class Game extends AbstractGame {
 
     @Override
     public String toString() {
-        return "[Game"+this.getGameId()+"/"+this.getGameState()+"]";
+        return this.getGameId()+"/"+this.getGameName();
     }
 }

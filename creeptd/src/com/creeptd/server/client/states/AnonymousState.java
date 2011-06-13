@@ -124,7 +124,7 @@ public class AnonymousState extends AbstractClientState {
         } else if (message instanceof ServerOnlineRequestMessage) {
             ServerOnlineRequestMessage sor = (ServerOnlineRequestMessage) message;
             ServerOnlineResponseMessage sorm = new ServerOnlineResponseMessage();
-            sorm.setCorrectVersion(Core.getVersion().equals(sor.getVersion()));
+            sorm.setCorrectVersion(Server.getVersion().equals(sor.getVersion()));
             this.getClient().send(sorm);
             return this;
         }
