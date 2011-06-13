@@ -280,7 +280,7 @@ public abstract class GameContext {
         } else {
             if (!deathsoundPlayed) {
                 if (managementSound != null) {
-                    managementSound.error();
+                    // managementSound.gameOver();
                 }
                 deathsoundPlayed = true;
             }
@@ -326,9 +326,11 @@ public abstract class GameContext {
 
         int update_Round = (int) (gm.getRoundId() - roundId);
         if (update_Round <= 0) {
-            logger.info("processMessage is out of sync!!!");
+            logger.warning("ProcessMessage is out of sync!");
             if (managementSound != null) {
                 managementSound.error();
+                this.sendDeathMessage();
+                return;
             }
         }
 
@@ -544,7 +546,7 @@ public abstract class GameContext {
     private void paintPlayerInfo(Graphics2D g) {
         StringBuffer sb = new StringBuffer();
         sb.append(this.playerName);
-        sb.append(" | Lives left: ");
+        sb.append(" | Lives: ");
         sb.append(this.lives);
 
         g.setColor(Color.WHITE);

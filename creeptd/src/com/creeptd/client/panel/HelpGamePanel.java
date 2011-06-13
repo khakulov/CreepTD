@@ -67,6 +67,7 @@ public class HelpGamePanel extends JDialog {
     private JScrollPane jScrollPaneHelp = new JScrollPane();
     private JPanel content = new JPanel();
     private JButton quit;
+    private URL index;
 
     /**
      * Constructor for the HelpGamePanel.
@@ -76,6 +77,7 @@ public class HelpGamePanel extends JDialog {
     public HelpGamePanel() {
         this.init();
         this.setTitle("CreepTD - Help");
+        this.index = getClass().getClassLoader().getResource("com/creeptd/client/resources/help/index.html");
     }
 
     /**
@@ -129,23 +131,19 @@ public class HelpGamePanel extends JDialog {
         this.quit.setForeground(Color.GREEN);
         this.quit.setBounds(265, 620, 100, 30);
         this.quit.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 dispose();
             }
         });
 
         try {
-            final URL url = getClass().getClassLoader().getResource("com/creeptd/client/resources/help/index.html");
-            htmlDisplay.setPage(url);
-
+            htmlDisplay.setPage(this.index);
         } catch (IOException ex) {
-            ex.printStackTrace();
-            System.out.println("HTML-Seite konnte nicht geladen werden!");
+            // ex.printStackTrace();
+            // System.out.println("HTML-Seite konnte nicht geladen werden!");
         }
 
         htmlDisplay.addHyperlinkListener(new HyperlinkListener() {
-
             public void hyperlinkUpdate(HyperlinkEvent e) {
                 try {
                     if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -179,8 +177,17 @@ public class HelpGamePanel extends JDialog {
     //
     // }
 
-    public static void main(String[] args) {
-        new HelpGamePanel().setVisible(true);
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (visible) {
+            try {
+                htmlDisplay.setPage(this.index);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                System.out.println("HTML-Seite konnte nicht geladen werden!");
+            }
+        }
     }
 }
 

@@ -104,7 +104,7 @@ public interface IConstants {
     double SOUTH = (Math.PI / 2);
     double NORTH = (Math.PI / 2) * (-1);
     String SOUNDS_URL = "com/creeptd/client/resources/sounds/";
-    String SIMLEY_URL = "com/creeptd/client/resources/smilies/";
+    String SIMLEY_URL = "com/creeptd/client/resources/smileys/";
     /**
      * Maps Download Server
      */

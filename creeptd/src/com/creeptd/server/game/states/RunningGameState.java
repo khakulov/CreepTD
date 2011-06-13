@@ -484,6 +484,10 @@ public class RunningGameState extends AbstractGameState implements
                     position = submitted_position;
                     this.playerPositions.set(position-1, player);
                     logger.info(this.getGame()+" Setting player "+player+" to position "+position+" (Submitted by player)");
+                } else if (this.getGame().getMode().equals(IConstants.Mode.TEAM2VS2) && submitted_position == 2 &&
+                            this.playerPositions.get(1) != null && this.playerPositions.get(0) == null) {
+                        this.playerPositions.set(0, player);
+                        logger.info(this.getGame()+" Setting player "+player+" to position 1 (Team 2vs2 over)");
                 } else {
                     for (position = this.getGame().getMaxPlayers(); position >= 1; position--) {
                         if (this.playerPositions.get(position-1) == null) {

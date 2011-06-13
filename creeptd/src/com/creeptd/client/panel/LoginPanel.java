@@ -283,12 +283,16 @@ public class LoginPanel extends GameScreen implements MessageListener {
     }
 
     public void serverOnlineProcess() {
-        if (getCore().getNetwork().makeContact()) {
-            ServerOnlineRequestMessage sorm = new ServerOnlineRequestMessage();
-            sorm.setVersion(Core.getVersion());
-            getCore().getNetwork().sendMessage(sorm);
-        } else {
-            serverOnlineLabel.setText("Sorry, the server seems to be offline. Please try again later!");
-        }
+        new Thread() {
+            public void run() {
+                if (getCore().getNetwork().makeContact()) {
+                    ServerOnlineRequestMessage sorm = new ServerOnlineRequestMessage();
+                    sorm.setVersion(Core.getVersion());
+                    getCore().getNetwork().sendMessage(sorm);
+                } else {
+                    serverOnlineLabel.setText("Sorry, the server seems to be offline. Please try again later!");
+                }
+            }
+        }.start();
     }
 }
