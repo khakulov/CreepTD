@@ -68,7 +68,7 @@ import com.creeptd.common.messages.server.ServerMessage;
 public class GameResultPanel extends GameScreen implements MessageListener {
 
     private static final long serialVersionUID = 4925493108175118730L;
-    private final JLabel title;
+    private final JLabel logoImage;
     private JTable highscoreTable;
     private JScrollPane highscoreScrollPane;
     private final JButton back;
@@ -79,26 +79,23 @@ public class GameResultPanel extends GameScreen implements MessageListener {
      * Creates a new HighscorePanel.
      */
     public GameResultPanel(TreeMap<Integer, String> players) {
-
         this.players = players;
-
         this.setLayout(null);
         this.setBackground(Color.BLACK);
 
-        this.title = new JLabel("Game Results");
-        this.title.setBounds(400, 50, 400, 30);
-        this.title.setForeground(Color.green);
-        this.title.setFont(new Font("Arial", Font.BOLD, 20));
+        java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/header-gameresults.jpg");
+        logoImage = new JLabel();
+        logoImage.setBounds(225, 50, 450, 100);
+        logoImage.setText("<html><img src=\"" + imageURL + "\"></html>");
 
-        this.back = new JButton("Back");
-        this.back.setBounds(310, 640, 120, 25);
+        this.back = new JButton("OK");
+        this.back.setBounds(385, 640, 120, 25);
         this.back.setBackground(Color.BLACK);
         this.back.setForeground(Color.GREEN);
 
         this.initHighscoreTable();
 
-
-        this.add(this.title);
+        this.add(this.logoImage);
         this.add(this.highscoreScrollPane);
         this.add(this.back);
 
@@ -179,11 +176,9 @@ public class GameResultPanel extends GameScreen implements MessageListener {
      *
      */
     private void updateTable() {
-        final Object[] headerNames = new Object[]{
-            "Name", "Points (Total)", "Skill (Total)"};
+        final Object[] headerNames = new Object[]{"Name", "Points (Total)", "Skill (Total)"};
 
         final DefaultTableModel model = new DefaultTableModel() {
-
             private static final long serialVersionUID = 6115678865194002026L;
 
             @Override
@@ -192,11 +187,15 @@ public class GameResultPanel extends GameScreen implements MessageListener {
             }
         };
 
-        /* Collections.sort(tableData, new Comparator<Vector<String>>() {
-        public int compare(Vector<String> a1, Vector<String> a2) {
-        return (Integer.valueOf(a2.get(2)).compareTo(Integer.valueOf(a1.get(2))));
-        }
-        }); */
+        Collections.sort(tableData, new Comparator<Vector<String>>() {
+            public int compare(Vector<String> a1, Vector<String> a2) {
+                String val2 = a2.get(2).substring(0, a2.get(2).indexOf(' '));
+                String val1 = a1.get(2).substring(0, a1.get(2).indexOf(' '));
+                if (val2.charAt(0) == '+') val2 = val2.substring(1); // 'cause valueOf sucks
+                if (val1.charAt(0) == '+') val1 = val1.substring(1);
+                return (Integer.valueOf(val2).compareTo(Integer.valueOf(val1)));
+            }
+        });
 
         model.setDataVector(tableData, new Vector<Object>(Arrays.asList(headerNames)));
         this.highscoreTable.setModel(model);
@@ -208,13 +207,10 @@ public class GameResultPanel extends GameScreen implements MessageListener {
      */
     private void processHighscoreMessage(HighscoreResponseMessage hrm) {
         final Object[] headerNames = new Object[]{"Rank", "Name", "Points", "Skill"};
-
         final Vector<Vector<String>> rows = new Vector<Vector<String>>();
-
         final DefaultTableModel model = new DefaultTableModel() {
-
             private static final long serialVersionUID = 6115678865194002026L;
-
+            
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -222,10 +218,7 @@ public class GameResultPanel extends GameScreen implements MessageListener {
         };
 
         if (hrm != null) {
-
-            ArrayList<HighscoreEntry> listA = new ArrayList<HighscoreEntry>(
-                    hrm.getHighscoreEntries());
-
+            ArrayList<HighscoreEntry> listA = new ArrayList<HighscoreEntry>(hrm.getHighscoreEntries());
             ArrayList<HighscoreEntry> list = new ArrayList<HighscoreEntry>();
 
             for (HighscoreEntry s : listA) {
@@ -234,7 +227,6 @@ public class GameResultPanel extends GameScreen implements MessageListener {
                 }
             }
             Collections.sort(list, new Comparator<HighscoreEntry>() {
-
                 public int compare(HighscoreEntry a, HighscoreEntry b) {
                     Integer aPoints = a.getLastgameExperience();
                     Integer bPoints = b.getLastgameExperience();
@@ -269,9 +261,7 @@ public class GameResultPanel extends GameScreen implements MessageListener {
                 nr++;
             }
         }
-
         model.setDataVector(rows, new Vector<Object>(Arrays.asList(headerNames)));
-
         this.highscoreTable.setModel(model);
     }
 

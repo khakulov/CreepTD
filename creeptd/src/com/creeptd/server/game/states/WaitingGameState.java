@@ -164,7 +164,11 @@ public class WaitingGameState extends AbstractGameState {
         }
         logger.info("Kicking " + player.getClient() + " from game '" + this.getGame() + "'");
         player.getClient().send(new KickedMessage());
+        PlayerQuitMessage pqm = new PlayerQuitMessage();
+        pqm.setPlayerID(player.getClient().getClientID());
+        pqm.setPlayerName(player.getClient().getPlayerModel().getName());
         this.getGame().removePlayer(player);
+        this.getGame().sendAll(pqm);
         sender.getClient().send(new KickPlayerResponseMessage(ResponseType.ok));
     }
 

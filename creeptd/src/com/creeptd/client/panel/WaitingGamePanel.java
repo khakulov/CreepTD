@@ -36,7 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.creeptd.client.panel;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -85,7 +84,6 @@ import com.creeptd.common.messages.server.StartGameResponseMessage;
  * @Robert
  */
 public class WaitingGamePanel extends GameScreen implements MessageListener {
-
     private Logger logger = Logger.getLogger(WaitingGamePanel.class.getName());
     private static final long serialVersionUID = 1L;
     private JButton kick = new JButton();
@@ -167,7 +165,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         });
 
         start.addKeyListener(new KeyAdapter() {
-
+            @Override
             public void keyPressed(KeyEvent e) {
                 startButtonActionPerformed();
             }
@@ -185,7 +183,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         });
 
         quit.addKeyListener(new KeyAdapter() {
-
+            @Override
             public void keyPressed(KeyEvent e) {
                 quitButtonActionPerformed();
             }
@@ -202,7 +200,6 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             }
         });
         this.message.addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyPressed(KeyEvent evt) {
                 if (evt.getKeyCode() == KeyEvent.VK_ENTER) {

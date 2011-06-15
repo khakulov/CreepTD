@@ -96,11 +96,11 @@ public class PlayerChat extends JEditorPane {
         }
 
         java.net.URL imageURL = null;
-
+        
         imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_smile.gif");
         msg = msg.replace(":)", "<img src='" + imageURL + "'>");
         msg = msg.replace(":-)", "<img src='" + imageURL + "'>");
-
+        
         imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_happyeyes.gif");
         msg = msg.replace("=)", "<img src='" + imageURL + "'>");
 
