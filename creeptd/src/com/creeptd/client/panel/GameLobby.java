@@ -686,13 +686,11 @@ public class GameLobby extends GameScreen implements MessageListener {
         final Vector<Vector<String>> rowsRunning = new Vector<Vector<String>>();
 
         final DefaultTableModel modelWaiting = (DefaultTableModel) this.gameinfoWaiting.getModel();
-
         final DefaultTableModel modelRunning = (DefaultTableModel) this.gameinfoRunning.getModel();
 
         if (g != null) {
             this.games = new ArrayList<GameDescription>(g.getGames());
             Collections.sort(this.games, new Comparator<GameDescription>() {
-
                 public int compare(GameDescription a, GameDescription b) {
                     return a.getState().compareToIgnoreCase(b.getState()) * -1;
                 }
@@ -700,7 +698,6 @@ public class GameLobby extends GameScreen implements MessageListener {
             this.Player_Online_gameinfo = 0;
             int count = 0;
             for (GameDescription gd : this.games) {
-
                 final int fullCount = gd.getNumberOfPlayers();
                 final int playerCount = gd.getCurrentPlayers();
                 this.Player_Online_gameinfo = this.Player_Online_gameinfo + playerCount;
