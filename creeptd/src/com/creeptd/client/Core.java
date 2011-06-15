@@ -53,6 +53,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Random;
+import javax.jnlp.BasicService;
+import javax.jnlp.FileContents;
+import javax.jnlp.PersistenceService;
+import javax.jnlp.ServiceManager;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -87,6 +96,8 @@ public class Core extends JPanel {
     private GameDescription activeGame;
     private SoundManagement coreManagementSound;
     private Object creator;
+    private PersistenceService persistenceService = null;
+    private String persistenceServiceCodebase = null;
 
     /**
      * Creates a new core instance.
@@ -104,6 +115,14 @@ public class Core extends JPanel {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);
         instance = this;
+        try {
+            this.persistenceService = (PersistenceService) ServiceManager.lookup("javax.jnlp.PersistenceService");
+            BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+            this.persistenceServiceCodebase = bs.getCodeBase().toString();
+        } catch (Exception ex) {
+            this.persistenceService = null;
+            logger.warning("Unable to look up PersistenceService: "+ex);
+        }
     }
 
     public static Core getInstance() {
@@ -376,5 +395,41 @@ public class Core extends JPanel {
             version = "-unknown-";
         }
         return version;
+    }
+
+    /**
+     * Get the client's unique ID.
+     *
+     * @return Unique ID
+     */
+    public Long getUniqueId() {
+        URL key = null;
+        FileContents fc = null;
+        try {
+            key = new URL(this.persistenceServiceCodebase+"/uid");
+        } catch (MalformedURLException ex) {
+            logger.warning("Unable to create persistence serivce url: "+ex);
+            return new Long(0);
+        }
+        try {
+            fc = this.persistenceService.get(key); // Get the key
+            BufferedReader reader = new BufferedReader(new InputStreamReader(fc.getInputStream()));
+            String uidS = reader.readLine();
+            reader.close();
+            Long uid = Long.parseLong(uidS);
+            return uid;
+        } catch (Exception ex1) { // If it does not exist, create it
+            Long uid = (new Random()).nextLong();
+            try {
+                this.persistenceService.create(key, 1024);
+                fc = this.persistenceService.get(key);
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fc.getOutputStream(false)));
+                writer.write(uid+"\n");
+                writer.close();
+            } catch (Exception ex2) {
+                logger.warning("Unable to write to persistence service: "+ex2);
+            }
+        }
+        return new Long(0);
     }
 }
