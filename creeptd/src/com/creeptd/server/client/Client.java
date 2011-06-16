@@ -57,7 +57,6 @@ import com.creeptd.server.model.Player;
  * 
  */
 public class Client {
-
     private static Logger logger = Logger.getLogger(Client.class);
     private static AtomicInteger clientCount = new AtomicInteger(0);
     private int clientID;
@@ -81,13 +80,12 @@ public class Client {
     public Client(Socket socket) {
         this.clientID = clientCount.incrementAndGet();
         this.socket = socket;
-        logger.info("new client: " + this.clientID);
+        logger.info("New client: " + this.clientID);
         try {
             this.clientOutThread = new ClientOutThread(socket.getOutputStream(), this);
             this.clientOutThread.start();
             this.clientInThread = new ClientInThread(socket.getInputStream(), this);
             this.clientInThread.start();
-
             this.changeState(new AnonymousState(this));
         } catch (IOException e) {
             logger.error("Problem with Client constructor in serverpacket.", e);

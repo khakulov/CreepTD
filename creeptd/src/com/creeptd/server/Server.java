@@ -136,7 +136,6 @@ public class Server {
         try {
             logger.info("Starting server on port "+gameServerPort+"...");
             ServerSocket serverSocket = new ServerSocket(gameServerPort);
-
             while (true) {
                 for (Socket socket : new HashSet<Socket>(activeSockets)) {
                     if (socket.isClosed() || !socket.isConnected()) {
@@ -148,7 +147,7 @@ public class Server {
                 activeSockets.add(socket);
                 if (activeSockets.size() >= maxClients) {
                     socket.close();
-                    logger.error("Number of max clients reached");
+                    logger.error("Number of maximum clients reached");
                 } else {
                     new Client(socket);
                 }
@@ -160,6 +159,7 @@ public class Server {
         } catch (IOException e) {
             logger.error("Cannot start server", e);
             e.printStackTrace();
+            System.exit(1);
         }
     }
 

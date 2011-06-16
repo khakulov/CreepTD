@@ -56,7 +56,6 @@ import org.apache.log4j.Logger;
  * @author Azim
  */
 public class ClientInThread extends Thread {
-
     private static Logger logger = Logger.getLogger(ClientInThread.class.getName());
     private BufferedReader bufferedReader;
     private Client client;
@@ -73,10 +72,8 @@ public class ClientInThread extends Thread {
      */
     public ClientInThread(InputStream inputStream, Client client) {
         super();
-        this.bufferedReader = new BufferedReader(new InputStreamReader(
-                inputStream));
+        this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         this.client = client;
-
         this.setName("Client " + client.getClientID() + ": InThread");
     }
 
@@ -89,9 +86,14 @@ public class ClientInThread extends Thread {
         while (!this.terminate) {
             try {
                 String messageString = this.bufferedReader.readLine();
+                if (messageString == null || messageString.equals("")) {
+                    logger.warn("Client " + this.client.getClientID() + " disconnected (Protocol inconsistency)");
+                    this.client.disconnect();
+                    continue;
+                }
                 ClientMessage message = ClientMessage.renderMessageString(messageString);
                 if (message instanceof InvalidMessage) {
-                    logger.warn("Client " + this.client.getClientID() + ": received invalid message " + messageString);
+                    logger.warn("Client " + this.client.getClientID() + " received invalid message " + messageString);
                     continue;
                 }
                 if (message instanceof PongMessage) {
@@ -103,17 +105,17 @@ public class ClientInThread extends Thread {
                 this.inactivityCount = 0;
                 this.client.receive(message);
             } catch (SocketException e) {
-                logger.warn("Client " + this.client.getClientID() + ": disconnected (Socket Exception)");
+                logger.warn("Client " + this.client.getClientID() + " disconnected (Socket closed)");
                 this.client.disconnect();
             } catch (NullPointerException e) {
-                logger.warn("Client " + this.client.getClientID() + ": disconnected (Connection closed)");
+                logger.warn("Client " + this.client.getClientID() + " disconnected (Connection closed)");
                 this.client.disconnect();
             } catch (SocketTimeoutException e) {
                 if (this.inactivityCount > 60) {
                     // Wenn der Client mehr als halbe Stunde nichts anders als
                     // Pingpong spielt...
                     // 30sek * 60 = 0.5 h
-                    logger.warn("Client " + this.client.getClientID() + ": has been inactive for too long");
+                    logger.warn("Client " + this.client.getClientID() + " has been inactive for too long");
                     if ((this.client.getPlayerModel() == null) || (!this.client.getPlayerModel().hasPermission(
                             Permission.NO_TIMEOUT))) {
                         this.client.disconnect();
@@ -127,10 +129,14 @@ public class ClientInThread extends Thread {
                     this.inactivityCount++;
                     continue;
                 }
-                logger.warn("Client " + this.client.getClientID() + ": timeout -- got no response to PING");
+                logger.warn("Client " + this.client.getClientID() + " timeout (Got no response to PING)");
                 this.client.disconnect();
             } catch (IOException e) {
-                logger.warn("IO-error: " + e);
+                logger.warn("Client " + this.client.getClientID() + " disconnected (I/O error): "+e);
+                this.client.disconnect();
+            } catch (Throwable e) {
+                logger.warn("Client " + this.client.getClientID() + " disconnected (Exotic exception): "+e);
+                this.client.disconnect();
             }
         }
     }
