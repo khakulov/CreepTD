@@ -35,6 +35,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.server.game.states;
 
+import com.creeptd.common.messages.client.BuildCreepMessage;
+import com.creeptd.common.messages.client.BuildTowerMessage;
+import com.creeptd.common.messages.client.ChangeStrategyMessage;
 import org.apache.log4j.Logger;
 
 import com.creeptd.common.messages.client.ExitGameMessage;
@@ -42,10 +45,11 @@ import com.creeptd.common.messages.client.GameMessage;
 import com.creeptd.common.messages.client.GameOverMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
 import com.creeptd.common.messages.client.ClientChatMessage;
+import com.creeptd.common.messages.client.SellTowerMessage;
+import com.creeptd.common.messages.client.UpgradeTowerMessage;
 import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.server.game.Game;
 import com.creeptd.server.game.PlayerInGame;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -89,10 +93,15 @@ public class EndedGameState extends AbstractGameState {
             handle((ClientChatMessage) message, sender);
         } else if (message instanceof LogoutMessage) {
             return removePlayer(sender);
-        } else if (message instanceof GameOverMessage) {
-            return this; // Silently ignore GameOverMessage
+        } else if (message instanceof GameOverMessage ||
+                message instanceof BuildCreepMessage ||
+                message instanceof BuildTowerMessage ||
+                message instanceof SellTowerMessage ||
+                message instanceof UpgradeTowerMessage ||
+                message instanceof ChangeStrategyMessage) {
+            return this; // Silently ignore
         } else {
-            logger.error("Cannot handle message: " + message);
+            logger.warn("Cannot handle message: " + message);
         }
         return this;
     }
@@ -102,6 +111,7 @@ public class EndedGameState extends AbstractGameState {
      *
      * @return "ended"
      */
+    @Override
     public String toString() {
         return "ended";
     }

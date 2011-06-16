@@ -141,9 +141,7 @@ public class WaitingGameState extends AbstractGameState {
         sgm.setPlayers(list);
         sgm.setMapID(this.getGame().getMapId());
         this.getGame().sendAll(sgm);
-
         sender.getClient().send(new StartGameResponseMessage(ResponseType.ok));
-
         return new RunningGameState(this.getGame());
     }
 
