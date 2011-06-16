@@ -126,7 +126,7 @@ public class PlayersMessage extends ServerMessage {
                 Matcher matcher_player = PATTERN_PLAYER.matcher(player);
 
                 if (matcher_player.matches()) {
-                    List l = new ArrayList();
+                    List<Integer> l = new ArrayList<Integer>();
                     l.add(Integer.parseInt(matcher_player.group(3)));
                     l.add(Integer.parseInt(matcher_player.group(4)));
                     this.playerNames.put(matcher_player.group(2), l);

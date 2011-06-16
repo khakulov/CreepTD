@@ -223,7 +223,7 @@ public class Game extends AbstractGame {
     }
     
     public List<PlayerInGame> getPlayers() {
-        return new ArrayList(this.players);
+        return new ArrayList<PlayerInGame>(this.players);
     }
 
     /**
@@ -260,7 +260,7 @@ public class Game extends AbstractGame {
     public void shufflePlayers() {
         synchronized (this.players) {
             Collections.shuffle(this.players);
-            this.players = new ArrayList(this.players);
+            this.players = new ArrayList<PlayerInGame>(this.players);
         }
     }
 

@@ -56,7 +56,7 @@ public class Interfaces {
      * @return List of IP addresses
      */
     public static List<String> getAddresses() {
-        List result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>();
         try {
             Enumeration interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {

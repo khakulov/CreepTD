@@ -91,7 +91,7 @@ public class RunningGameState extends AbstractGameState implements
         super(game);
         this.nextTowerId = 1;
         this.maxTick = 0;
-        this.playerPositions = new ArrayList();
+        this.playerPositions = new ArrayList<PlayerInGame>();
         synchronized(this.playerPositions) {
             for (int i=0; i<game.getMaxPlayers(); i++) {
                 this.playerPositions.add(null);
@@ -343,7 +343,7 @@ public class RunningGameState extends AbstractGameState implements
                 }
             }
         } else if ((this.getGame().getMode().equals(IConstants.Mode.SENDRANDOM)) && (this.getGame().numPlayers() > 2)) {
-            List<PlayerInGame> pl = new ArrayList(this.getGame().getPlayers()); // Work with a copy
+            List<PlayerInGame> pl = new ArrayList<PlayerInGame>(this.getGame().getPlayers()); // Work with a copy
             while (!pl.isEmpty()) {
                 PlayerInGame p = pl.get(new Random().nextInt(pl.size()));
                 if (p != null) {
