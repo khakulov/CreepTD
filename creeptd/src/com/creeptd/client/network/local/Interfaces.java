@@ -33,44 +33,46 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-package com.creeptd.client.panel;
+package com.creeptd.client.network.local;
 
 import com.creeptd.client.Core;
-import com.creeptd.common.messages.client.ClientChatMessage;
-import com.creeptd.common.messages.client.StartGameRequestMessage;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
- * Countdown when starting game. 
+ * Local network interfaces helper.
  *
+ * @author Daniel
  */
-public class WaitingGameCountdownThread extends Thread {
-
-    private Core core = null;
+public class Interfaces {
 
     /**
-     * @param c core
-     */
-    public WaitingGameCountdownThread(Core c) {
-        core = c;
-    }
-
-    /**
+     * Get local network interface addresses.
      *
+     * @return List of IP addresses
      */
-    public void run() {
-        ClientChatMessage m = new ClientChatMessage();
-        m.setMessage("GAME START COUNTDOWN 3");
-        core.getNetwork().sendMessage(m);
-        for (int i = 2; i > 0; i--) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    public static List<String> getAddresses() {
+        List result = new ArrayList<String>();
+        try {
+            Enumeration interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+              NetworkInterface ni = (NetworkInterface) interfaces.nextElement();
+              Enumeration addresses = ni.getInetAddresses();
+              while (addresses.hasMoreElements()) {
+                InetAddress address = (InetAddress)addresses.nextElement();
+                if (!address.isLoopbackAddress() && !(address instanceof Inet6Address)) {
+                    result.add(address.getHostAddress());
+                }
+              }
             }
-            m.setMessage("in " + i);
-            core.getNetwork().sendMessage(m);
+            return result;
+        } catch (Exception ex) {
+            Core.getLogger().warning("Unable to fetch network interfaces: "+ex);
         }
-        core.getNetwork().sendMessage(new StartGameRequestMessage());
-
+        return null;
     }
 }

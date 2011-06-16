@@ -95,8 +95,7 @@ public class AuthenticatedState extends AbstractClientState {
     /**
      * Method for sending a Message.
      *
-     * @param message
-     *            ClientMessage
+     * @param message ClientMessage
      * @return ClientState
      */
     @Override

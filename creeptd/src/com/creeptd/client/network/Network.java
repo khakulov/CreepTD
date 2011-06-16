@@ -175,24 +175,31 @@ public class Network implements MessageSubject {
     /**
      * Method to send ClientMessages to the server.
      *
-     * @param message
-     *            ClientMessage
+     * @param message ClientMessage
      */
     public void sendMessage(ClientMessage message) {
         if (message != null) {
-            this.out.println(message.getMessageString());
-            logger.info("Sent: " + message.getMessageString());
+            this.sendMessage(message.getMessageString());
         }
     }
 
     /**
      * Method to send messages to the server.
      *
-     * @param message
-     *            Stringmessage
+     * @param message Message
      */
     public void sendMessage(Message message) {
-        this.out.println(message.getMessageString());
+        this.sendMessage(message.getMessageString());
+    }
+
+    /**
+     * Internal method to send String messages to the server.
+     *
+     * @param message The message
+     */
+    private void sendMessage(String message) {
+        this.out.println(message);
+        logger.info("Sent: " + message);
     }
 
     /**

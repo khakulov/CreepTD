@@ -61,7 +61,6 @@ import com.creeptd.client.tower.FindWeakestCreep;
 import com.creeptd.client.tower.StrategyFactory;
 import com.creeptd.common.IConstants;
 import com.creeptd.common.messages.client.ExitGameMessage;
-import com.creeptd.common.messages.client.ClientChatMessage;
 
 /**
  * The GamePanel class is the container for all other game related panels.
@@ -96,8 +95,7 @@ public class GamePanel extends GameScreen {
     }
 
     /**
-     * @param context
-     *            the context to set
+     * @param context the context to set
      */
     public void setContext(GameContext context) {
         this.context = context;
@@ -139,6 +137,7 @@ public class GamePanel extends GameScreen {
         this.quit.setForeground(Color.RED);
         this.quit.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 getCore().getNetwork().sendMessage(new ExitGameMessage());
                 if (!loop.isRunning() && !Core.isLANVersion()) {
@@ -218,31 +217,26 @@ public class GamePanel extends GameScreen {
 
     @SuppressWarnings("serial")
     private void setupShortcuts() {
-        // Quit
+        //Quit
         addShortcut("ESCAPE", new AbstractAction() {
-
             public void actionPerformed(ActionEvent event) {
                 leave();
             }
         });
         //Upgrade
         addShortcut("U", new AbstractAction() {
-
             public void actionPerformed(ActionEvent event) {
                 context.upgradeTower();
             }
         });
         //Sell
         addShortcut("I", new AbstractAction() {
-
             public void actionPerformed(ActionEvent event) {
                 context.sellTower();
             }
         });
-        //Strategies
-        //Clostest
+        //Strategies: Clostest
         addShortcut("K", new AbstractAction() {
-
             public void actionPerformed(ActionEvent event) {
                 FindCreepStrategy strategy = StrategyFactory.getStrategyForName(FindClosestCreep.class.getSimpleName(), context.getSelectedTower());
                 strategy.setCreepLock(context.getSelectedTower().getStrategy().isCreepLock());
@@ -251,7 +245,6 @@ public class GamePanel extends GameScreen {
         });
         //Farthest
         addShortcut("0", new AbstractAction() {
-
             public void actionPerformed(ActionEvent event) {
                 FindCreepStrategy strategy = StrategyFactory.getStrategyForName(FindFarthestCreep.class.getSimpleName(), context.getSelectedTower());
                 strategy.setCreepLock(context.getSelectedTower().getStrategy().isCreepLock());
@@ -260,7 +253,6 @@ public class GamePanel extends GameScreen {
         });
         //Fastest
         addShortcut("L", new AbstractAction() {
-
             public void actionPerformed(ActionEvent event) {
                 FindCreepStrategy strategy = StrategyFactory.getStrategyForName(FindFastestCreep.class.getSimpleName(), context.getSelectedTower());
                 strategy.setCreepLock(context.getSelectedTower().getStrategy().isCreepLock());
@@ -269,7 +261,6 @@ public class GamePanel extends GameScreen {
         });
         //Strongest
         addShortcut("P", new AbstractAction() {
-
             public void actionPerformed(ActionEvent event) {
                 FindCreepStrategy strategy = StrategyFactory.getStrategyForName(FindStrongestCreep.class.getSimpleName(), context.getSelectedTower());
                 strategy.setCreepLock(context.getSelectedTower().getStrategy().isCreepLock());
@@ -278,17 +269,14 @@ public class GamePanel extends GameScreen {
         });
         //Weakest
         addShortcut("O", new AbstractAction() {
-
             public void actionPerformed(ActionEvent event) {
                 FindCreepStrategy strategy = StrategyFactory.getStrategyForName(FindWeakestCreep.class.getSimpleName(), context.getSelectedTower());
                 strategy.setCreepLock(context.getSelectedTower().getStrategy().isCreepLock());
                 context.setStrategy(strategy);
             }
         });
-
         //Lock
         addShortcut("9", new AbstractAction() {
-
             public void actionPerformed(ActionEvent event) {
                 FindCreepStrategy strategy = context.getSelectedTower().getStrategy();
                 strategy.setCreepLock(!strategy.isCreepLock());

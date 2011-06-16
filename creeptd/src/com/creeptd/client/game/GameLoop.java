@@ -421,12 +421,13 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
             }
             cnt++;
             if (id.equals(gamePanel.getCore().getPlayerId())) {
-                logger.info("Own context created");
+                logger.info("Own context (id="+id+") created");
                 context = new PlayerContext(loc, tdNetwork, soundManagement, map, this, id, players.get(id));
                 gamePanel.getBoardPanel().addMouseMotionListener(context.getGameBoard());
                 gamePanel.getBoardPanel().addMouseListener(context.getGameBoard());
                 gamePanel.getGameInfoPanel().addPlayerContext((PlayerContext) context);
             } else {
+                logger.info("Opponent context (id="+id+") created");
                 context = new OpponentContext(loc, tdNetwork, map, this, id, players.get(id));
                 gamePanel.getGameInfoPanel().addOpponentContext((OpponentContext) context);
             }

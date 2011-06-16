@@ -459,6 +459,7 @@ public class GameLobby extends GameScreen implements MessageListener {
 
         quit.addKeyListener(new KeyAdapter() {
 
+            @Override
             public void keyPressed(KeyEvent e) {
                 LogoutMessage gm = new LogoutMessage();
                 getCore().getNetwork().sendMessage(gm);

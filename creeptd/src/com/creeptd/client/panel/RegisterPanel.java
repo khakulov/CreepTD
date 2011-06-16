@@ -54,6 +54,7 @@ import javax.swing.UIManager;
 import com.creeptd.client.Core;
 import com.creeptd.client.network.MessageListener;
 import com.creeptd.common.IConstants;
+import com.creeptd.common.Password;
 import com.creeptd.common.messages.client.LoginRequestMessage;
 import com.creeptd.common.messages.client.RegistrationRequestMessage;
 import com.creeptd.common.messages.server.RegistrationResponseMessage;
@@ -164,7 +165,6 @@ public class RegisterPanel extends GameScreen implements MessageListener {
         this.add(back);
 
         ActionListener a1 = new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 registrationProcess();
             }
@@ -172,7 +172,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
         register.addActionListener(a1);
 
         KeyAdapter registerKeyAdapter = new KeyAdapter() {
-
+            @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() != KeyEvent.VK_ENTER) {
                     return;
@@ -187,7 +187,6 @@ public class RegisterPanel extends GameScreen implements MessageListener {
         register.addKeyListener(registerKeyAdapter);
 
         ActionListener a3 = new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 getCore().popScreen();
             }
@@ -195,7 +194,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
         back.addActionListener(a3);
 
         back.addKeyListener(new KeyAdapter() {
-
+            @Override
             public void keyPressed(KeyEvent e) {
                 getCore().popScreen();
             }
@@ -236,19 +235,18 @@ public class RegisterPanel extends GameScreen implements MessageListener {
                 UIManager.put("OptionPane.background", Color.BLACK);
                 UIManager.put("Panel.background", Color.BLACK);
                 UIManager.put("OptionPane.messageForeground", Color.GREEN);
-                JOptionPane.showMessageDialog(this, "Registration Successful",
-                        "Thank You", 2);
+                JOptionPane.showMessageDialog(this, "Registration Successful", "Thank You", 2);
                 getCore().popScreen();
-                // login
+                // Automatic login after sign up
                 LoginRequestMessage loginMessage = new LoginRequestMessage();
                 loginMessage.setVersion(Core.getVersion());
                 loginMessage.setUsername(lName.getText());
-                loginMessage.setPassword(String.valueOf(lPassword.getPassword()));
+                loginMessage.setPassword(String.valueOf(Password.encodePassword(new String(lPassword.getPassword()))));
                 loginMessage.setMacaddress(getCore().getNetwork().getMACAddress());
                 getCore().getNetwork().sendMessage(loginMessage);
             }
             if (response.getResponseType() == IConstants.ResponseType.failed) {
-                errorDialog("Unknown error");
+                errorDialog("Your registration could not be completed. Please check your inputs!");
                 register.setEnabled(true);
                 lName.requestFocus();
             }
@@ -264,7 +262,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
         getCore().getNetwork().makeContact();
         RegistrationRequestMessage request = new RegistrationRequestMessage();
 
-        Pattern pWord = Pattern.compile("[a-zA-Z_0-9]+");
+        Pattern pWord = Pattern.compile("[a-zA-Z0-9]+");
         Pattern pEmail = Pattern.compile("^\\S+@\\S+$");
         Matcher mName = pWord.matcher(lName.getText());
         Matcher mPassword = pWord.matcher(String.valueOf(lPassword.getPassword()));
@@ -275,26 +273,25 @@ public class RegisterPanel extends GameScreen implements MessageListener {
 
         if (!this.isInDictionary(lName.getText().toLowerCase())) {
             if (lName.getText().equals("") || String.valueOf(lPassword.getPassword()).equals("") || String.valueOf(lPassword2.getPassword()).equals("")) {
-                errorDialog("fields marked with * have to be filled out");
+                errorDialog("Please fill out all required fields");
                 lName.requestFocus();
-            } else if (lName.getText().length() > 12) {
-                errorDialog("Maximum length of Username is 12");
+            } else if (lName.getText().length() > 16) {
+                errorDialog("Maximum length of Username is 16");
                 lName.requestFocus();
             } else if (!pMatchesPwd) {
-                errorDialog("only a-zA-Z and 0-9 is allowed");
+                errorDialog("Only the characters a-z, A-Z and 0-9 are allowed for the password");
                 lPassword.requestFocus();
             } else if (!String.valueOf(lPassword.getPassword()).equals(
                     String.valueOf(lPassword2.getPassword()))) {
                 errorDialog("The passwords you entered weren't identical");
                 lPassword.requestFocus();
             } else if (!pMatchesName) {
-                errorDialog("only a-zA-Z and 0-9 is allowed");
+                errorDialog("Only the characters a-z, A-Z and 0-9 are allowed for the name");
                 lName.requestFocus();
             } else if (!pMatchesEmail && !lEmail.getText().equals("")) {
-                errorDialog("Not a valid email address!");
+                errorDialog("Please specify a valid email address or none");
                 lEmail.requestFocus();
             } else {
-
                 request.setPassword(String.valueOf(lPassword.getPassword()));
                 request.setEmail(lEmail.getText());
                 request.setUsername(lName.getText());

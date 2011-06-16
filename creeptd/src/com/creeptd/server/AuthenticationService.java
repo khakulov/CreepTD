@@ -72,6 +72,23 @@ public class AuthenticationService {
     }
 
     /**
+     * Validate username.
+     *
+     * @param name The user's name
+     * @return true if valid, else false
+     */
+    private static boolean checkUsername(String name) {
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        if (name.length() > 16) return false;
+        for (int i=0; i<name.length(); i++) {
+            if (chars.indexOf(name.charAt(i)) < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * @param playerName the name of the player
      * @param password the password of the player
      * @param email the email of the player
@@ -79,6 +96,10 @@ public class AuthenticationService {
      *         other errors.
      */
     public static IConstants.ResponseType create(RegistrationRequestMessage registrationRequestMessage) {
+        if (!checkUsername(registrationRequestMessage.getUsername())) {
+            logger.warn("Registration failed (invalid username): "+registrationRequestMessage.getUsername());
+            return IConstants.ResponseType.failed;
+        }
         if (AuthenticationService.getPlayer(registrationRequestMessage.getUsername()) != null) {
             logger.error("Registration failed (username used)");
             return IConstants.ResponseType.username;
