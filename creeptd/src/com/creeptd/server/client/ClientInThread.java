@@ -115,10 +115,12 @@ public class ClientInThread extends Thread {
                     // Wenn der Client mehr als halbe Stunde nichts anders als
                     // Pingpong spielt...
                     // 30sek * 60 = 0.5 h
-                    logger.warn("Client " + this.client.getClientID() + " has been inactive for too long");
-                    if ((this.client.getPlayerModel() == null) || (!this.client.getPlayerModel().hasPermission(
-                            Permission.NO_TIMEOUT))) {
+                    if ((this.client.getPlayerModel() == null) || (!this.client.getPlayerModel().hasPermission(Permission.NO_TIMEOUT))) {
+                        logger.warn("Client " + this.client.getClientID() + " has been inactive for too long");
                         this.client.disconnect();
+                        continue;
+                    } else {
+                        this.inactivityCount = 0;
                     }
                 }
                 if (!timeout) {

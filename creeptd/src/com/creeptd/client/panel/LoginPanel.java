@@ -237,7 +237,7 @@ public class LoginPanel extends GameScreen implements MessageListener {
             if (response.getResponseType() == IConstants.ResponseType.ok) {
                 getCore().pushScreen(new GameLobby());
             } else if (response.getResponseType() == IConstants.ResponseType.version) {
-                errorDialog("Wrong version \u2013 Please download the latest version." + "\n\n" + "If that doesn't work, you may need to clear the Java WebStart cache. Go to your system panel, select \"Java\", \"Show temporary files\" and clear your copy of the game.");
+                errorDialog("Wrong version \u2013 Please download the latest version." + "\n\n" + "If that doesn't work, you may need to clear the Java WebStart cache:\nGo to your system panel, select \"Java\", \"Show temporary files\" and clear your copy of the game.");
                 loginButton.setEnabled(true);
             } else {
                 errorDialog("Login failed");
