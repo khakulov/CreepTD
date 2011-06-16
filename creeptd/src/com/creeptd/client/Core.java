@@ -43,25 +43,18 @@ import java.io.InputStreamReader;
 import java.util.Stack;
 import java.util.logging.Logger;
 
-
 import com.creeptd.client.network.Network;
 import com.creeptd.client.panel.GameScreen;
 import com.creeptd.client.panel.LoginPanel;
 import com.creeptd.client.sound.SoundManagement;
 import com.creeptd.common.messages.server.GameDescription;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
+
 import java.util.Random;
-import javax.jnlp.BasicService;
-import javax.jnlp.FileContents;
-import javax.jnlp.PersistenceService;
-import javax.jnlp.ServiceManager;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -74,7 +67,6 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
  * network connection.
  * 
  * @author Philipp
- * 
  */
 public class Core extends JPanel {
 
@@ -96,9 +88,7 @@ public class Core extends JPanel {
     private GameDescription activeGame;
     private SoundManagement coreManagementSound;
     private Object creator;
-    private PersistenceService persistenceService = null;
-    private String persistenceServiceCodebase = null;
-
+    
     /**
      * Creates a new core instance.
      */
@@ -115,18 +105,14 @@ public class Core extends JPanel {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);
         instance = this;
-        try {
-            this.persistenceService = (PersistenceService) ServiceManager.lookup("javax.jnlp.PersistenceService");
-            BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
-            this.persistenceServiceCodebase = bs.getCodeBase().toString();
-        } catch (Exception ex) {
-            this.persistenceService = null;
-            logger.warning("Unable to look up PersistenceService: "+ex);
-        }
     }
 
     public static Core getInstance() {
         return instance;
+    }
+
+    public static Logger getLogger() {
+        return logger;
     }
 
     public int getCreatorX() {
@@ -265,18 +251,18 @@ public class Core extends JPanel {
      * @return the network
      */
     public Network getNetwork() {
-        return this.network;
+        return network;
     }
-
+    
     /**
      * Getter for the Soundmanagement in the core.
      *
      * @return SoundManagement
      */
     public SoundManagement getCoreManagementSound() {
-        return this.coreManagementSound;
+        return coreManagementSound;
     }
-
+    
     /**
      * @return the gamecreator
      */
@@ -366,7 +352,7 @@ public class Core extends JPanel {
     public static String getVersion() {
         String version = null;
 
-        InputStream inStream = Core.class.getResourceAsStream("version");
+        InputStream inStream = Core.class.getResourceAsStream("../common/version");
         try {
             if (inStream.available() > 0) {
                 InputStreamReader inStreamReader = null;
@@ -398,38 +384,25 @@ public class Core extends JPanel {
     }
 
     /**
-     * Get the client's unique ID.
+     * Check if this is a LAN only version.
      *
-     * @return Unique ID
+     * @return true if LAN version, else false
      */
-    public Long getUniqueId() {
-        URL key = null;
-        FileContents fc = null;
-        try {
-            key = new URL(this.persistenceServiceCodebase+"/uid");
-        } catch (MalformedURLException ex) {
-            logger.warning("Unable to create persistence serivce url: "+ex);
-            return new Long(0);
+    public static boolean isLANVersion() {
+        return getVersion().indexOf("LAN") >= 0;
+    }
+
+    /**
+     * Get this computer's unique ID.
+     *
+     * @return The unique ID
+     */
+    public static String getUniqueId() {
+        String uid = com.creeptd.client.util.JNLP.getValue("/uid");
+        if (uid == null) {
+            uid = new Long((new Random()).nextLong()).toString();
+            com.creeptd.client.util.JNLP.setValue("/uid", uid);
         }
-        try {
-            fc = this.persistenceService.get(key); // Get the key
-            BufferedReader reader = new BufferedReader(new InputStreamReader(fc.getInputStream()));
-            String uidS = reader.readLine();
-            reader.close();
-            Long uid = Long.parseLong(uidS);
-            return uid;
-        } catch (Exception ex1) { // If it does not exist, create it
-            Long uid = (new Random()).nextLong();
-            try {
-                this.persistenceService.create(key, 1024);
-                fc = this.persistenceService.get(key);
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fc.getOutputStream(false)));
-                writer.write(uid+"\n");
-                writer.close();
-            } catch (Exception ex2) {
-                logger.warning("Unable to write to persistence service: "+ex2);
-            }
-        }
-        return new Long(0);
+        return uid;
     }
 }

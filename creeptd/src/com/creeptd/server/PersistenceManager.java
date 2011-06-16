@@ -44,35 +44,30 @@ import javax.persistence.Persistence;
  */
 public final class PersistenceManager {
 
-	private static PersistenceManager persistenceManager;
-	
-	private final EntityManagerFactory entityManagerFactory;
-	
-	/**
-	 * Private constructor.
-	 */
-	private PersistenceManager() {
-		this.entityManagerFactory = Persistence
-		.createEntityManagerFactory("db", Server.getConfigFileDB());
-	}
-	
-	/**
-	 * @return the singleton.
-	 */
-	public static PersistenceManager getInstance() {
-		
-		if (persistenceManager == null) {
-			persistenceManager = new PersistenceManager();
-		}
-		return persistenceManager;
-	}
-	
-	
-	/**
-	 * @return the EntityManager.
-	 */
-	public EntityManager getEntityManager() {
-		return this.entityManagerFactory.createEntityManager();
-	}
-		
+    private static PersistenceManager persistenceManager;
+    private final EntityManagerFactory entityManagerFactory;
+
+    /**
+     * Private constructor.
+     */
+    private PersistenceManager() {
+        this.entityManagerFactory = Persistence.createEntityManagerFactory("db", Server.getConfigFileDB());
+    }
+
+    /**
+     * @return the singleton.
+     */
+    public static PersistenceManager getInstance() {
+        if (persistenceManager == null) {
+            persistenceManager = new PersistenceManager();
+        }
+        return persistenceManager;
+    }
+
+    /**
+     * @return the EntityManager.
+     */
+    public EntityManager getEntityManager() {
+        return this.entityManagerFactory.createEntityManager();
+    }
 }

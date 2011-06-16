@@ -72,9 +72,8 @@ public class Lobby {
 		if (client == null)
 			throw new IllegalArgumentException("'newClient' was null");
 		synchronized(clients) {
-			if (clients.contains(client))
-				return;
-			clients.add(client);
+			if (clients.contains(client)) return;
+                        clients.add(client);
 		}
 		client.send(GameManager.getGamesMessage());
 		sendAll(getPlayersMessage());

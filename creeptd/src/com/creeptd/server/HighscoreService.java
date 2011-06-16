@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.server;
 
+import com.creeptd.client.Core;
 import com.creeptd.common.IConstants;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -132,7 +133,7 @@ public class HighscoreService {
      */
     public static void createHighscoreEntry(ArrayList<PlayerInGame> playerPositions, Game game) {
         try {
-            EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
+            EntityManager entityManager = entityManager = PersistenceManager.getInstance().getEntityManager();
 
             int[] experience = new int[playerPositions.size()];
             for (int i = 0; i < playerPositions.size(); i++) {
@@ -143,10 +144,10 @@ public class HighscoreService {
             for (int i = 0; i < playerPositions.size(); i++) {
                 elopoints[i] = playerPositions.get(i).getClient().getPlayerModel().getElopoints();
             }
-
+            
             EntityTransaction entityTransaction = entityManager.getTransaction();
             entityTransaction.begin();
-
+            
             int[] newExperience = (game.getMode().equals(IConstants.Mode.TEAM2VS2)) ? calcExperienceTeam(experience) : calcExperience(experience);
             int[] newElopoints = (game.getMode().equals(IConstants.Mode.TEAM2VS2)) ? calcElopointsTeam(elopoints) : calcElopoints(elopoints);
 

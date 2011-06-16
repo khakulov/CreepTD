@@ -63,14 +63,11 @@ import javax.swing.border.EmptyBorder;
 
 /**
  * LoginPanel at the beginning of the game.
+ * 
  * @author sven
- *
  */
 public class LoginPanel extends GameScreen implements MessageListener {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
     private JLabel logoImage;
     private JLabel nameLabel;
@@ -109,15 +106,17 @@ public class LoginPanel extends GameScreen implements MessageListener {
         name.setFont(new Font("Arial", Font.PLAIN, 12));
         this.setGameScreenFocus(name);
 
-        passwordField = new JLabel("Password");
-        passwordField.setBounds(350, 300, 200, 25);
-        passwordField.setForeground(Color.GRAY);
-        passwordField.setFont(new Font("Arial", Font.PLAIN, 11));
+        if (!Core.isLANVersion()) {
+            passwordField = new JLabel("Password");
+            passwordField.setBounds(350, 300, 200, 25);
+            passwordField.setForeground(Color.GRAY);
+            passwordField.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        password = new JPasswordField();
-        password.setBounds(350, 275, 200, 25);
-        password.setEchoChar('*');
-        password.setFont(new Font("Arial", Font.PLAIN, 12));
+            password = new JPasswordField();
+            password.setBounds(350, 275, 200, 25);
+            password.setEchoChar('*');
+            password.setFont(new Font("Arial", Font.PLAIN, 12));
+        }
 
         loginButton = new JButton("Login");
         loginButton.setBounds(350, 350, 200, 25);
@@ -145,17 +144,25 @@ public class LoginPanel extends GameScreen implements MessageListener {
         serverOnlineLabel.setBounds(510, 665, 400, 25);
         serverOnlineLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         serverOnlineLabel.setFont(new Font("Arial", Font.BOLD, 11));
-        serverOnlineLabel.setText("Checking server...");
+        if (!Core.isLANVersion()) {
+            serverOnlineLabel.setText("Checking server...");
+        } else {
+            serverOnlineLabel.setText("LAN Version");
+        }
         serverOnlineLabel.setForeground(Color.GRAY);
 
         this.add(logoImage);
         this.add(name);
-        this.add(passwordField);
         this.add(nameLabel);
-        this.add(password);
+        if (!Core.isLANVersion()) { // No registration for LAN games
+            this.add(password);
+            this.add(passwordField);
+            this.add(registerButton);
+            this.add(registerLabel);
+        } else {
+            this.loginButton.setText("Go");
+        }
         this.add(loginButton);
-        this.add(registerButton);
-        this.add(registerLabel);
         this.add(versionLabel);
         this.add(serverOnlineLabel);
         name.requestFocus();
@@ -163,7 +170,6 @@ public class LoginPanel extends GameScreen implements MessageListener {
         ActionListener a1 = new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-
                 loginProcess();
             }
         };
@@ -179,8 +185,9 @@ public class LoginPanel extends GameScreen implements MessageListener {
                 loginProcess();
             }
         };
-
-        password.addKeyListener(loginKeyAdapter);
+        if (!Core.isLANVersion()) {
+            password.addKeyListener(loginKeyAdapter);
+        }
         name.addKeyListener(loginKeyAdapter);
         loginButton.addKeyListener(loginKeyAdapter);
 
@@ -215,8 +222,10 @@ public class LoginPanel extends GameScreen implements MessageListener {
     public void start() {
         getCore().getNetwork().addListener(this);
         this.loginButton.setEnabled(true);
-        this.password.setText("");
-        serverOnlineProcess();
+        if (!Core.isLANVersion()) {
+            this.password.setText("");
+            serverOnlineProcess();
+        }
     }
 
     /**

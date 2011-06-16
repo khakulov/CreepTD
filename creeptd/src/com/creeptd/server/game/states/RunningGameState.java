@@ -60,6 +60,7 @@ import com.creeptd.common.messages.server.RoundMessage;
 import com.creeptd.common.messages.server.SellTowerRoundMessage;
 import com.creeptd.common.messages.server.UpgradeTowerRoundMessage;
 import com.creeptd.server.HighscoreService;
+import com.creeptd.server.Server;
 import com.creeptd.server.game.Game;
 import com.creeptd.server.game.PlayerInGame;
 import com.creeptd.server.game.TickThread;
@@ -593,25 +594,28 @@ public class RunningGameState extends AbstractGameState implements
 
         this.ended = true;
         this.tickThread.terminate();
-        long endDate = System.currentTimeMillis() / 1000;
-        if (endDate - startDate > 60) {
-            String positionLog = "";
-            synchronized (this.playerPositions) {
-                for (int i=0; i<this.playerPositions.size(); i++) {
-                    if (!positionLog.equals("")) {
-                        positionLog += ", ";
+
+        if (!Server.isLANVersion()) { // No saving for LAN games
+            long endDate = System.currentTimeMillis() / 1000;
+            if (endDate - startDate > 60) {
+                String positionLog = "";
+                synchronized (this.playerPositions) {
+                    for (int i=0; i<this.playerPositions.size(); i++) {
+                        if (!positionLog.equals("")) {
+                            positionLog += ", ";
+                        }
+                        positionLog += ""+this.playerPositions.get(i)+" is #"+(i+1);
                     }
-                    positionLog += ""+this.playerPositions.get(i)+" is #"+(i+1);
+                    logger.info("Saving scores: "+positionLog);
+                    HighscoreService.createHighscoreEntry(this.playerPositions, this.getGame());
                 }
-                logger.info("Saving scores: "+positionLog);
-                HighscoreService.createHighscoreEntry(this.playerPositions, this.getGame());
+            } else {
+                logger.info("Not saving scores, duration of game " + this.getGame() + " was too short ("+(endDate - startDate)+" seconds)");
             }
-        } else {
-            logger.info("Not saving scores, duration of game " + this.getGame() + " was too short ("+(endDate - startDate)+" seconds)");
-        }
-        // Save Game in DB (player locations, player positions, ...)
-        synchronized (this.playerPositions) {
-            this.getGame().saveToJournal(this.getGame().getPlayers(), this.playerPositions, startDate, endDate);
+            // Save Game in DB (player locations, player positions, ...)
+            synchronized (this.playerPositions) {
+                this.getGame().saveToJournal(this.getGame().getPlayers(), this.playerPositions, startDate, endDate);
+            }
         }
     }
 

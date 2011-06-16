@@ -141,7 +141,7 @@ public class GamePanel extends GameScreen {
 
             public void mousePressed(MouseEvent e) {
                 getCore().getNetwork().sendMessage(new ExitGameMessage());
-                if (!loop.isRunning()) {
+                if (!loop.isRunning() && !Core.isLANVersion()) {
                     getCore().switchScreen(new GameResultPanel(loop.getPlayers()));
                 } else {
                     getCore().popScreen();

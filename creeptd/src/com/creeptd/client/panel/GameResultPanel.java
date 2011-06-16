@@ -85,7 +85,7 @@ public class GameResultPanel extends GameScreen implements MessageListener {
 
         java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/header-gameresults.jpg");
         logoImage = new JLabel();
-        logoImage.setBounds(225, 50, 450, 100);
+        logoImage.setBounds(225, 10, 450, 100);
         logoImage.setText("<html><img src=\"" + imageURL + "\"></html>");
 
         this.back = new JButton("OK");

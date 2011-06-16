@@ -146,7 +146,7 @@ public class Client {
 
     public void disconnect() {
         logger.info("Client " + this.getClientID() + ": disconnecting... disconnect()");
-        this.changeState(this.clientState.receiveMessage(null));
+        if (this.clientState != null) this.changeState(this.clientState.receiveMessage(null));
         this.clientInThread.terminate();
         this.clientOutThread.terminate();
         try {

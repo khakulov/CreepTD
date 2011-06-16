@@ -181,6 +181,10 @@ public class Server {
         }
     }
 
+    public static Logger getLogger() {
+        return logger;
+    }
+
     public static void setConfigFile(String configFile) {
         Server.configFile = configFile;
     }
@@ -252,7 +256,7 @@ public class Server {
     public static String getVersion() {
         String version = null;
 
-        InputStream inStream = Server.class.getResourceAsStream("version");
+        InputStream inStream = Server.class.getResourceAsStream("../common/version");
         try {
             if (inStream.available() > 0) {
                 InputStreamReader inStreamReader = new InputStreamReader(inStream);
@@ -268,5 +272,14 @@ public class Server {
         }
 
         return version;
+    }
+
+    /**
+     * Check if this is a LAN only version.
+     *
+     * @return true if LAN version, else false
+     */
+    public static boolean isLANVersion() {
+        return getVersion().indexOf("LAN") >= 0;
     }
 }
