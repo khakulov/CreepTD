@@ -87,7 +87,7 @@ public class ClientInThread extends Thread {
             try {
                 String messageString = this.bufferedReader.readLine();
                 if (messageString == null || messageString.equals("")) {
-                    logger.warn("Client " + this.client.getClientID() + " disconnected (Protocol inconsistency)");
+                    logger.warn("Client " + this.client.getClientID() + " disconnected (Protocol aborted)");
                     this.client.disconnect();
                     continue;
                 }

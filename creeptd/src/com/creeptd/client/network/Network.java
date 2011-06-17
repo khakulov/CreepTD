@@ -198,8 +198,10 @@ public class Network implements MessageSubject {
      * @param message The message
      */
     private void sendMessage(String message) {
-        this.out.println(message);
-        logger.info("Sent: " + message);
+        if (message != null && !message.equals("")) {
+            this.out.println(message);
+            logger.info("Sent: " + message);
+        }
     }
 
     /**

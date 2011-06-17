@@ -903,8 +903,6 @@ public class GameLobby extends GameScreen implements MessageListener {
             Player_Online_player_list = 0;
             DefaultListModel listModel = new DefaultListModel();
             Enumeration<String> e = Collections.enumeration(new TreeSet<String>(Collections.list(p.getPlayerNames().keys())));
-            
-
             while (e.hasMoreElements()) {
                 Player_Online_player_list++;
                 String key = (String) e.nextElement();
@@ -925,7 +923,6 @@ public class GameLobby extends GameScreen implements MessageListener {
                 }
                 listModel.addElement(html);
             }
-
             this.playerList.setModel(listModel);
         }
     }
@@ -937,23 +934,18 @@ public class GameLobby extends GameScreen implements MessageListener {
      *
      */
     public void setGameInfoEditorPaneHTML(String HTML) {
-
-        String inhalt = "<html><body text=\"#00FF00\" style=\"font-family: Arial\" bgcolor=\"#000000\">";
-
-        URL imageURL = this.getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/lobby.jpg");
-
-        if (HTML == null) {
-            inhalt = inhalt + "<center><img src=\"" + imageURL + "\"></center>";
+        String content = "<html><body text=\"#00FF00\" style=\"font-family: Arial\" bgcolor=\"#000000\">";
+        if (HTML == null || HTML.equals("")) {
+            URL imageURL = this.getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/lobby.jpg");
+            content = content + "<center><img src=\"" + imageURL + "\"></center>";
             this.setBorder(new EmptyBorder(0, 0, 0, 0));
         } else {
-            inhalt = inhalt + HTML;
+            content = content + HTML;
             this.setBorder(new LineBorder(Color.GRAY));
         }
-
-        inhalt = inhalt + "</body></html>";
-
-        if (!inhalt.equals(this.gameInfoEditorPane.getText())) {
-            this.gameInfoEditorPane.setText(inhalt);
+        content = content + "</body></html>";
+        if (!content.equals(this.gameInfoEditorPane.getText())) {
+            this.gameInfoEditorPane.setText(content);
         }
 
     }

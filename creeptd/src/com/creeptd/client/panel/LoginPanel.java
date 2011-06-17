@@ -58,6 +58,9 @@ import com.creeptd.common.messages.client.ServerOnlineRequestMessage;
 import com.creeptd.common.messages.server.LoginResponseMessage;
 import com.creeptd.common.messages.server.ServerMessage;
 import com.creeptd.common.messages.server.ServerOnlineResponseMessage;
+import java.awt.Graphics;
+import java.awt.Image;
+import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -69,7 +72,6 @@ import javax.swing.border.EmptyBorder;
 public class LoginPanel extends GameScreen implements MessageListener {
 
     private static final long serialVersionUID = 1L;
-    private JLabel logoImage;
     private JLabel nameLabel;
     private JLabel passwordField;
     private JTextField name;
@@ -90,11 +92,6 @@ public class LoginPanel extends GameScreen implements MessageListener {
         UIManager.put("TextField.border", new EmptyBorder(2, 2, 2, 2));
         UIManager.put("PasswordField.border", new EmptyBorder(2, 2, 2, 2));
         UIManager.put("EditorPane.border", new EmptyBorder(2, 2, 2, 2));
-
-        java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/creeptd-logo.jpg");
-        logoImage = new JLabel();
-        logoImage.setBounds(225, 50, 450, 100);
-        logoImage.setText("<html><img src=\"" + imageURL + "\"></html>");
 
         nameLabel = new JLabel("Username");
         nameLabel.setBounds(350, 220, 200, 30);
@@ -147,11 +144,10 @@ public class LoginPanel extends GameScreen implements MessageListener {
         if (!Core.isLANVersion()) {
             serverOnlineLabel.setText("Checking server...");
         } else {
-            serverOnlineLabel.setText("LAN Version");
+            serverOnlineLabel.setText("Also available online: www.creeptd.com");
         }
         serverOnlineLabel.setForeground(Color.GRAY);
 
-        this.add(logoImage);
         this.add(name);
         this.add(nameLabel);
         if (!Core.isLANVersion()) { // No registration for LAN games
@@ -177,6 +173,7 @@ public class LoginPanel extends GameScreen implements MessageListener {
 
         KeyAdapter loginKeyAdapter = new KeyAdapter() {
 
+            @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() != KeyEvent.VK_ENTER) {
                     return;
@@ -201,10 +198,19 @@ public class LoginPanel extends GameScreen implements MessageListener {
 
         registerButton.addKeyListener(new KeyAdapter() {
 
+            @Override
             public void keyPressed(KeyEvent e) {
                 getCore().pushScreen(new RegisterPanel());
             }
         });
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/splashscreen.jpg");
+        Image img = new ImageIcon(imageURL).getImage();
+        g.drawImage(img, 0, 0, null);
     }
 
     /**
@@ -293,6 +299,7 @@ public class LoginPanel extends GameScreen implements MessageListener {
 
     public void serverOnlineProcess() {
         new Thread() {
+            @Override
             public void run() {
                 if (getCore().getNetwork().makeContact()) {
                     ServerOnlineRequestMessage sorm = new ServerOnlineRequestMessage();
