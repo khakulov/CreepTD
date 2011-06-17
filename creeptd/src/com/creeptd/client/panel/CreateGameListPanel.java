@@ -43,7 +43,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * The Create GameList Panel
@@ -82,7 +82,7 @@ public class CreateGameListPanel extends JFrame {
 
         int GridX = 4;
 
-        int GridY = Math.round((IConstants.Map.values().length / GridX) + 1);
+        int GridY = Math.round((Constants.Map.values().length / GridX) + 1);
 
         content.setLayout(new GridLayout(GridY, GridX));
         content.setBackground(Color.BLACK);
@@ -99,7 +99,7 @@ public class CreateGameListPanel extends JFrame {
 
             @Override
             public void run() {
-                for (IConstants.Map m : IConstants.Map.values()) {
+                for (Constants.Map m : Constants.Map.values()) {
                     content.add(new CreateGameListThumailBoxPanel(TR, m));
                     content.revalidate();
                 }

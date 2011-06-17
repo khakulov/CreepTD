@@ -38,7 +38,7 @@ package com.creeptd.client.util;
 import java.awt.image.BufferedImage;
 import java.util.Hashtable;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * Cache for images and shapes. All images used in the game should be placed
@@ -49,10 +49,10 @@ import com.creeptd.common.IConstants;
  */
 public class Cache {
 
-    private Hashtable<IConstants.Towers, BufferedImage> imgTowerCache;
-    private Hashtable<IConstants.Creeps, BufferedImage> imgCreepCache;
-    private Hashtable<IConstants.Towers, BufferedImage[]> imgArrayTowerCache;
-    private Hashtable<IConstants.Creeps, BufferedImage[]> imgArrayCreepCache;
+    private Hashtable<Constants.Towers, BufferedImage> imgTowerCache;
+    private Hashtable<Constants.Creeps, BufferedImage> imgCreepCache;
+    private Hashtable<Constants.Towers, BufferedImage[]> imgArrayTowerCache;
+    private Hashtable<Constants.Creeps, BufferedImage[]> imgArrayCreepCache;
     /**
      * Creates the instance of Cache.
      */
@@ -62,10 +62,10 @@ public class Cache {
      * todo.
      */
     private Cache() {
-        this.imgTowerCache = new Hashtable<IConstants.Towers, BufferedImage>();
-        this.imgCreepCache = new Hashtable<IConstants.Creeps, BufferedImage>();
-        this.imgArrayTowerCache = new Hashtable<IConstants.Towers, BufferedImage[]>();
-        this.imgArrayCreepCache = new Hashtable<IConstants.Creeps, BufferedImage[]>();
+        this.imgTowerCache = new Hashtable<Constants.Towers, BufferedImage>();
+        this.imgCreepCache = new Hashtable<Constants.Creeps, BufferedImage>();
+        this.imgArrayTowerCache = new Hashtable<Constants.Towers, BufferedImage[]>();
+        this.imgArrayCreepCache = new Hashtable<Constants.Creeps, BufferedImage[]>();
     }
 
     /**
@@ -94,7 +94,7 @@ public class Cache {
      *            the Tower type
      * @return true if theres already an image array in the hashtable
      */
-    public boolean hasArrayTowerImg(IConstants.Towers type) {
+    public boolean hasArrayTowerImg(Constants.Towers type) {
         return this.imgArrayTowerCache.containsKey(type);
     }
 
@@ -106,7 +106,7 @@ public class Cache {
      * @return the BufferedImage array for the type or null if there is no image
      *         for the Tower type
      */
-    public BufferedImage[] getArrayTowerImg(IConstants.Towers type) {
+    public BufferedImage[] getArrayTowerImg(Constants.Towers type) {
         return this.imgArrayTowerCache.get(type);
     }
 
@@ -118,7 +118,7 @@ public class Cache {
      * @param image
      *            the BufferedImage array
      */
-    public void putArrayTowerImg(IConstants.Towers type, BufferedImage[] image) {
+    public void putArrayTowerImg(Constants.Towers type, BufferedImage[] image) {
         this.imgArrayTowerCache.put(type, image);
     }
 
@@ -129,7 +129,7 @@ public class Cache {
      *            the tower type
      * @return true if theres already an image in the hashtable
      */
-    public boolean hasTowerImg(IConstants.Towers type) {
+    public boolean hasTowerImg(Constants.Towers type) {
         return this.imgTowerCache.containsKey(type);
     }
 
@@ -141,7 +141,7 @@ public class Cache {
      * @return the BufferedImage for the type or null if there is no image for
      *         the tower type
      */
-    public BufferedImage getTowerImg(IConstants.Towers type) {
+    public BufferedImage getTowerImg(Constants.Towers type) {
         return this.imgTowerCache.get(type);
     }
 
@@ -153,7 +153,7 @@ public class Cache {
      * @param image
      *            the BufferedImage
      */
-    public void putTowerImg(IConstants.Towers type, BufferedImage image) {
+    public void putTowerImg(Constants.Towers type, BufferedImage image) {
         this.imgTowerCache.put(type, image);
     }
 
@@ -164,7 +164,7 @@ public class Cache {
      *            the Creep type
      * @return true if theres already an image array in the hashtable
      */
-    public boolean hasArrayCreepImg(IConstants.Creeps type) {
+    public boolean hasArrayCreepImg(Constants.Creeps type) {
         return this.imgArrayCreepCache.containsKey(type);
     }
 
@@ -176,7 +176,7 @@ public class Cache {
      * @return the BufferedImage array for the type or null if there is no image
      *         for the Creep type
      */
-    public BufferedImage[] getArrayCreepImg(IConstants.Creeps type) {
+    public BufferedImage[] getArrayCreepImg(Constants.Creeps type) {
         return this.imgArrayCreepCache.get(type);
     }
 
@@ -188,7 +188,7 @@ public class Cache {
      * @param image
      *            the BufferedImage array
      */
-    public void putArrayCreepImg(IConstants.Creeps type, BufferedImage[] image) {
+    public void putArrayCreepImg(Constants.Creeps type, BufferedImage[] image) {
         this.imgArrayCreepCache.put(type, image);
     }
 
@@ -199,7 +199,7 @@ public class Cache {
      *            the Creep type
      * @return true if theres already an image in the hashtable
      */
-    public boolean hasCreepImg(IConstants.Creeps type) {
+    public boolean hasCreepImg(Constants.Creeps type) {
         return this.imgCreepCache.containsKey(type);
     }
 
@@ -211,7 +211,7 @@ public class Cache {
      * @return the BufferedImage for the type or null if there is no image for
      *         the Creep type
      */
-    public BufferedImage getCreepImg(IConstants.Creeps type) {
+    public BufferedImage getCreepImg(Constants.Creeps type) {
         return this.imgCreepCache.get(type);
     }
 
@@ -223,7 +223,7 @@ public class Cache {
      * @param image
      *            the BufferedImage
      */
-    public void putCreepImg(IConstants.Creeps type, BufferedImage image) {
+    public void putCreepImg(Constants.Creeps type, BufferedImage image) {
         this.imgCreepCache.put(type, image);
     }
 }

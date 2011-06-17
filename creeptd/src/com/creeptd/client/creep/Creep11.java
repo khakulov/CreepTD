@@ -45,7 +45,7 @@ import javax.imageio.ImageIO;
 
 import com.creeptd.client.game.GameContext;
 import com.creeptd.client.util.Cache;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * implementation of a Creep11.
@@ -59,7 +59,7 @@ public class Creep11 extends AbstractCreep {
      * @param context gamecontext
      * @param t type of creep
      */
-    public Creep11(GameContext context, IConstants.Creeps t) {
+    public Creep11(GameContext context, Constants.Creeps t) {
         super(context, t);
 
 
@@ -102,16 +102,16 @@ public class Creep11 extends AbstractCreep {
      */
     public void loadImage() {
 
-        if (Cache.getInstance().hasCreepImg(IConstants.Creeps.creep11)) {
-            setImage(Cache.getInstance().getCreepImg(IConstants.Creeps.creep11));
+        if (Cache.getInstance().hasCreepImg(Constants.Creeps.creep11)) {
+            setImage(Cache.getInstance().getCreepImg(Constants.Creeps.creep11));
         } else {
 
             try {
                 BufferedImage forCache;
                 this.image = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(
-                        IConstants.CREEPS_URL + "11.png"));
+                        Constants.CREEPS_URL + "11.png"));
                 forCache = this.image;
-                Cache.getInstance().putCreepImg(IConstants.Creeps.creep11, forCache);
+                Cache.getInstance().putCreepImg(Constants.Creeps.creep11, forCache);
 
             } catch (IOException e) {
                 e.printStackTrace();

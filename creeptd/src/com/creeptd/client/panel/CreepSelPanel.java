@@ -49,7 +49,7 @@ import javax.swing.JPanel;
 
 import com.creeptd.client.game.ContextListener;
 import com.creeptd.client.game.GameContext;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * Panel with Buttons to select Creeps.
@@ -125,22 +125,22 @@ public class CreepSelPanel extends JPanel implements ContextListener {
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(4, 4));
 
-        button1 = new CreepSendButton(gamepanel, IConstants.Creeps.creep1, "1");
-        button2 = new CreepSendButton(gamepanel, IConstants.Creeps.creep2, "2");
-        button3 = new CreepSendButton(gamepanel, IConstants.Creeps.creep3, "3");
-        button4 = new CreepSendButton(gamepanel, IConstants.Creeps.creep4, "4");
-        button5 = new CreepSendButton(gamepanel, IConstants.Creeps.creep5, "5");
-        button6 = new CreepSendButton(gamepanel, IConstants.Creeps.creep6, "6");
-        button7 = new CreepSendButton(gamepanel, IConstants.Creeps.creep7, "7");
-        button8 = new CreepSendButton(gamepanel, IConstants.Creeps.creep8, "8");
-        button9 = new CreepSendButton(gamepanel, IConstants.Creeps.creep9, "9");
-        button10 = new CreepSendButton(gamepanel, IConstants.Creeps.creep10, "10");
-        button11 = new CreepSendButton(gamepanel, IConstants.Creeps.creep11, "11");
-        button12 = new CreepSendButton(gamepanel, IConstants.Creeps.creep12, "12");
-        button13 = new CreepSendButton(gamepanel, IConstants.Creeps.creep13, "13");
-        button14 = new CreepSendButton(gamepanel, IConstants.Creeps.creep14, "14");
-        button15 = new CreepSendButton(gamepanel, IConstants.Creeps.creep15, "15");
-        button16 = new CreepSendButton(gamepanel, IConstants.Creeps.creep16, "16");
+        button1 = new CreepSendButton(gamepanel, Constants.Creeps.creep1, "1");
+        button2 = new CreepSendButton(gamepanel, Constants.Creeps.creep2, "2");
+        button3 = new CreepSendButton(gamepanel, Constants.Creeps.creep3, "3");
+        button4 = new CreepSendButton(gamepanel, Constants.Creeps.creep4, "4");
+        button5 = new CreepSendButton(gamepanel, Constants.Creeps.creep5, "5");
+        button6 = new CreepSendButton(gamepanel, Constants.Creeps.creep6, "6");
+        button7 = new CreepSendButton(gamepanel, Constants.Creeps.creep7, "7");
+        button8 = new CreepSendButton(gamepanel, Constants.Creeps.creep8, "8");
+        button9 = new CreepSendButton(gamepanel, Constants.Creeps.creep9, "9");
+        button10 = new CreepSendButton(gamepanel, Constants.Creeps.creep10, "10");
+        button11 = new CreepSendButton(gamepanel, Constants.Creeps.creep11, "11");
+        button12 = new CreepSendButton(gamepanel, Constants.Creeps.creep12, "12");
+        button13 = new CreepSendButton(gamepanel, Constants.Creeps.creep13, "13");
+        button14 = new CreepSendButton(gamepanel, Constants.Creeps.creep14, "14");
+        button15 = new CreepSendButton(gamepanel, Constants.Creeps.creep15, "15");
+        button16 = new CreepSendButton(gamepanel, Constants.Creeps.creep16, "16");
 
         buttonPanel.add(button1);
         buttonPanel.add(button2);
@@ -181,42 +181,42 @@ public class CreepSelPanel extends JPanel implements ContextListener {
         }
         int credits = context.getCredits();
 
-        if ((credits >= IConstants.Creeps.creep1.getPrice())) {
+        if ((credits >= Constants.Creeps.creep1.getPrice())) {
             this.button1.setEnabled(true);
             this.button1.setBackground(Color.BLACK);
         } else {
             this.button1.setEnabled(false);
             this.button1.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep2.getPrice())) {
+        if ((credits >= Constants.Creeps.creep2.getPrice())) {
             this.button2.setEnabled(true);
             this.button2.setBackground(Color.BLACK);
         } else {
             this.button2.setEnabled(false);
             this.button2.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep3.getPrice())) {
+        if ((credits >= Constants.Creeps.creep3.getPrice())) {
             this.button3.setEnabled(true);
             this.button3.setBackground(Color.BLACK);
         } else {
             this.button3.setEnabled(false);
             this.button3.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep4.getPrice())) {
+        if ((credits >= Constants.Creeps.creep4.getPrice())) {
             this.button4.setEnabled(true);
             this.button4.setBackground(Color.BLACK);
         } else {
             this.button4.setEnabled(false);
             this.button4.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep5.getPrice())) {
+        if ((credits >= Constants.Creeps.creep5.getPrice())) {
             this.button5.setEnabled(true);
             this.button5.setBackground(Color.BLACK);
         } else {
             this.button5.setEnabled(false);
             this.button5.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep6.getPrice())) {
+        if ((credits >= Constants.Creeps.creep6.getPrice())) {
             this.button6.setEnabled(true);
             this.button6.setBackground(Color.BLACK);
         } else {
@@ -224,70 +224,70 @@ public class CreepSelPanel extends JPanel implements ContextListener {
             this.button6.setBackground(Color.GRAY);
         }
 
-        if ((credits >= IConstants.Creeps.creep7.getPrice())) {
+        if ((credits >= Constants.Creeps.creep7.getPrice())) {
             this.button7.setEnabled(true);
             this.button7.setBackground(Color.BLACK);
         } else {
             this.button7.setEnabled(false);
             this.button7.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep8.getPrice())) {
+        if ((credits >= Constants.Creeps.creep8.getPrice())) {
             this.button8.setEnabled(true);
             this.button8.setBackground(Color.BLACK);
         } else {
             this.button8.setEnabled(false);
             this.button8.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep9.getPrice())) {
+        if ((credits >= Constants.Creeps.creep9.getPrice())) {
             this.button9.setEnabled(true);
             this.button9.setBackground(Color.BLACK);
         } else {
             this.button9.setEnabled(false);
             this.button9.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep10.getPrice())) {
+        if ((credits >= Constants.Creeps.creep10.getPrice())) {
             this.button10.setEnabled(true);
             this.button10.setBackground(Color.BLACK);
         } else {
             this.button10.setEnabled(false);
             this.button10.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep11.getPrice())) {
+        if ((credits >= Constants.Creeps.creep11.getPrice())) {
             this.button11.setEnabled(true);
             this.button11.setBackground(Color.BLACK);
         } else {
             this.button11.setEnabled(false);
             this.button11.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep12.getPrice())) {
+        if ((credits >= Constants.Creeps.creep12.getPrice())) {
             this.button12.setEnabled(true);
             this.button12.setBackground(Color.BLACK);
         } else {
             this.button12.setEnabled(false);
             this.button12.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep13.getPrice())) {
+        if ((credits >= Constants.Creeps.creep13.getPrice())) {
             this.button13.setEnabled(true);
             this.button13.setBackground(Color.BLACK);
         } else {
             this.button13.setEnabled(false);
             this.button13.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep14.getPrice())) {
+        if ((credits >= Constants.Creeps.creep14.getPrice())) {
             this.button14.setEnabled(true);
             this.button14.setBackground(Color.BLACK);
         } else {
             this.button14.setEnabled(false);
             this.button14.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep15.getPrice())) {
+        if ((credits >= Constants.Creeps.creep15.getPrice())) {
             this.button15.setEnabled(true);
             this.button15.setBackground(Color.BLACK);
         } else {
             this.button15.setEnabled(false);
             this.button15.setBackground(Color.GRAY);
         }
-        if ((credits >= IConstants.Creeps.creep16.getPrice())) {
+        if ((credits >= Constants.Creeps.creep16.getPrice())) {
             this.button16.setEnabled(true);
             this.button16.setBackground(Color.BLACK);
         } else {

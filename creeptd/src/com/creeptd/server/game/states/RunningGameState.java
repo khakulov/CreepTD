@@ -39,7 +39,7 @@ import java.util.Random;
 
 import org.apache.log4j.Logger;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.BuildCreepMessage;
 import com.creeptd.common.messages.client.BuildTowerMessage;
 import com.creeptd.common.messages.client.ChangeStrategyMessage;
@@ -75,7 +75,7 @@ public class RunningGameState extends AbstractGameState implements
 
     private int nextTowerId;
     private long maxTick;
-    private ArrayList<PlayerInGame> playerPositions;
+    private final ArrayList<PlayerInGame> playerPositions = new ArrayList<PlayerInGame>();
     private long startDate;
     TickThread tickThread;
     private static Logger logger = Logger.getLogger(RunningGameState.class);
@@ -91,7 +91,6 @@ public class RunningGameState extends AbstractGameState implements
         super(game);
         this.nextTowerId = 1;
         this.maxTick = 0;
-        this.playerPositions = new ArrayList<PlayerInGame>();
         synchronized(this.playerPositions) {
             for (int i=0; i<game.getMaxPlayers(); i++) {
                 this.playerPositions.add(null);
@@ -99,7 +98,7 @@ public class RunningGameState extends AbstractGameState implements
             logger.info(game+" Initialized with "+this.playerPositions.size()+" players");
         }
         this.startDate = System.currentTimeMillis() / 1000;
-        tickThread = new TickThread(this, IConstants.TICK_MS * 1000000);
+        tickThread = new TickThread(this, Constants.TICK_MS * 1000000);
     }
 
     /**
@@ -109,25 +108,25 @@ public class RunningGameState extends AbstractGameState implements
     public void tick() {
         if (this.maxTick == 0) {
             RoundMessage message = new RoundMessage();
-            message.setRoundId(this.maxTick + IConstants.USER_ACTION_DELAY);
+            message.setRoundId(this.maxTick + Constants.USER_ACTION_DELAY);
             this.getGame().sendAll(message);
         }
 
         this.maxTick += 1;
 
-        if ((this.maxTick < IConstants.USER_ACTION_DELAY * 10) && (this.maxTick % IConstants.USER_ACTION_DELAY == 0)) {
+        if ((this.maxTick < Constants.USER_ACTION_DELAY * 10) && (this.maxTick % Constants.USER_ACTION_DELAY == 0)) {
             RoundMessage message = new RoundMessage();
-            message.setRoundId(this.maxTick + IConstants.USER_ACTION_DELAY);
+            message.setRoundId(this.maxTick + Constants.USER_ACTION_DELAY);
             this.getGame().sendAll(message);
         }
 
-        if (this.maxTick % (IConstants.USER_ACTION_DELAY * 10) == 0) {
+        if (this.maxTick % (Constants.USER_ACTION_DELAY * 10) == 0) {
             RoundMessage message = new RoundMessage();
-            message.setRoundId(this.maxTick + (IConstants.USER_ACTION_DELAY * 10));
+            message.setRoundId(this.maxTick + (Constants.USER_ACTION_DELAY * 10));
             this.getGame().sendAll(message);
         }
 
-        if (this.maxTick % (IConstants.INCOME_TIME / IConstants.TICK_MS) == 0) {
+        if (this.maxTick % (Constants.INCOME_TIME / Constants.TICK_MS) == 0) {
             List<Integer> incomeLogEntry = new LinkedList<Integer>();
             for (PlayerInGame p : this.getGame().getPlayers()) {
                 if (p.isConnected()) {
@@ -207,7 +206,7 @@ public class RunningGameState extends AbstractGameState implements
         }
 
         ChangeStrategyRoundMessage csm = new ChangeStrategyRoundMessage();
-        csm.setRoundId(this.maxTick + IConstants.USER_ACTION_DELAY);
+        csm.setRoundId(this.maxTick + Constants.USER_ACTION_DELAY);
         csm.setPlayerId(message.getClientId());
         csm.setTowerId(towerId);
         csm.setStrategyType(message.getStrategyType());
@@ -243,7 +242,7 @@ public class RunningGameState extends AbstractGameState implements
         String type = m.getTowerType();
         Point position = m.getPosition();
         int senderId = m.getClientId();
-        long roundID = this.maxTick + IConstants.USER_ACTION_DELAY;
+        long roundID = this.maxTick + Constants.USER_ACTION_DELAY;
 
         BuildTowerRoundMessage n = new BuildTowerRoundMessage();
         n.setRoundId(roundID);
@@ -271,7 +270,7 @@ public class RunningGameState extends AbstractGameState implements
      */
     private void handle(UpgradeTowerMessage m, PlayerInGame sender) {
         int towerId = m.getTowerId();
-        long roundID = this.maxTick + IConstants.USER_ACTION_DELAY;
+        long roundID = this.maxTick + Constants.USER_ACTION_DELAY;
 
         if (towerId <= 0) {
             logger.error("Invalid tower id (tried to upgrade tower " + towerId + ")");
@@ -311,7 +310,7 @@ public class RunningGameState extends AbstractGameState implements
         }
 
         SellTowerRoundMessage n = new SellTowerRoundMessage();
-        n.setRoundId(this.maxTick + IConstants.USER_ACTION_DELAY);
+        n.setRoundId(this.maxTick + Constants.USER_ACTION_DELAY);
         n.setPlayerId(m.getClientId());
         n.setTowerId(towerId);
         this.getGame().sendAll(n);
@@ -328,9 +327,9 @@ public class RunningGameState extends AbstractGameState implements
     private void handle(BuildCreepMessage m) {
         String type = m.getCreepType();
         int senderId = m.getClientId();
-        long roundID = this.maxTick + IConstants.USER_ACTION_DELAY;
+        long roundID = this.maxTick + Constants.USER_ACTION_DELAY;
 
-        if ((this.getGame().getMode().equals(IConstants.Mode.ALLVSALL)) && (this.getGame().numPlayers() >= 2)) {
+        if ((this.getGame().getMode().equals(Constants.Mode.ALLVSALL)) && (this.getGame().numPlayers() >= 2)) {
             for (PlayerInGame p : this.getGame().getPlayers()) {
                 if ((p.getClient().getClientID() != senderId) && (!p.getGameOver())) {
                     BuildCreepRoundMessage n = new BuildCreepRoundMessage();
@@ -342,7 +341,7 @@ public class RunningGameState extends AbstractGameState implements
                     p.anticheat_receivedThisCreep(type, m.getRoundId());
                 }
             }
-        } else if ((this.getGame().getMode().equals(IConstants.Mode.SENDRANDOM)) && (this.getGame().numPlayers() > 2)) {
+        } else if ((this.getGame().getMode().equals(Constants.Mode.SENDRANDOM)) && (this.getGame().numPlayers() > 2)) {
             List<PlayerInGame> pl = new ArrayList<PlayerInGame>(this.getGame().getPlayers()); // Work with a copy
             while (!pl.isEmpty()) {
                 PlayerInGame p = pl.get(new Random().nextInt(pl.size()));
@@ -368,7 +367,7 @@ public class RunningGameState extends AbstractGameState implements
                     break;
                 }
             }
-        } else if (this.getGame().getMode().equals(IConstants.Mode.TEAM2VS2)) { // Team 2vs2
+        } else if (this.getGame().getMode().equals(Constants.Mode.TEAM2VS2)) { // Team 2vs2
             List<PlayerInGame> pl = this.getGame().getPlayers();
             int senderPosition = 0;
             Iterator<PlayerInGame> it = pl.iterator();
@@ -485,7 +484,7 @@ public class RunningGameState extends AbstractGameState implements
                     position = submitted_position;
                     this.playerPositions.set(position-1, player);
                     logger.info(this.getGame()+" Setting player "+player+" to position "+position+" (Submitted by player)");
-                } else if (this.getGame().getMode().equals(IConstants.Mode.TEAM2VS2) && submitted_position == 2 &&
+                } else if (this.getGame().getMode().equals(Constants.Mode.TEAM2VS2) && submitted_position == 2 &&
                             this.playerPositions.get(1) != null && this.playerPositions.get(0) == null) {
                         this.playerPositions.set(0, player);
                         logger.info(this.getGame()+" Setting player "+player+" to position 1 (Team 2vs2 over)");
@@ -509,7 +508,7 @@ public class RunningGameState extends AbstractGameState implements
         PlayerInGame winplayer = null;
 
         // Team 2vs2
-        if (this.getGame().getGameDescription().getGameMode().equals(IConstants.Mode.TEAM2VS2)) {
+        if (this.getGame().getGameDescription().getGameMode().equals(Constants.Mode.TEAM2VS2)) {
             boolean isover = false;
             List<PlayerInGame> players = this.getGame().getPlayers();
             if (players.get(0).getGameOver() && players.get(1).getGameOver()) {
@@ -570,7 +569,7 @@ public class RunningGameState extends AbstractGameState implements
         }
 
         // Fix positions for team mode
-        if (this.getGame().getMode().equals(IConstants.Mode.TEAM2VS2)) {
+        if (this.getGame().getMode().equals(Constants.Mode.TEAM2VS2)) {
             List <PlayerInGame> players = this.getGame().getPlayers();
             synchronized (this.playerPositions) {
                 if (this.playerPositions.get(0).equals(players.get(0)) || this.playerPositions.get(0).equals(players.get(1))) {

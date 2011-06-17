@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.creeptd.client.game;
 
 import com.creeptd.client.network.Network;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * The GameContext for opponents.
@@ -50,7 +50,7 @@ public class OpponentContext extends GameContext {
      * @param network the current network object
      * @param map the map
      */
-    public OpponentContext(BoardLocation location, Network network, IConstants.Map map, GameLoop gameLoop, int player_id, String player_name) {
+    public OpponentContext(BoardLocation location, Network network, Constants.Map map, GameLoop gameLoop, int player_id, String player_name) {
         super(location, network, null, map, gameLoop, player_id, player_name);
     }
 

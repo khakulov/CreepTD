@@ -61,7 +61,7 @@ import javax.swing.UIManager;
 
 import com.creeptd.client.network.MessageListener;
 import com.creeptd.client.sound.SoundManagement;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.ExitGameMessage;
 import com.creeptd.common.messages.client.KickPlayerRequestMessage;
 import com.creeptd.common.messages.client.ClientChatMessage;
@@ -111,7 +111,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
     private int mapId;
     private int minimumPlayerNumber;
     private SoundManagement managementSound;
-    private IConstants.Mode gameMode = IConstants.Mode.ALLVSALL;
+    private Constants.Mode gameMode = Constants.Mode.ALLVSALL;
 
     /**
      * Creates a new instance of CreateGamePanel.
@@ -280,11 +280,11 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             gamename += " ("+getCore().getPlayerName()+")";
         }
         if (gamename.length() > 30) gamename = gamename.substring(0, 27)+"...";
-        description.setText("<html><p style=\"padding-bottom: 3; color: yellow;\"><b>„"+gamename+"”</b></p><table width=\"180px\"><tr><td>Map: </td><td>" + IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString() + "</td></tr><tr><td>Players:  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>Min/Max:  </td><td>" + ((this.getCore().getActiveGame().getMinEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMinEloPoints()) + "/" + ((this.getCore().getActiveGame().getMaxEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMaxEloPoints()) + "</td></tr>" + "<tr><td>Mode:  </td><td>" + this.getCore().getActiveGame().getGameModeString() + "</td></tr>" + "<tr><td>Password:  </td><td>" + ("".equals(this.getCore().getActiveGame().getPassword()) ? "(not set)" : this.getCore().getActiveGame().getPassword()) + "</td></tr>" + "</td></tr></table></html>");
+        description.setText("<html><p style=\"padding-bottom: 3; color: yellow;\"><b>„"+gamename+"”</b></p><table width=\"180px\"><tr><td>Map: </td><td>" + Constants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString() + "</td></tr><tr><td>Players:  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>Min/Max:  </td><td>" + ((this.getCore().getActiveGame().getMinEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMinEloPoints()) + "/" + ((this.getCore().getActiveGame().getMaxEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMaxEloPoints()) + "</td></tr>" + "<tr><td>Mode:  </td><td>" + this.getCore().getActiveGame().getGameModeString() + "</td></tr>" + "<tr><td>Password:  </td><td>" + ("".equals(this.getCore().getActiveGame().getPassword()) ? "(not set)" : this.getCore().getActiveGame().getPassword()) + "</td></tr>" + "</td></tr></table></html>");
 
         try {
-            preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(IConstants.Map.getPicturePath(IConstants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString()))));
-            if (this.getCore().getActiveGame().getGameMode().equals(IConstants.Mode.TEAM2VS2)) {
+            preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(Constants.Map.getPicturePath(Constants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString()))));
+            if (this.getCore().getActiveGame().getGameMode().equals(Constants.Mode.TEAM2VS2)) {
                 locationImage = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("com/creeptd/client/resources/panel/boardlocations-team.jpg")));
             } else if (this.getCore().getActiveGame().getShufflePlayers()) {
                 locationImage = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("com/creeptd/client/resources/panel/boardlocations-random.jpg")));
@@ -399,7 +399,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         if (m instanceof StartGameResponseMessage) {
 
             StartGameResponseMessage sgrm = (StartGameResponseMessage) m;
-            if (sgrm.getResponseType() == IConstants.ResponseType.failed) {
+            if (sgrm.getResponseType() == Constants.ResponseType.failed) {
                 UIManager.put("OptionPane.background", Color.BLACK);
                 UIManager.put("OptionPane.JButton.setForground", Color.BLACK);
                 UIManager.put("Panel.background", Color.BLACK);
@@ -410,7 +410,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
 
         if (m instanceof KickPlayerResponseMessage) {
             KickPlayerResponseMessage kprm = (KickPlayerResponseMessage) m;
-            if (kprm.getResponseType().equals(IConstants.ResponseType.ok)) {
+            if (kprm.getResponseType().equals(Constants.ResponseType.ok)) {
                 DefaultListModel dl = (DefaultListModel) this.playerlist.getModel();
 
                 removePlayer((String) this.playerlist.getSelectedValue());
@@ -441,7 +441,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             gamePanel.getLoop().setPlayersOrder(this.playersOrder);
             gamePanel.getLoop().setPlayers(this.players);
             gamePanel.getLoop().setGameMode(this.gameMode);
-            gamePanel.getLoop().setMap(IConstants.Map.getMapById(this.mapId));
+            gamePanel.getLoop().setMap(Constants.Map.getMapById(this.mapId));
             gamePanel.getLoop().start();
         }
 
@@ -499,14 +499,14 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
     /**
      * @param game mod
      */
-    public void setGameMode(IConstants.Mode gameMode) {
+    public void setGameMode(Constants.Mode gameMode) {
         this.gameMode = gameMode;
     }
 
     /**
      * @return the game mod
      */
-    public IConstants.Mode getGameMode() {
+    public Constants.Mode getGameMode() {
         return this.gameMode;
     }
 

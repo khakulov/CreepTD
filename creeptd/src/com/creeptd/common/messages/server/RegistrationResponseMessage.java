@@ -38,7 +38,7 @@ package com.creeptd.common.messages.server;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.creeptd.common.IConstants.ResponseType;
+import com.creeptd.common.Constants.ResponseType;
 
 /**
  * Message from server to client. Response to RegistrationRequestMessage.

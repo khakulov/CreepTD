@@ -37,7 +37,7 @@ package com.creeptd.server.game;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.CreateGameMessage;
 
 public abstract class AbstractGame extends Thread {
@@ -45,7 +45,7 @@ public abstract class AbstractGame extends Thread {
     private static AtomicInteger gameCount = new AtomicInteger(0);
     private int gameId;
     private String gameName;
-    private IConstants.Mode mode = IConstants.Mode.ALLVSALL;
+    private Constants.Mode mode = Constants.Mode.ALLVSALL;
     private int mapId;
     private int maxPlayers;
     private String password;
@@ -73,7 +73,7 @@ public abstract class AbstractGame extends Thread {
         return gameName;
     }
 
-    public IConstants.Mode getMode() {
+    public Constants.Mode getMode() {
         return mode;
     }
 
@@ -82,7 +82,7 @@ public abstract class AbstractGame extends Thread {
     }
 
     public void setRandomMap() {
-        this.mapId = (int) ((Math.random() * IConstants.Map.values().length) + 1);
+        this.mapId = (int) ((Math.random() * Constants.Map.values().length) + 1);
     }
 
     public int getMaxPlayers() {

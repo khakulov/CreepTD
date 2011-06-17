@@ -37,7 +37,7 @@ package com.creeptd.client.tower;
 
 import com.creeptd.client.game.GameContext;
 import com.creeptd.client.grid.Grid;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * Factory to create towers by their type.
@@ -57,7 +57,7 @@ public class TowerFactory {
      *            the grid in which the tower is placed
      * @return the created tower
      */
-    public static Tower createTower(GameContext context, IConstants.Towers t,
+    public static Tower createTower(GameContext context, Constants.Towers t,
             Grid grid) {
         switch (t) {
             case tower1:

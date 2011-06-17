@@ -38,7 +38,7 @@ package com.creeptd.client.creep;
 import java.awt.Graphics2D;
 
 import com.creeptd.client.tower.Tower;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * Interface for all creeps.
@@ -125,7 +125,7 @@ public interface Creep {
      * Getter for the creep type.
      * @return the type of the creep
      */
-    IConstants.Creeps getType();
+    Constants.Creeps getType();
 
     /**
      * Tests if the Creep is a valid target.

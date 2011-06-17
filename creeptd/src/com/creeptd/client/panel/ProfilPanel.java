@@ -52,7 +52,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import com.creeptd.client.network.MessageListener;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.DeleteRequestMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
 import com.creeptd.common.messages.client.UpdateDataRequestMessage;
@@ -260,7 +260,7 @@ public class ProfilPanel extends GameScreen implements MessageListener {
         if (m instanceof UpdateDataResponseMessage) {
             UpdateDataResponseMessage udResponsem = (UpdateDataResponseMessage) m;
 
-            if (udResponsem.getResponseType() == IConstants.ResponseType.ok) {
+            if (udResponsem.getResponseType() == Constants.ResponseType.ok) {
                 UIManager.put("OptionPane.background", Color.BLACK);
                 UIManager.put("Panel.background", Color.BLACK);
                 UIManager.put("OptionPane.messageForeground", Color.GREEN);
@@ -268,7 +268,7 @@ public class ProfilPanel extends GameScreen implements MessageListener {
                         "Thank You", 2);
                 getCore().popScreen();
             }
-            if (udResponsem.getResponseType() == IConstants.ResponseType.failed) {
+            if (udResponsem.getResponseType() == Constants.ResponseType.failed) {
                 errorDialog("Unknown error");
                 confirm.setEnabled(true);
                 lPassword.requestFocus();
@@ -278,7 +278,7 @@ public class ProfilPanel extends GameScreen implements MessageListener {
 
         if (m instanceof DeleteResponseMessage) {
             DeleteResponseMessage drm = (DeleteResponseMessage) m;
-            if (drm.getResponseType() == IConstants.ResponseType.ok) {
+            if (drm.getResponseType() == Constants.ResponseType.ok) {
                 LogoutMessage gm = new LogoutMessage();
                 getCore().getNetwork().sendMessage(gm);
                 getCore().getNetwork().shutdown();

@@ -37,7 +37,7 @@ package com.creeptd.client.game;
 
 import com.creeptd.client.network.Network;
 import com.creeptd.client.sound.SoundManagement;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.GameOverMessage;
 
 /**
@@ -56,7 +56,7 @@ public class PlayerContext extends GameContext {
      * @param managementSound Sound object for sound
      * @param map the map
      */
-    public PlayerContext(BoardLocation location, Network network, SoundManagement managementSound, IConstants.Map map, GameLoop gameLoop, int player_id, String player_name) {
+    public PlayerContext(BoardLocation location, Network network, SoundManagement managementSound, Constants.Map map, GameLoop gameLoop, int player_id, String player_name) {
         super(location, network, managementSound, map, gameLoop, player_id, player_name);
 
     }

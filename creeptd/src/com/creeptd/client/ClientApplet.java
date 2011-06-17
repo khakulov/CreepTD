@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.client;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import java.awt.BorderLayout;
 import javax.swing.JApplet;
 
@@ -53,13 +53,13 @@ public class ClientApplet extends JApplet {
         if (host != null) {
             Core.host = host;
         } else {
-            Core.host = IConstants.DEFAULT_HOSTNAME;
+            Core.host = Constants.DEFAULT_HOSTNAME;
         }
         String port = this.getParameter("port");
         if (port != null) {
             Core.port = Integer.parseInt(port);
         } else {
-            Core.port = IConstants.DEFAULT_SERVER_PORT;
+            Core.port = Constants.DEFAULT_SERVER_PORT;
         }
 
         this.core = new Core(this);

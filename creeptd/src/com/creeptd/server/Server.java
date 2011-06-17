@@ -35,13 +35,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.server;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -61,7 +59,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.w3c.dom.Document;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.server.client.Client;
 
 /**
@@ -111,8 +109,8 @@ public class Server {
             System.exit(0);
         }
 
-        int gameServerPort = IConstants.DEFAULT_SERVER_PORT;
-        int maxClients = IConstants.DEFAULT_MAX_CLIENTS;
+        int gameServerPort = Constants.DEFAULT_SERVER_PORT;
+        int maxClients = Constants.DEFAULT_MAX_CLIENTS;
 
         logger.info("Parsing runtime arguments...");
         if (args.length >= 1) {
@@ -143,7 +141,7 @@ public class Server {
                     }
                 }
                 Socket socket = serverSocket.accept();
-                socket.setSoTimeout(IConstants.TIMEOUT);
+                socket.setSoTimeout(Constants.TIMEOUT);
                 activeSockets.add(socket);
                 if (activeSockets.size() >= maxClients) {
                     socket.close();
@@ -254,9 +252,8 @@ public class Server {
      * @return the server version
      */
     public static String getVersion() {
-        String version = null;
-
-        InputStream inStream = Server.class.getResourceAsStream("../common/version");
+        /* String version = null;
+        InputStream inStream = Server.class.getResourceAsStream("version");
         try {
             if (inStream.available() > 0) {
                 InputStreamReader inStreamReader = new InputStreamReader(inStream);
@@ -266,12 +263,11 @@ public class Server {
         } catch (Exception e) {
             logger.warn("Caught exception while finding out version", e);
         }
-
         if (version == null) {
             version = "-unknown-";
         }
-
-        return version;
+        return version; */
+        return Constants.VERSION;
     }
 
     /**

@@ -53,7 +53,7 @@ import javax.swing.UIManager;
 
 import com.creeptd.client.Core;
 import com.creeptd.client.network.MessageListener;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.Password;
 import com.creeptd.common.messages.client.LoginRequestMessage;
 import com.creeptd.common.messages.client.RegistrationRequestMessage;
@@ -225,13 +225,13 @@ public class RegisterPanel extends GameScreen implements MessageListener {
 
         if (m instanceof RegistrationResponseMessage) {
             RegistrationResponseMessage response = (RegistrationResponseMessage) m;
-            if (response.getResponseType() == IConstants.ResponseType.username) {
+            if (response.getResponseType() == Constants.ResponseType.username) {
 
                 errorDialog("Username already exists!");
                 register.setEnabled(true);
                 lName.requestFocus();
             }
-            if (response.getResponseType() == IConstants.ResponseType.ok) {
+            if (response.getResponseType() == Constants.ResponseType.ok) {
                 UIManager.put("OptionPane.background", Color.BLACK);
                 UIManager.put("Panel.background", Color.BLACK);
                 UIManager.put("OptionPane.messageForeground", Color.GREEN);
@@ -245,7 +245,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
                 loginMessage.setMacaddress(getCore().getNetwork().getMACAddress());
                 getCore().getNetwork().sendMessage(loginMessage);
             }
-            if (response.getResponseType() == IConstants.ResponseType.failed) {
+            if (response.getResponseType() == Constants.ResponseType.failed) {
                 errorDialog("Your registration could not be completed. Please check your inputs!");
                 register.setEnabled(true);
                 lName.requestFocus();

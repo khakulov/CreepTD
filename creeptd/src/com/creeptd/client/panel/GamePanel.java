@@ -59,7 +59,7 @@ import com.creeptd.client.tower.FindFastestCreep;
 import com.creeptd.client.tower.FindStrongestCreep;
 import com.creeptd.client.tower.FindWeakestCreep;
 import com.creeptd.client.tower.StrategyFactory;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.ExitGameMessage;
 
 /**
@@ -291,10 +291,10 @@ public class GamePanel extends GameScreen {
          */
         class SendAction extends AbstractAction {
 
-            protected IConstants.Creeps type;
+            protected Constants.Creeps type;
             protected GamePanel panel;
 
-            public SendAction(IConstants.Creeps type, GamePanel panel) {
+            public SendAction(Constants.Creeps type, GamePanel panel) {
                 this.type = type;
                 this.panel = panel;
             }
@@ -310,7 +310,7 @@ public class GamePanel extends GameScreen {
         }
         class SendWaveAction extends SendAction {
 
-            public SendWaveAction(IConstants.Creeps type, GamePanel panel) {
+            public SendWaveAction(Constants.Creeps type, GamePanel panel) {
                 super(type, panel);
             }
 
@@ -325,10 +325,10 @@ public class GamePanel extends GameScreen {
 
         class BuildAction extends AbstractAction {
 
-            protected IConstants.Towers type;
+            protected Constants.Towers type;
             protected GamePanel panel;
 
-            public BuildAction(IConstants.Towers type, GamePanel panel) {
+            public BuildAction(Constants.Towers type, GamePanel panel) {
                 this.type = type;
                 this.panel = panel;
             }
@@ -342,7 +342,7 @@ public class GamePanel extends GameScreen {
         }
 
         //Send Creeps
-        IConstants.Creeps[] creeps = IConstants.Creeps.values();
+        Constants.Creeps[] creeps = Constants.Creeps.values();
         String[] shortcuts = {"1", "2", "3", "4", "Q", "W", "E", "R", "A", "S", "D", "F", "Y", "X", "C", "V"};
 
         //Sanity check
@@ -356,7 +356,7 @@ public class GamePanel extends GameScreen {
         }
 
         // Tower shortcuts
-        IConstants.Towers[] tower = IConstants.Towers.values();
+        Constants.Towers[] tower = Constants.Towers.values();
         String[] shortcutsT = {"G", "H", "J", "B", "N", "M"};
 
         //Add the shortcuts

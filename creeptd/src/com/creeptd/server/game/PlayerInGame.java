@@ -42,7 +42,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.server.PersistenceManager;
 import com.creeptd.server.client.Client;
@@ -96,8 +96,8 @@ public class PlayerInGame {
         }
         this.client = client;
         this.gameOver = false;
-        this.credits = IConstants.CREDITS;
-        this.income = IConstants.START_INCOME;
+        this.credits = Constants.CREDITS;
+        this.income = Constants.START_INCOME;
 
     }
 
@@ -172,7 +172,7 @@ public class PlayerInGame {
      * context (map). So it's purposed that all incoming creeps are getting
      * killed. This leads to a error.
      *
-     * So bear in mind that you have to add for example 2* IConstants.LIVE *
+     * So bear in mind that you have to add for example 2* Constants.LIVE *
      * bounty of the best creeps sent * the number of alive opponents * 2. So
      * you can be sure that if this player gets over this amount of money, he's
      * definitely cheating!
@@ -232,8 +232,8 @@ public class PlayerInGame {
         if (this.anticheatLastTick >= tick) {
             return;
         }
-        if (tick % (IConstants.INCOME_TIME / IConstants.TICK_MS) == 0) {
-            long checkTick = tick - (IConstants.INCOME_TIME / IConstants.TICK_MS);
+        if (tick % (Constants.INCOME_TIME / Constants.TICK_MS) == 0) {
+            long checkTick = tick - (Constants.INCOME_TIME / Constants.TICK_MS);
             if (checkTick + 1 > 0) {
                 this.anticheat_updateItems(checkTick);
                 this.credits += this.income;
@@ -257,8 +257,8 @@ public class PlayerInGame {
      */
     public synchronized void anticheat_TowerBuilt(String towerType, int towerId, long roundID) {
         this.anticheatTowerId.put(towerId, towerType);
-        this.anticheatTowerIdPrices.put(towerId, IConstants.Towers.valueOf(
-                IConstants.Towers.class, this.anticheatTowerId.get(towerId)).getPrice());
+        this.anticheatTowerIdPrices.put(towerId, Constants.Towers.valueOf(
+                Constants.Towers.class, this.anticheatTowerId.get(towerId)).getPrice());
         synchronized (this.items) {
             items.add(new AnticheatItem(roundID, AnticheatType.CREDIT, -1 * this.anticheatTowerIdPrices.get(towerId)));
         }
@@ -286,14 +286,14 @@ public class PlayerInGame {
      *            UpgradeTowerMessage
      */
     public synchronized void anticheat_TowerUpgraded(int towerId, long roundID) {
-        String nameOfNextTower = IConstants.Towers.valueOf(
+        String nameOfNextTower = Constants.Towers.valueOf(
                 this.anticheatTowerId.get(towerId)).getNext().name();
 
         this.anticheatTowerId.remove(towerId);
         this.anticheatTowerId.put(towerId, nameOfNextTower);
 
         int oldPrice = this.anticheatTowerIdPrices.get(towerId);
-        int newPrice = IConstants.Towers.valueOf(IConstants.Towers.class,
+        int newPrice = Constants.Towers.valueOf(Constants.Towers.class,
                 this.anticheatTowerId.get(towerId)).getPrice();
         this.anticheatTowerIdPrices.remove(towerId);
         this.anticheatTowerIdPrices.put(towerId, oldPrice + newPrice);
@@ -314,8 +314,8 @@ public class PlayerInGame {
      */
     public void anticheat_sentThisCreep(String creepType, long roundID) {
         synchronized (this.items) {
-            items.add(new AnticheatItem(roundID, AnticheatType.CREDIT, -1 * IConstants.Creeps.valueOf(IConstants.Creeps.class, creepType).getPrice()));
-            items.add(new AnticheatItem(roundID, AnticheatType.INCOME, IConstants.Creeps.valueOf(IConstants.Creeps.class, creepType).getIncome()));
+            items.add(new AnticheatItem(roundID, AnticheatType.CREDIT, -1 * Constants.Creeps.valueOf(Constants.Creeps.class, creepType).getPrice()));
+            items.add(new AnticheatItem(roundID, AnticheatType.INCOME, Constants.Creeps.valueOf(Constants.Creeps.class, creepType).getIncome()));
         }
     }
 
@@ -336,7 +336,7 @@ public class PlayerInGame {
      */
     public void anticheat_receivedThisCreep(String creepType, long roundID) {
         synchronized (this.items) {
-            items.add(new AnticheatItem(roundID, AnticheatType.CREDIT, IConstants.Creeps.valueOf(IConstants.Creeps.class, creepType).getBounty()));
+            items.add(new AnticheatItem(roundID, AnticheatType.CREDIT, Constants.Creeps.valueOf(Constants.Creeps.class, creepType).getBounty()));
         }
     }
 
@@ -347,7 +347,7 @@ public class PlayerInGame {
      */
     public void anticheat_transferThisCreep(String creepType, long roundID) {
         synchronized (this.items) {
-            items.add(new AnticheatItem(roundID, AnticheatType.CREDIT, -1 * IConstants.Creeps.valueOf(IConstants.Creeps.class, creepType).getBounty()));
+            items.add(new AnticheatItem(roundID, AnticheatType.CREDIT, -1 * Constants.Creeps.valueOf(Constants.Creeps.class, creepType).getBounty()));
         }
     }
 

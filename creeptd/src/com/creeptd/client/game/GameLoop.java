@@ -48,7 +48,7 @@ import com.creeptd.client.network.Network;
 import com.creeptd.client.panel.GamePanel;
 import com.creeptd.client.sound.SoundManagement;
 import com.creeptd.client.tower.Tower;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.common.messages.server.RoundMessage;
@@ -62,7 +62,7 @@ import java.util.Iterator;
  * Main GameLoop for updates and repaint. Sync with Server tick and framerate
  * approximation.
  */
-public class GameLoop extends Thread implements MessageListener, IConstants {
+public class GameLoop extends Thread implements MessageListener, Constants {
 
     private static Logger logger = Logger.getLogger(GameLoop.class.getName());
     private GameContext myContext;
@@ -74,7 +74,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
     private Network tdNetwork;
     private GamePanel gamePanel;
     private Map map;
-    private IConstants.Mode gameMode;
+    private Constants.Mode gameMode;
     private boolean running = false;
     private long roundID = 0;
     private long maxRound = 0;
@@ -258,7 +258,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
         for (int i = 0; i < size; i++) {
             ArrayList<Creep> transCopy = new ArrayList<Creep>(contexts.get(i).getTransfer());
             GameContext copyTo = null;
-            if (this.getGameMode().equals(IConstants.Mode.TEAM2VS2)) {  // Send to same team, if dead or not
+            if (this.getGameMode().equals(Constants.Mode.TEAM2VS2)) {  // Send to same team, if dead or not
                 int playerPosition = playersOrder.get(contexts.get(i).getPlayerId());
                 if (playerPosition == 1) {
                     for (int j = 0; j < contexts.size(); j++) {
@@ -284,7 +284,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
                     copyTo = findNextContext(contexts.get(i));
                 }
                 // Don't check for dead
-            } else if (this.getGameMode().equals(IConstants.Mode.ALLVSALL)) { // ALL vs ALL, send to self
+            } else if (this.getGameMode().equals(Constants.Mode.ALLVSALL)) { // ALL vs ALL, send to self
                 if (contexts.get(i).isDead()) {
                     continue; // Discard creeps if dead
                 }
@@ -505,7 +505,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
             }
         }
 
-        if (this.getGameMode().equals(IConstants.Mode.TEAM2VS2)) {
+        if (this.getGameMode().equals(Constants.Mode.TEAM2VS2)) {
             GameContext[] ordererdPlayers = this.getOrderedPlayers();
             if (ordererdPlayers != null) { // Becomes != null when context is completely set up
                 if ((ordererdPlayers[0].isDead() && ordererdPlayers[1].isDead()) || (ordererdPlayers[2].isDead() && ordererdPlayers[3].isDead())) {
@@ -550,7 +550,7 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
 
                     if (--incomeCounter < 1) {
                         // milis>>secs
-                        incomeCounter = IConstants.INCOME_TIME / 1000;
+                        incomeCounter = Constants.INCOME_TIME / 1000;
                     }
 
                     gamePanel.getGameInfoPanel().setIncomeCounter(incomeCounter);
@@ -622,14 +622,14 @@ public class GameLoop extends Thread implements MessageListener, IConstants {
     /**
      * @param game mod
      */
-    public void setGameMode(IConstants.Mode gameMode) {
+    public void setGameMode(Constants.Mode gameMode) {
         this.gameMode = gameMode;
     }
 
     /**
      * @return the game mod
      */
-    public IConstants.Mode getGameMode() {
+    public Constants.Mode getGameMode() {
         return this.gameMode;
     }
 

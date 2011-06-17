@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.common.messages.server;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,7 +63,7 @@ public class GameDescription {
     private Integer MinEloPoints = 0;
     private Boolean shufflePlayers = true;
     private String state;
-    private IConstants.Mode gameMode;
+    private Constants.Mode gameMode;
     private static final String REG_EXP = "(\\s)*([0-9]+)\\s\"([^\"]+)\"\\s" + "([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)" + "\\s\"([^\"]*)\"\\s\"(.*)\"\\s\"(.*)\"\\s\"(.*)\"\\s\"(.*)\"\\s\"([^\"]+)\"\\s(0|1)(\\s)*";
     public static final Pattern PATTERN = Pattern.compile(REG_EXP);
 
@@ -85,7 +85,7 @@ public class GameDescription {
     public GameDescription(Integer gameId, String gameName, Integer mapId,
             Integer maxPlayers, Integer currentPlayers, Integer MaxEloPoints, Integer MinEloPoints,
             String Password,
-            IConstants.Mode gameMode,
+            Constants.Mode gameMode,
             String Player1,
             String Player2,
             String Player3,
@@ -112,7 +112,7 @@ public class GameDescription {
     /**
      * @return the gameMode
      */
-    public IConstants.Mode getGameMode() {
+    public Constants.Mode getGameMode() {
         return this.gameMode;
     }
 
@@ -123,7 +123,7 @@ public class GameDescription {
     /**
      * @param The gameMode to set
      */
-    public void setGameMode(IConstants.Mode gameMode) {
+    public void setGameMode(Constants.Mode gameMode) {
         this.gameMode = gameMode;
     }
 
@@ -338,10 +338,10 @@ public class GameDescription {
             this.setCurrentPlayers(Integer.valueOf(matcher.group(6)));
             this.setMaxEloPoints(Integer.valueOf(matcher.group(7)));
             this.setMinEloPoints(Integer.valueOf(matcher.group(8)));
-            IConstants.Mode mode = IConstants.Mode.ALLVSALL;
+            Constants.Mode mode = Constants.Mode.ALLVSALL;
             try {
                 int sentModeValue = Integer.valueOf(matcher.group(9));
-                IConstants.Mode sentMode = IConstants.Mode.forValue(sentModeValue);
+                Constants.Mode sentMode = Constants.Mode.forValue(sentModeValue);
                 if (sentMode != null) mode = sentMode;
             } catch (Exception ex) {}
             this.setGameMode(mode);

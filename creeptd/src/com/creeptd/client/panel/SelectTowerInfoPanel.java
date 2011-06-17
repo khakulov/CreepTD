@@ -56,7 +56,7 @@ import com.creeptd.client.tower.FindFarthestCreep;
 import com.creeptd.client.tower.FindFastestCreep;
 import com.creeptd.client.tower.FindStrongestCreep;
 import com.creeptd.client.tower.FindWeakestCreep;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 
@@ -655,7 +655,7 @@ public class SelectTowerInfoPanel extends JPanel implements ContextListener {
             this.infoTower.setText(context.getSelectedTower().getType().getName());
             this.infoSellPrice.setText("Sell for: " + (int) (context.getSelectedTower().getTotalPrice() * 0.75));
             this.infoDamage.setText("Damage: " + context.getSelectedTower().getDamage());
-            this.infoSpeed.setText("Speed: " + IConstants.Towers.translateSpeed(context.getSelectedTower().getCoolDown()));
+            this.infoSpeed.setText("Speed: " + Constants.Towers.translateSpeed(context.getSelectedTower().getCoolDown()));
             this.infoRange.setText("Range: " + (int) context.getSelectedTower().getRange());
             this.infoSpecial.setText(context.getSelectedTower().getType().getSpecial());
 
@@ -664,7 +664,7 @@ public class SelectTowerInfoPanel extends JPanel implements ContextListener {
                 upgradeTower.setText(context.getSelectedTower().getType().getNext().getName());
                 upgradePrice.setText("Price: " + context.getSelectedTower().getType().getNext().getPrice());
                 upgradeDamage.setText("Damage: " + context.getSelectedTower().getType().getNext().getDamage());
-                upgradeSpeed.setText("Speed: " + IConstants.Towers.translateSpeed(context.getSelectedTower().getType().getNext().getSpeed()));
+                upgradeSpeed.setText("Speed: " + Constants.Towers.translateSpeed(context.getSelectedTower().getType().getNext().getSpeed()));
                 upgradeRange.setText("Range: " + (int) context.getSelectedTower().getType().getNext().getRange());
                 upgradeSpecial.setText(context.getSelectedTower().getType().getNext().getSpecial());
             }

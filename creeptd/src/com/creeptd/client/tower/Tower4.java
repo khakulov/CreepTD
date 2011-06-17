@@ -49,7 +49,7 @@ import com.creeptd.client.creep.Creep;
 import com.creeptd.client.game.GameContext;
 import com.creeptd.client.game.PlayerContext;
 import com.creeptd.client.grid.Grid;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * implementation of tower4.
@@ -70,7 +70,7 @@ public class Tower4 extends AbstractTower {
      *            the grid where the tower is placed into
      */
     public Tower4(GameContext context, Grid grid) {
-        super(IConstants.Towers.tower4, context, grid);
+        super(Constants.Towers.tower4, context, grid);
         this.setStrategy(new FindStrongestCreep(this));
         this.updateSelectedStrategy(this.getStrategy());
     }
@@ -145,7 +145,7 @@ public class Tower4 extends AbstractTower {
         // upgrade animation
         if (this.getUpgradeTime() > 0) {
             this.setUpgradeTime(getUpgradeTime() - 1, false);
-            if (this.getRunningTowerUpgrades() > 0 && this.getUpgradeTime() == IConstants.USER_ACTION_DELAY) {
+            if (this.getRunningTowerUpgrades() > 0 && this.getUpgradeTime() == Constants.USER_ACTION_DELAY) {
 
                 this.upgrade();
                 this.setRunningTowerUpgrades(0);

@@ -45,7 +45,7 @@ import java.awt.geom.Line2D;
 import com.creeptd.client.creep.Creep;
 import com.creeptd.client.game.GameContext;
 import com.creeptd.client.grid.Grid;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * implementation of tower3.
@@ -69,7 +69,7 @@ public class Tower3 extends AbstractTower {
      *            the grid where the tower is placed into
      */
     public Tower3(GameContext context, Grid grid) {
-        super(IConstants.Towers.tower3, context, grid);
+        super(Constants.Towers.tower3, context, grid);
         this.setStrategy(new FindClosestCreep(this));
         this.updateSelectedStrategy(this.getStrategy());
     }

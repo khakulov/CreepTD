@@ -40,7 +40,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.creeptd.common.IConstants.ResponseType;
+import com.creeptd.common.Constants.ResponseType;
 import com.creeptd.common.messages.client.ExitGameMessage;
 import com.creeptd.common.messages.client.GameMessage;
 import com.creeptd.common.messages.client.KickPlayerRequestMessage;
@@ -56,13 +56,11 @@ import com.creeptd.server.client.Client;
 import com.creeptd.server.game.Game;
 import com.creeptd.server.game.GameManager;
 import com.creeptd.server.game.PlayerInGame;
-import java.util.ArrayList;
 
 /**
  * GameState for a game that has not yet started.
  */
 public class WaitingGameState extends AbstractGameState {
-
     private Client creator;
     private static Logger logger = Logger.getLogger(WaitingGameState.class);
 

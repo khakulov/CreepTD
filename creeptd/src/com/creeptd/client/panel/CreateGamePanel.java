@@ -58,7 +58,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import com.creeptd.client.network.MessageListener;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.CreateGameMessage;
 import com.creeptd.common.messages.server.CreateGameResponseMessage;
 import com.creeptd.common.messages.server.GameDescription;
@@ -403,10 +403,10 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         }
         gM.setPasswort(tPasswort.getText());
         int selectedMode = tGamemode.getSelectedIndex();
-        IConstants.Mode mode = IConstants.Mode.ALLVSALL;
-        if (selectedMode == 1) mode = IConstants.Mode.SENDNEXT;
-        if (selectedMode == 2) mode = IConstants.Mode.SENDRANDOM;
-        if (selectedMode == 3) mode = IConstants.Mode.TEAM2VS2;
+        Constants.Mode mode = Constants.Mode.ALLVSALL;
+        if (selectedMode == 1) mode = Constants.Mode.SENDNEXT;
+        if (selectedMode == 2) mode = Constants.Mode.SENDRANDOM;
+        if (selectedMode == 3) mode = Constants.Mode.TEAM2VS2;
         gM.setGameMode(mode);
         if (selectedMode == 3) {
             gM.setShufflePlayers(false);
@@ -423,10 +423,10 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
      *            Creates a new Game
      */
     private void createGame(CreateGameResponseMessage g) {
-        if (g.getResponseType().equals(IConstants.ResponseType.failed)) {
+        if (g.getResponseType().equals(Constants.ResponseType.failed)) {
             errorDialog("Game already exists!");
 
-        } else if (g.getResponseType().equals(IConstants.ResponseType.ok)) {
+        } else if (g.getResponseType().equals(Constants.ResponseType.ok)) {
             GameDescription gd = new GameDescription();
             gd.setNumberOfPlayers(tPlayer.getSelectedIndex() + 2);
             gd.setMapId(this.selectMap);
@@ -442,10 +442,10 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
                 gd.setMinEloPoints(0);
             }
             int selectedMode = tGamemode.getSelectedIndex();
-            IConstants.Mode mode = IConstants.Mode.ALLVSALL;
-            if (selectedMode == 1) mode = IConstants.Mode.SENDNEXT;
-            if (selectedMode == 2) mode = IConstants.Mode.SENDRANDOM;
-            if (selectedMode == 3) mode = IConstants.Mode.TEAM2VS2;
+            Constants.Mode mode = Constants.Mode.ALLVSALL;
+            if (selectedMode == 1) mode = Constants.Mode.SENDNEXT;
+            if (selectedMode == 2) mode = Constants.Mode.SENDRANDOM;
+            if (selectedMode == 3) mode = Constants.Mode.TEAM2VS2;
             gd.setGameMode(mode);
             gd.setPassword(tPasswort.getText());
             gd.setShufflePlayers(shufflePlayers.isSelected());
@@ -478,8 +478,8 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
 
         try {
             preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(
-                    IConstants.Map.getPicturePath(IConstants.Map.getMapById(id).toString()))));
-            previewDescription.setText("Preview " + IConstants.Map.getMapById(id).toString());
+                    Constants.Map.getPicturePath(Constants.Map.getMapById(id).toString()))));
+            previewDescription.setText("Preview " + Constants.Map.getMapById(id).toString());
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();

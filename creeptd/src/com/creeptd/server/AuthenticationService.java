@@ -47,7 +47,7 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.LoginRequestMessage;
 import com.creeptd.common.messages.client.RegistrationRequestMessage;
 import com.creeptd.common.messages.client.UpdateDataRequestMessage;
@@ -95,14 +95,14 @@ public class AuthenticationService {
      * @return ok if successful, username if the username is in use, failed for
      *         other errors.
      */
-    public static IConstants.ResponseType create(RegistrationRequestMessage registrationRequestMessage) {
+    public static Constants.ResponseType create(RegistrationRequestMessage registrationRequestMessage) {
         if (!checkUsername(registrationRequestMessage.getUsername())) {
             logger.warn("Registration failed (invalid username): "+registrationRequestMessage.getUsername());
-            return IConstants.ResponseType.failed;
+            return Constants.ResponseType.failed;
         }
         if (AuthenticationService.getPlayer(registrationRequestMessage.getUsername()) != null) {
             logger.error("Registration failed (username used)");
-            return IConstants.ResponseType.username;
+            return Constants.ResponseType.username;
         }
         try {
             EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
@@ -123,10 +123,10 @@ public class AuthenticationService {
         } catch (Exception e) {
             logger.error("Registration failed");
             logger.debug(e.getLocalizedMessage());
-            return IConstants.ResponseType.failed;
+            return Constants.ResponseType.failed;
 
         }
-        return IConstants.ResponseType.ok;
+        return Constants.ResponseType.ok;
     }
 
     /**
@@ -140,9 +140,9 @@ public class AuthenticationService {
      *            the new mailadress
      * @return the response type for ResponseMessage
      */
-    public static IConstants.ResponseType update(Client client, UpdateDataRequestMessage updateDataRequestMessage) {
+    public static Constants.ResponseType update(Client client, UpdateDataRequestMessage updateDataRequestMessage) {
         boolean update = false;
-        IConstants.ResponseType responseType = IConstants.ResponseType.failed;
+        Constants.ResponseType responseType = Constants.ResponseType.failed;
         EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
         EntityTransaction entityTransaction = entityManager.getTransaction();
         entityTransaction.begin();
@@ -167,7 +167,7 @@ public class AuthenticationService {
             if (update) {
                 entityManager.merge(player);
                 entityManager.flush();
-                responseType = IConstants.ResponseType.ok;
+                responseType = Constants.ResponseType.ok;
                 logger.info("Registartion data for client " + client + " changed.");
             }
         } else {
@@ -181,8 +181,8 @@ public class AuthenticationService {
      * @param playerName the name of the player
      * @return the response type
      */
-    public static IConstants.ResponseType delete(Client client) {
-        IConstants.ResponseType responseType = IConstants.ResponseType.failed;
+    public static Constants.ResponseType delete(Client client) {
+        Constants.ResponseType responseType = Constants.ResponseType.failed;
         /* if (client.getPlayerModel() != null) {
         EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
         EntityTransaction entityTransaction = entityManager.getTransaction();
@@ -190,7 +190,7 @@ public class AuthenticationService {
         entityManager.remove(entityManager.find(Player.class, client.getPlayerModel().getName()));
         entityManager.flush();
         entityTransaction.commit();
-        responseType = IConstants.ResponseType.ok;
+        responseType = Constants.ResponseType.ok;
         } */
         return responseType;
     }

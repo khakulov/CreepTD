@@ -47,15 +47,15 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import com.creeptd.client.game.GameContext;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 public class CreepSendButton extends JButton implements ActionListener, MouseListener {
 
     private static final long serialVersionUID = 1L;
     private GamePanel gamepanel;
-    private IConstants.Creeps type;
+    private Constants.Creeps type;
 
-    public CreepSendButton(GamePanel gamepanel, IConstants.Creeps type, String iconName) {
+    public CreepSendButton(GamePanel gamepanel, Constants.Creeps type, String iconName) {
         super();
         this.gamepanel = gamepanel;
         this.type = type;
@@ -70,7 +70,7 @@ public class CreepSendButton extends JButton implements ActionListener, MouseLis
     }
 
     private Icon createIcon(String name) {
-        // FIXME This should be a Constant (in IConstants?)
+        // FIXME This should be a Constant (in Constants?)
         String path = "com/creeptd/client/resources/creeps/";
         return new ImageIcon(getClass().getClassLoader().getResource(path + name + ".png"));
     }

@@ -46,7 +46,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import com.creeptd.client.Core;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import javax.swing.JScrollPane;
 
 public class PlayerChat extends JEditorPane {
@@ -78,63 +78,63 @@ public class PlayerChat extends JEditorPane {
         String plain = msg;
         java.net.URL imageURL = null;
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_smile.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_smile.gif");
         msg = msg.replace(":)", "<img src='" + imageURL + "'>");
         msg = msg.replace(":-)", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_happyeyes.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_happyeyes.gif");
         msg = msg.replace("=)", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_biggrin.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_biggrin.gif");
         msg = msg.replace(":D", "<img src='" + imageURL + "'>");
         msg = msg.replace(":-D", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_wink.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_wink.gif");
         msg = msg.replace(";)", "<img src='" + imageURL + "'>");
         msg = msg.replace(";-)", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_sad.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_sad.gif");
         msg = msg.replace(":(", "<img src='" + imageURL + "'>");
         msg = msg.replace(":-(", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_razz.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_razz.gif");
         msg = msg.replace(":P", "<img src='" + imageURL + "'>");
         msg = msg.replace(":-P", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL+"icon_cool.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL+"icon_cool.gif");
         msg = msg.replace("8)", "<img src='"+imageURL+"'>");
         msg = msg.replace("8-)", "<img src='"+imageURL+"'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL+"icon_neutral.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL+"icon_neutral.gif");
         msg = msg.replace(":|", "<img src='"+imageURL+"'>");
         msg = msg.replace(":-|", "<img src='"+imageURL+"'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_surprised.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_surprised.gif");
         msg = msg.replace(":o", "<img src='" + imageURL + "'>");
         msg = msg.replace(":-o", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL+"icon_confused.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL+"icon_confused.gif");
         msg = msg.replace(":hmm", "<img src='"+imageURL+"'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_lol.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_lol.gif");
         msg = msg.replace(":lol", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_blush.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_blush.gif");
         msg = msg.replace(":blush", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_rolleyes.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_rolleyes.gif");
         msg = msg.replace(":rolleyes", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_eek.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_eek.gif");
         msg = msg.replace(":eek", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_mad.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_mad.gif");
         msg = msg.replace(":mad", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_evil.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_evil.gif");
         msg = msg.replace(":evil", "<img src='" + imageURL + "'>");
 
-        imageURL = getClass().getClassLoader().getResource(IConstants.SIMLEY_URL + "icon_idea.gif");
+        imageURL = getClass().getClassLoader().getResource(Constants.SIMLEY_URL + "icon_idea.gif");
         msg = msg.replace(":idea", "<img src='" + imageURL + "'>");
 
         int lastIndex = 0;

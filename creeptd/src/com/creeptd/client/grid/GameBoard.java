@@ -56,7 +56,7 @@ import com.creeptd.client.game.GameContext;
 import com.creeptd.client.game.PlayerContext;
 import com.creeptd.client.game.GameContext.BoardLocation;
 import com.creeptd.client.tower.Tower;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.BuildTowerMessage;
 
 /**
@@ -572,7 +572,7 @@ public class GameBoard implements MouseListener, MouseMotionListener {
      * @param g The grid (cell) in which the tower should be build
      * @return Returns whether the tower could be build or not
      */
-    public boolean buyTower(IConstants.Towers tower, Grid g) {
+    public boolean buyTower(Constants.Towers tower, Grid g) {
         if (g == null) {
             return false;
         }
@@ -602,7 +602,7 @@ public class GameBoard implements MouseListener, MouseMotionListener {
      *
      * @param tower Tower that should be build
      */
-    public void buyTowerPerShortcut(IConstants.Towers tower) {
+    public void buyTowerPerShortcut(Constants.Towers tower) {
         Grid g = null;
 
         // get the highlighted grid (cell)

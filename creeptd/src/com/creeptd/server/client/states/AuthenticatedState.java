@@ -38,7 +38,7 @@ package com.creeptd.server.client.states;
 import org.apache.log4j.Logger;
 
 import com.creeptd.common.Permission;
-import com.creeptd.common.IConstants.ResponseType;
+import com.creeptd.common.Constants.ResponseType;
 import com.creeptd.common.messages.client.ClientMessage;
 import com.creeptd.common.messages.client.CreateGameMessage;
 import com.creeptd.common.messages.client.DeleteRequestMessage;

@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.client;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -59,17 +59,17 @@ public class Client extends JFrame {
         if (args.length > 2) {
             System.err.println("Wrong command line arguments");
             System.out.println("Using default configuration...");
-            Core.host = IConstants.DEFAULT_SERVER_HOST;
-            Core.port = IConstants.DEFAULT_SERVER_PORT;
+            Core.host = Constants.DEFAULT_SERVER_HOST;
+            Core.port = Constants.DEFAULT_SERVER_PORT;
         } else if (args.length == 2) {
             Core.host = args[0];
             Core.port = Integer.parseInt(args[1]);
         } else if (args.length == 1) {
             Core.host = args[0];
-            Core.port = IConstants.DEFAULT_SERVER_PORT;
+            Core.port = Constants.DEFAULT_SERVER_PORT;
         } else if (args.length == 0) {
-            Core.host = IConstants.DEFAULT_SERVER_HOST;
-            Core.port = IConstants.DEFAULT_SERVER_PORT;
+            Core.host = Constants.DEFAULT_SERVER_HOST;
+            Core.port = Constants.DEFAULT_SERVER_PORT;
         }
         System.out.println("Using server=" + Core.host + ", port=" + Core.port);
         Client app = new Client();

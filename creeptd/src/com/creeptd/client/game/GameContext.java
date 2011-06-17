@@ -56,7 +56,7 @@ import com.creeptd.client.tower.FindCreepStrategy;
 import com.creeptd.client.tower.StrategyFactory;
 import com.creeptd.client.tower.Tower;
 import com.creeptd.client.tower.TowerFactory;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.Password;
 import com.creeptd.common.messages.client.BuildCreepMessage;
 import com.creeptd.common.messages.client.ChangeStrategyMessage;
@@ -169,11 +169,11 @@ public abstract class GameContext {
     private List<Creep> creeps;
     private List<Creep> transfer; // creeps for context switch
     // private List<Integer> towerIDs; //builded tower IDs
-    private int credits = IConstants.CREDITS;
+    private int credits = Constants.CREDITS;
     private String credits_hash = null;
-    private int income = IConstants.START_INCOME;
+    private int income = Constants.START_INCOME;
     private String income_hash = null;
-    private int lives = IConstants.LIVES;
+    private int lives = Constants.LIVES;
     private String lives_hash = null;
     private GameBoard gameBoard;
     private BoardLocation location;
@@ -184,12 +184,12 @@ public abstract class GameContext {
     private SoundManagement managementSound;
     private boolean deathsoundPlayed = false;
     // default map
-    private IConstants.Map mapfile = IConstants.Map.REDWORLD;
-    private IConstants.Towers nextTower = null;
+    private Constants.Map mapfile = Constants.Map.REDWORLD;
+    private Constants.Towers nextTower = null;
     private Tower selectedTower = null;
     private static Integer winningPosition = 0;
     private boolean dead = false;
-    private int startCounter = IConstants.INCOME_TIME / 1000;
+    private int startCounter = Constants.INCOME_TIME / 1000;
     private long lastCreepSent = 0;
     private long lastWaveSent = 0;
     private long lastWaveDelay = 0;
@@ -221,7 +221,7 @@ public abstract class GameContext {
      * @param int The context owner's player id
      * @param String The context owner's player name
      */
-    public GameContext(BoardLocation location, Network network, SoundManagement mSound, IConstants.Map map, GameLoop gameLoop, int player_id, String player_name) {
+    public GameContext(BoardLocation location, Network network, SoundManagement mSound, Constants.Map map, GameLoop gameLoop, int player_id, String player_name) {
         this.location = location;
         this.network = network;
         this.mapfile = map;
@@ -339,7 +339,7 @@ public abstract class GameContext {
             Grid grid = this.gameBoard.getGrid((int) btrm.getTowerPosition().getX(), (int) btrm.getTowerPosition().getY());
 
             if (grid.isFree()) {
-                Tower t = TowerFactory.createTower(this, IConstants.Towers.valueOf(IConstants.Towers.class, btrm.getTowerType()),
+                Tower t = TowerFactory.createTower(this, Constants.Towers.valueOf(Constants.Towers.class, btrm.getTowerType()),
                         grid);
                 t.setBuilding(true);
                 t.setBuildTime(update_Round);
@@ -390,13 +390,13 @@ public abstract class GameContext {
             }
         } else if (gm instanceof BuildCreepRoundMessage) {
             BuildCreepRoundMessage bcrm = (BuildCreepRoundMessage) gm;
-            Creep c = CreepFactory.createCreep(this, IConstants.Creeps.valueOf(
-                    IConstants.Creeps.class, bcrm.getCreepType()));
+            Creep c = CreepFactory.createCreep(this, Constants.Creeps.valueOf(
+                    Constants.Creeps.class, bcrm.getCreepType()));
             c.setBuildTime(update_Round);
             c.setSenderId(bcrm.getSenderId());
             c.setPlayerID(bcrm.getPlayerId());
 
-            if (!this.isDead()) { //  || this.getGameLoop().getGameMode().equals(IConstants.Mode.TEAM2VS2)
+            if (!this.isDead()) { //  || this.getGameLoop().getGameMode().equals(Constants.Mode.TEAM2VS2)
                 this.getCreeps().add(c);
             } else {
                 this.getTransfer().add(c);
@@ -463,7 +463,7 @@ public abstract class GameContext {
         boolean drawDead = false;
 
         // Team 2vs2 mode
-        if (this.getGameLoop().getGameMode().equals(IConstants.Mode.TEAM2VS2)) {
+        if (this.getGameLoop().getGameMode().equals(Constants.Mode.TEAM2VS2)) {
             GameContext[] players = this.getGameLoop().getOrderedPlayers();
 
             // Check if Team A is dead
@@ -583,7 +583,7 @@ public abstract class GameContext {
     }
 
     public boolean readyForNewCreep() {
-        if (lastCreepSent + IConstants.CREEP_DELAY < System.nanoTime()) {
+        if (lastCreepSent + Constants.CREEP_DELAY < System.nanoTime()) {
             return true;
         } else {
             return false;
@@ -593,7 +593,7 @@ public abstract class GameContext {
     /**
      * Sendet Threadsafe neue Creep
      */
-    public synchronized boolean sendCreep(IConstants.Creeps type) {
+    public synchronized boolean sendCreep(Constants.Creeps type) {
         if (this.getCredits() >= type.getPrice() && startCounter < 0 && !this.isDead()) {
             BuildCreepMessage bcm = new BuildCreepMessage();
             bcm.setClientId(this.getPlayerId());
@@ -615,7 +615,7 @@ public abstract class GameContext {
      * @param gamepanel
      * @param type
      */
-    public void sendCreepsWave(final IConstants.Creeps type) {
+    public void sendCreepsWave(final Constants.Creeps type) {
 
         if (this.getCredits() >= type.getPrice() && startCounter < 0 && !this.isDead()) {
             lastWaveSent = System.currentTimeMillis();
@@ -629,17 +629,17 @@ public abstract class GameContext {
                         // get the max size of the wave that could be send
                         long maxWaveSize = context.getCredits() / type.getPrice();
                         // if size exceeds CREEPS_IN_WAVE, set it to CREEPS_IN_WAVE
-                        if (maxWaveSize > IConstants.CREEPS_IN_WAVE) {
-                            maxWaveSize = IConstants.CREEPS_IN_WAVE;
+                        if (maxWaveSize > Constants.CREEPS_IN_WAVE) {
+                            maxWaveSize = Constants.CREEPS_IN_WAVE;
                         }
                         // set delay to send new creeps
-                        context.lastWaveDelay = maxWaveSize * IConstants.SEND_WAVE_DELAY;
+                        context.lastWaveDelay = maxWaveSize * Constants.SEND_WAVE_DELAY;
 
                         // while loop needed to get the number of completed loops
                         long i = 0;
                         while (i < maxWaveSize && !isInterrupted()) {
                             if (context.sendCreep(type)) {
-                                sleep(IConstants.SEND_WAVE_DELAY);
+                                sleep(Constants.SEND_WAVE_DELAY);
                             } else {
                                 interrupt();
                             }
@@ -647,7 +647,7 @@ public abstract class GameContext {
                         }
                         // correct lastWaveDelay to prevent short send bug after spending money for
                         // tower/upgrades while sending the wave.
-                        context.lastWaveDelay = i * IConstants.SEND_WAVE_DELAY;
+                        context.lastWaveDelay = i * Constants.SEND_WAVE_DELAY;
                         interrupt();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -678,7 +678,7 @@ public abstract class GameContext {
         return false;
     }
 
-    public void buyTower(IConstants.Towers tower) {
+    public void buyTower(Constants.Towers tower) {
         if (startCounter < 0) {
             this.gameBoard.buyTowerPerShortcut(tower);
         }
@@ -1075,7 +1075,7 @@ public abstract class GameContext {
      * @param m
      *            one Map out of the enum
      */
-    public void setMap(IConstants.Map m) {
+    public void setMap(Constants.Map m) {
         mapfile = m;
     }
 
@@ -1084,14 +1084,14 @@ public abstract class GameContext {
      *
      * @return just the Map
      */
-    public IConstants.Map getMap() {
+    public Constants.Map getMap() {
         return mapfile;
     }
 
     /**
      * @return the nextTower
      */
-    public IConstants.Towers getNextTower() {
+    public Constants.Towers getNextTower() {
         return nextTower;
     }
 
@@ -1099,7 +1099,7 @@ public abstract class GameContext {
      * @param nextTower
      *            the nextTower to set
      */
-    public void setNextTower(IConstants.Towers nextTower) {
+    public void setNextTower(Constants.Towers nextTower) {
         this.nextTower = nextTower;
     }
 

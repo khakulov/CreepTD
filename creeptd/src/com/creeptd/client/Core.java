@@ -36,10 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.creeptd.client;
 
 import java.awt.Dimension;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Stack;
 import java.util.logging.Logger;
 
@@ -47,6 +43,7 @@ import com.creeptd.client.network.Network;
 import com.creeptd.client.panel.GameScreen;
 import com.creeptd.client.panel.LoginPanel;
 import com.creeptd.client.sound.SoundManagement;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.server.GameDescription;
 
 import java.awt.BorderLayout;
@@ -350,9 +347,9 @@ public class Core extends JPanel {
      * @return the version
      */
     public static String getVersion() {
-        String version = null;
+        /* String version = null;
 
-        InputStream inStream = Core.class.getResourceAsStream("../common/version");
+        InputStream inStream = Core.class.getResourceAsStream("version");
         try {
             if (inStream.available() > 0) {
                 InputStreamReader inStreamReader = null;
@@ -380,7 +377,8 @@ public class Core extends JPanel {
         if (version == null) {
             version = "-unknown-";
         }
-        return version;
+        return version; */
+        return Constants.VERSION;
     }
 
     /**

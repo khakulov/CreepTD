@@ -44,7 +44,7 @@ import com.creeptd.client.game.GameContext;
 import com.creeptd.client.game.PlayerContext;
 import com.creeptd.client.tower.AbstractTower;
 import com.creeptd.client.tower.Tower;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import java.awt.Composite;
 
 /**
@@ -159,7 +159,7 @@ public class EmptyGrid implements Grid {
                 }
                 if (this.getTower() == null) {
                     Composite oldComposite = g.getComposite();
-                    IConstants.Towers current = this.context.getNextTower();
+                    Constants.Towers current = this.context.getNextTower();
                     while (current != null) {
                         Arc2D rangeArcUpgrade = new Arc2D.Float();
                         rangeArcUpgrade.setArcByCenter(Grid.SIZE / 2, Grid.SIZE / 2, current.getRange(), 0.0, 360.0, Arc2D.CHORD);

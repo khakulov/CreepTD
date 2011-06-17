@@ -48,16 +48,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import com.creeptd.client.game.GameContext;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 public class TowerBuyButton extends JButton implements ActionListener,
         MouseListener {
 
     private static final long serialVersionUID = 1L;
     private GamePanel gamepanel;
-    private IConstants.Towers type;
+    private Constants.Towers type;
 
-    public TowerBuyButton(GamePanel gamepanel, IConstants.Towers type,
+    public TowerBuyButton(GamePanel gamepanel, Constants.Towers type,
             String iconName) {
         super();
         this.gamepanel = gamepanel;
@@ -75,7 +75,7 @@ public class TowerBuyButton extends JButton implements ActionListener,
     }
 
     private Icon createIcon(String name) {
-        // FIXME This should be a Constant (in IConstants?)
+        // FIXME This should be a Constant (in Constants?)
         String path = "com/creeptd/client/resources/pictures/";
         return new ImageIcon(getClass().getClassLoader().getResource(
                 path + name + ".png"));

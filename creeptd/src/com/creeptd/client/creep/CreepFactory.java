@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.creeptd.client.creep;
 
 import com.creeptd.client.game.GameContext;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * Factory to create new creeps.
@@ -51,40 +51,40 @@ public class CreepFactory {
      * @param t type of creep
      * @return type of creep
      */
-    public static Creep createCreep(GameContext context, IConstants.Creeps t) {
+    public static Creep createCreep(GameContext context, Constants.Creeps t) {
         switch (t) {
             case creep1:
-                return new Creep1(context, IConstants.Creeps.creep1);
+                return new Creep1(context, Constants.Creeps.creep1);
             case creep2:
-                return new Creep2(context, IConstants.Creeps.creep2);
+                return new Creep2(context, Constants.Creeps.creep2);
             case creep3:
-                return new Creep3(context, IConstants.Creeps.creep3);
+                return new Creep3(context, Constants.Creeps.creep3);
             case creep4:
-                return new Creep4(context, IConstants.Creeps.creep4);
+                return new Creep4(context, Constants.Creeps.creep4);
             case creep5:
-                return new Creep5(context, IConstants.Creeps.creep5);
+                return new Creep5(context, Constants.Creeps.creep5);
             case creep6:
-                return new Creep6(context, IConstants.Creeps.creep6);
+                return new Creep6(context, Constants.Creeps.creep6);
             case creep7:
-                return new Creep7(context, IConstants.Creeps.creep7);
+                return new Creep7(context, Constants.Creeps.creep7);
             case creep8:
-                return new Creep8(context, IConstants.Creeps.creep8);
+                return new Creep8(context, Constants.Creeps.creep8);
             case creep9:
-                return new Creep9(context, IConstants.Creeps.creep9);
+                return new Creep9(context, Constants.Creeps.creep9);
             case creep10:
-                return new Creep10(context, IConstants.Creeps.creep10);
+                return new Creep10(context, Constants.Creeps.creep10);
             case creep11:
-                return new Creep11(context, IConstants.Creeps.creep11);
+                return new Creep11(context, Constants.Creeps.creep11);
             case creep12:
-                return new Creep12(context, IConstants.Creeps.creep12);
+                return new Creep12(context, Constants.Creeps.creep12);
             case creep13:
-                return new Creep13(context, IConstants.Creeps.creep13);
+                return new Creep13(context, Constants.Creeps.creep13);
             case creep14:
-                return new Creep14(context, IConstants.Creeps.creep14);
+                return new Creep14(context, Constants.Creeps.creep14);
             case creep15:
-                return new Creep15(context, IConstants.Creeps.creep15);
+                return new Creep15(context, Constants.Creeps.creep15);
             case creep16:
-                return new Creep16(context, IConstants.Creeps.creep16);
+                return new Creep16(context, Constants.Creeps.creep16);
             default:
                 return null;
         }

@@ -38,7 +38,7 @@ package com.creeptd.server.client.states;
 import com.creeptd.client.Core;
 import org.apache.log4j.Logger;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.ClientMessage;
 import com.creeptd.common.messages.client.LoginRequestMessage;
 import com.creeptd.common.messages.client.RegistrationRequestMessage;
@@ -96,7 +96,7 @@ public class AnonymousState extends AbstractClientState {
             // Check Version
             if (!clientVersion.equals(Server.getVersion())) {
                 logger.warn("client " + this.getClient() + " has wrong version: " + clientVersion);
-                loginResponseMessage.setResponseType(IConstants.ResponseType.version);
+                loginResponseMessage.setResponseType(Constants.ResponseType.version);
                 this.getClient().send(loginResponseMessage);
                 return this;
             }
@@ -105,7 +105,7 @@ public class AnonymousState extends AbstractClientState {
             if (AuthenticationService.isBanned(this.getClient(),
                     loginRequestMessage)) {
                 logger.warn("blocked user try to login: " + loginRequestMessage.getUsername());
-                loginResponseMessage.setResponseType(IConstants.ResponseType.failed);
+                loginResponseMessage.setResponseType(Constants.ResponseType.failed);
                 this.getClient().send(loginResponseMessage);
                 return this;
             }
@@ -113,11 +113,11 @@ public class AnonymousState extends AbstractClientState {
             // Check login
             if (!AuthenticationService.login(this.getClient(),
                     loginRequestMessage)) {
-                loginResponseMessage.setResponseType(IConstants.ResponseType.failed);
+                loginResponseMessage.setResponseType(Constants.ResponseType.failed);
                 this.getClient().send(loginResponseMessage);
                 return this;
             }
-            loginResponseMessage.setResponseType(IConstants.ResponseType.ok);
+            loginResponseMessage.setResponseType(Constants.ResponseType.ok);
             this.getClient().send(loginResponseMessage);
             return new AuthenticatedState(this.getClient(), this);
 

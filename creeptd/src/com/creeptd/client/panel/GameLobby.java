@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.client.panel;
 
+import com.creeptd.client.Core;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -78,7 +79,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import com.creeptd.client.network.MessageListener;
 import com.creeptd.client.sound.SoundManagement;
 import com.creeptd.client.util.SkillImage;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.JoinGameRequestMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
 import com.creeptd.common.messages.client.RefreshMessage;
@@ -706,7 +707,7 @@ public class GameLobby extends GameScreen implements MessageListener {
 
                 rowsData.add(gd.getGameName());
                 rowsData.add(String.valueOf(playerCount) + "/" + String.valueOf(fullCount));
-                rowsData.add(IConstants.Map.getMapById(gd.getMapId()).toString());
+                rowsData.add(Constants.Map.getMapById(gd.getMapId()).toString());
 
                 // Mode
                 rowsData.add("<html><b>" + gd.getGameModeString() + "</b></html>");
@@ -899,10 +900,10 @@ public class GameLobby extends GameScreen implements MessageListener {
      */
     private void setPlayersList(PlayersMessage p) {
         if (p != null) {
-
             Player_Online_player_list = 0;
             DefaultListModel listModel = new DefaultListModel();
             Enumeration<String> e = Collections.enumeration(new TreeSet<String>(Collections.list(p.getPlayerNames().keys())));
+            
 
             while (e.hasMoreElements()) {
                 Player_Online_player_list++;
@@ -915,11 +916,13 @@ public class GameLobby extends GameScreen implements MessageListener {
                 } else {
                     html += key;
                 }
-                html += " <font color=\"gray\">(" + p.getPlayerNames().get(key).get(0) + ")</font>";
-                html += "</td><td align=\"right\" width=\"50\">";
-                URL skillImageURL = SkillImage.getURL(p.getPlayerNames().get(key).get(1));
-                html += "<img src=\"" + skillImageURL + "\">";
-                html += "</td></tr></table></html>";
+                if (!Core.isLANVersion()) {
+                    html += " <font color=\"gray\">(" + p.getPlayerNames().get(key).get(0) + ")</font>";
+                    html += "</td><td align=\"right\" width=\"50\">";
+                    URL skillImageURL = SkillImage.getURL(p.getPlayerNames().get(key).get(1));
+                    html += "<img src=\"" + skillImageURL + "\">";
+                    html += "</td></tr></table></html>";
+                }
                 listModel.addElement(html);
             }
 
@@ -966,7 +969,7 @@ public class GameLobby extends GameScreen implements MessageListener {
 
         GameDescription GameRow = this.games.get(selectedRow);
         java.net.URL imageURL = getClass().getClassLoader().getResource(
-                IConstants.Map.getPictureThumbnailPath(IConstants.Map.getMapById(GameRow.getMapId()).toString()));
+                Constants.Map.getPictureThumbnailPath(Constants.Map.getMapById(GameRow.getMapId()).toString()));
 
         //Mod
         String Mod = "<b>" + GameRow.getGameModeString() + "</b>";
@@ -982,7 +985,7 @@ public class GameLobby extends GameScreen implements MessageListener {
         }
 
 
-        String txt = "<div align=\"center\"><div style=\"background: gray; color: white; margin-bottom: 5\"><b>" + GameRow.getGameName() + "</b><br>(" + IConstants.Map.getMapById(GameRow.getMapId()).toString() + ")<br> </div>" + "<table border='0' style='border-collapse: collapse' width='270' height='102' cellpadding='3'>" + "<tr>" + "<td width='122' valign='top' height='102'>" + "<center>" + "	<img src='" + imageURL + "' width='100' height='100'></center></td>" + "	<td valign='top' width='150' height='102'>" + "	Players: " + GameRow.getCurrentPlayers() + " of " + GameRow.getNumberOfPlayers() + "<br>" + "	Mode: " + Mod + "<br>" + "	Status: " + StateMSG + "<br>" + "	Min/Max: " + GameRow.getMinEloPoints() + " / " + GameRow.getMaxEloPoints() + "<br>" + "	Password: " + ("".equals(GameRow.getPassword()) ? "no" : "yes") + "<br>" + "  </td>" + "</tr>" + "</table>" + "</div><div style=\"margin-top: 5\">" + "<b>Players:</b> " + GameRow.getPlayer1() + " " + GameRow.getPlayer2() + " " + GameRow.getPlayer3() + " " + GameRow.getPlayer4() + "<br>" + "</div></font>";
+        String txt = "<div align=\"center\"><div style=\"background: gray; color: white; margin-bottom: 5\"><b>" + GameRow.getGameName() + "</b><br>(" + Constants.Map.getMapById(GameRow.getMapId()).toString() + ")<br> </div>" + "<table border='0' style='border-collapse: collapse' width='270' height='102' cellpadding='3'>" + "<tr>" + "<td width='122' valign='top' height='102'>" + "<center>" + "	<img src='" + imageURL + "' width='100' height='100'></center></td>" + "	<td valign='top' width='150' height='102'>" + "	Players: " + GameRow.getCurrentPlayers() + " of " + GameRow.getNumberOfPlayers() + "<br>" + "	Mode: " + Mod + "<br>" + "	Status: " + StateMSG + "<br>" + "	Min/Max: " + GameRow.getMinEloPoints() + " / " + GameRow.getMaxEloPoints() + "<br>" + "	Password: " + ("".equals(GameRow.getPassword()) ? "no" : "yes") + "<br>" + "  </td>" + "</tr>" + "</table>" + "</div><div style=\"margin-top: 5\">" + "<b>Players:</b> " + GameRow.getPlayer1() + " " + GameRow.getPlayer2() + " " + GameRow.getPlayer3() + " " + GameRow.getPlayer4() + "<br>" + "</div></font>";
 
         this.setGameInfoEditorPaneHTML(txt);
 
@@ -1074,7 +1077,7 @@ public class GameLobby extends GameScreen implements MessageListener {
 
         if (m instanceof JoinGameResponseMessage) {
             if (((JoinGameResponseMessage) m).getResponseType().equals(
-                    IConstants.ResponseType.ok)) {
+                    Constants.ResponseType.ok)) {
 
                 WaitingGamePanel wgp = new WaitingGamePanel();
                 if (this.joinGame == null) {

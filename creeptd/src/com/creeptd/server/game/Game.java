@@ -47,7 +47,7 @@ import javax.persistence.EntityTransaction;
 
 import org.apache.log4j.Logger;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.CreateGameMessage;
 import com.creeptd.common.messages.client.GameMessage;
 import com.creeptd.common.messages.client.JoinGameRequestMessage;
@@ -360,7 +360,7 @@ public class Game extends AbstractGame {
             entityTransaction.begin();
 
             GameJournal gameJournalEntry = new GameJournal();
-            String mapname = IConstants.Map.getMapById(this.getMapId()).getFilename();
+            String mapname = Constants.Map.getMapById(this.getMapId()).getFilename();
             mapname = mapname.replaceAll("com/creeptd/client/resources/maps/map_", "");
             gameJournalEntry.setMap(mapname.replaceAll(".map", ""));
             gameJournalEntry.setName(this.getGameName());
@@ -434,16 +434,16 @@ public class Game extends AbstractGame {
      */
     public boolean check4Multi(String ip, String mac) {
         /*
-         * TODO if (IConstants.MUTIACCOUNT_IP_CHECK ||
-         * IConstants.MUTIACCOUNT_MAC_CHECK) { boolean a = false; synchronized
+         * TODO if (Constants.MUTIACCOUNT_IP_CHECK ||
+         * Constants.MUTIACCOUNT_MAC_CHECK) { boolean a = false; synchronized
          * (this.clients) { for (PlayerInGame p : this.clients) { Client c =
          * p.getClient(); // If the client from same Computer if
          * (mac.equalsIgnoreCase(c.getPlayerModel().getMac()) &&
-         * IConstants.MUTIACCOUNT_MAC_CHECK) {
+         * Constants.MUTIACCOUNT_MAC_CHECK) {
          * logger.warn("Multiaccounting detected. MAC: " + mac); return false; }
          * // If the client from same IP if
          * (ip.equalsIgnoreCase(c.getIPAddress()) &&
-         * IConstants.MUTIACCOUNT_IP_CHECK) { if (a) {
+         * Constants.MUTIACCOUNT_IP_CHECK) { if (a) {
          * logger.warn("Multiaccounting detected. IP: " + ip); return false; } a
          * = true; } } } }
          */

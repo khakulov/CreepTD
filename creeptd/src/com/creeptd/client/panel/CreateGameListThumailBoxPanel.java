@@ -51,7 +51,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * The Create GameList Panel @ThumailBox
@@ -66,11 +66,11 @@ public class CreateGameListThumailBoxPanel extends JPanel implements MouseListen
      */
     private static final long serialVersionUID = 4L;
     public int mapID;
-    public IConstants.Map map;
+    public Constants.Map map;
     private JLabel name;
     private CreateGameListPanel creategameListPanel;
 
-    public CreateGameListThumailBoxPanel(CreateGameListPanel createGameListPanel, IConstants.Map map) {
+    public CreateGameListThumailBoxPanel(CreateGameListPanel createGameListPanel, Constants.Map map) {
 
         this.mapID = map.ordinal();
         this.map = map;
@@ -102,7 +102,7 @@ public class CreateGameListThumailBoxPanel extends JPanel implements MouseListen
         ImageIcon preview = null;
 
 
-        InputStream file = this.getClass().getClassLoader().getResourceAsStream(IConstants.Map.getPictureThumbnailPath(this.map.toString()));
+        InputStream file = this.getClass().getClassLoader().getResourceAsStream(Constants.Map.getPictureThumbnailPath(this.map.toString()));
 
 
         if (file != null) {

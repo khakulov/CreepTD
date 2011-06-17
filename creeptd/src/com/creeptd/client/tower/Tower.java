@@ -40,8 +40,8 @@ import java.awt.Graphics2D;
 
 import com.creeptd.client.game.GameContext;
 import com.creeptd.client.grid.Grid;
-import com.creeptd.common.IConstants;
-import com.creeptd.common.IConstants.DamageType;
+import com.creeptd.common.Constants;
+import com.creeptd.common.Constants.DamageType;
 
 /**
  * Interface for all towers.
@@ -269,12 +269,12 @@ public interface Tower {
      * @param type
      *            the type to set
      */
-    void setType(IConstants.Towers type);
+    void setType(Constants.Towers type);
 
     /**
      * @return the type
      */
-    IConstants.Towers getType();
+    Constants.Towers getType();
 
     /**
      * @return the sellPrice

@@ -52,7 +52,7 @@ import javax.swing.UIManager;
 import com.creeptd.client.Core;
 import com.creeptd.client.network.MessageListener;
 import com.creeptd.common.Password;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.LoginRequestMessage;
 import com.creeptd.common.messages.client.ServerOnlineRequestMessage;
 import com.creeptd.common.messages.server.LoginResponseMessage;
@@ -234,9 +234,9 @@ public class LoginPanel extends GameScreen implements MessageListener {
     public void update(ServerMessage m) {
         if (m instanceof LoginResponseMessage) {
             LoginResponseMessage response = (LoginResponseMessage) m;
-            if (response.getResponseType() == IConstants.ResponseType.ok) {
+            if (response.getResponseType() == Constants.ResponseType.ok) {
                 getCore().pushScreen(new GameLobby());
-            } else if (response.getResponseType() == IConstants.ResponseType.version) {
+            } else if (response.getResponseType() == Constants.ResponseType.version) {
                 errorDialog("Wrong version \u2013 Please download the latest version." + "\n\n" + "If that doesn't work, you may need to clear the Java WebStart cache:\nGo to your system panel, select \"Java\", \"Show temporary files\" and clear your copy of the game.");
                 loginButton.setEnabled(true);
             } else {

@@ -48,9 +48,9 @@ import com.creeptd.client.game.PlayerContext;
 import com.creeptd.client.grid.Grid;
 import com.creeptd.client.sound.SoundManagement;
 import com.creeptd.client.util.Cache;
-import com.creeptd.common.IConstants;
-import com.creeptd.common.IConstants.DamageType;
-import com.creeptd.common.IConstants.Towers;
+import com.creeptd.common.Constants;
+import com.creeptd.common.Constants.DamageType;
+import com.creeptd.common.Constants.Towers;
 import java.awt.Composite;
 
 /**
@@ -61,7 +61,7 @@ import java.awt.Composite;
  */
 public abstract class AbstractTower implements Tower {
 
-    private IConstants.Towers type;
+    private Constants.Towers type;
     private GameContext context;
     private boolean selected = false;
     private int price;
@@ -275,10 +275,10 @@ public abstract class AbstractTower implements Tower {
      * @param grid
      *            the grid where the tower is placed
      */
-    protected AbstractTower(IConstants.Towers type, GameContext context,
+    protected AbstractTower(Constants.Towers type, GameContext context,
             Grid grid) {
         this.setBuilding(false);
-        this.buildTime = IConstants.USER_ACTION_DELAY;
+        this.buildTime = Constants.USER_ACTION_DELAY;
         this.upgradeTime = 0;
         this.changeStrategyTime = 0;
         this.context = context;
@@ -405,7 +405,7 @@ public abstract class AbstractTower implements Tower {
 
         if (isSelected()) {
             Composite oldComposite = g.getComposite();
-            IConstants.Towers current = this.type;
+            Constants.Towers current = this.type;
             while (current != null) {
                 Arc2D rangeArcUpgrade = new Arc2D.Float();
                 rangeArcUpgrade.setArcByCenter(Grid.SIZE / 2, Grid.SIZE / 2, current.getRange(), 0.0, 360.0, Arc2D.CHORD);
@@ -430,23 +430,23 @@ public abstract class AbstractTower implements Tower {
         if (this.buildTime > 0) {
 
             g.setColor(Color.BLACK);
-            g.fillRect(20 - 20 * this.buildTime / IConstants.USER_ACTION_DELAY,
-                    1, 20 * this.buildTime / IConstants.USER_ACTION_DELAY, 19);
+            g.fillRect(20 - 20 * this.buildTime / Constants.USER_ACTION_DELAY,
+                    1, 20 * this.buildTime / Constants.USER_ACTION_DELAY, 19);
         }
 
         if (this.upgradeTime > 0) {
             g.setColor(Color.BLUE);
-            g.fillRect(1, 1, 20 * this.upgradeTime / IConstants.USER_ACTION_DELAY, 3);
+            g.fillRect(1, 1, 20 * this.upgradeTime / Constants.USER_ACTION_DELAY, 3);
         }
 
         if (this.sellTime > 0) {
             g.setColor(Color.RED);
-            g.fillRect(1, 1, 20 * this.sellTime / IConstants.USER_ACTION_DELAY, 3);
+            g.fillRect(1, 1, 20 * this.sellTime / Constants.USER_ACTION_DELAY, 3);
         }
 
         if (this.changeStrategyTime > 0) {
             g.setColor(Color.ORANGE);
-            g.fillRect(1, 1, 20 * this.changeStrategyTime / IConstants.USER_ACTION_DELAY, 3);
+            g.fillRect(1, 1, 20 * this.changeStrategyTime / Constants.USER_ACTION_DELAY, 3);
         }
 
         g.setTransform(save);
@@ -499,7 +499,7 @@ public abstract class AbstractTower implements Tower {
         //upgrade animation
         if (this.upgradeTime > 0) {
             this.upgradeTime--;
-            if (this.runningTowerUpgrades > 0 && this.upgradeTime == IConstants.USER_ACTION_DELAY) {
+            if (this.runningTowerUpgrades > 0 && this.upgradeTime == Constants.USER_ACTION_DELAY) {
 
                 this.upgrade();
                 this.runningTowerUpgrades = 0;
@@ -728,14 +728,14 @@ public abstract class AbstractTower implements Tower {
      * @param type
      *            the type to set
      */
-    public void setType(IConstants.Towers type) {
+    public void setType(Constants.Towers type) {
         this.type = type;
     }
 
     /**
      * @return the type
      */
-    public IConstants.Towers getType() {
+    public Constants.Towers getType() {
         return type;
     }
 

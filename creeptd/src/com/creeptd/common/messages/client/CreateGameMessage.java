@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.common.messages.client;
 
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,7 +65,7 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
     private String Passwort = "";
     private Integer MaxEloPoints = 0;
     private Integer MinEloPoints = 0;
-    private IConstants.Mode gameMode;
+    private Constants.Mode gameMode;
     private Boolean shufflePlayers = true;
 
     /**
@@ -178,14 +178,14 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
     /**
      * @param gameMode Mode number of game
      */
-    public void setGameMode(IConstants.Mode mode) {
+    public void setGameMode(Constants.Mode mode) {
         this.gameMode = mode;
     }
 
     /**
      * @return the Gamemode number
      */
-    public IConstants.Mode getGameMode() {
+    public Constants.Mode getGameMode() {
         return gameMode;
     }
 
@@ -210,10 +210,10 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
             this.setMaxEloPoints(Integer.valueOf(matcher.group(4)));
             this.setMinEloPoints(Integer.valueOf(matcher.group(5)));
             this.setPasswort(matcher.group(6));
-            IConstants.Mode mode = IConstants.Mode.ALLVSALL;
+            Constants.Mode mode = Constants.Mode.ALLVSALL;
             try {
                 int sentModeValue = Integer.valueOf(matcher.group(7));
-                IConstants.Mode sentMode = IConstants.Mode.forValue(sentModeValue);
+                Constants.Mode sentMode = Constants.Mode.forValue(sentModeValue);
                 if (sentMode != null) mode = sentMode;
             } catch (Exception ex) {}
             this.setGameMode(mode);

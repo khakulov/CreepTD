@@ -44,7 +44,7 @@ import javax.swing.JPanel;
 
 import com.creeptd.client.game.ContextListener;
 import com.creeptd.client.game.GameContext;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * Panel with Buttons to select Tower.
@@ -86,17 +86,17 @@ public class TowerSelPanel extends JPanel implements ContextListener {
 
         setLayout(new GridLayout(2, 3));
 
-        button1 = new TowerBuyButton(gamepanel, IConstants.Towers.tower1,
+        button1 = new TowerBuyButton(gamepanel, Constants.Towers.tower1,
                 "towerIconButton1");
-        button2 = new TowerBuyButton(gamepanel, IConstants.Towers.tower2,
+        button2 = new TowerBuyButton(gamepanel, Constants.Towers.tower2,
                 "towerIconButton2");
-        button3 = new TowerBuyButton(gamepanel, IConstants.Towers.tower3,
+        button3 = new TowerBuyButton(gamepanel, Constants.Towers.tower3,
                 "towerIconButton3");
-        button4 = new TowerBuyButton(gamepanel, IConstants.Towers.tower4,
+        button4 = new TowerBuyButton(gamepanel, Constants.Towers.tower4,
                 "towerIconButton4");
-        button5 = new TowerBuyButton(gamepanel, IConstants.Towers.tower5,
+        button5 = new TowerBuyButton(gamepanel, Constants.Towers.tower5,
                 "towerIconButton5");
-        button6 = new TowerBuyButton(gamepanel, IConstants.Towers.tower6,
+        button6 = new TowerBuyButton(gamepanel, Constants.Towers.tower6,
                 "towerIconButton6");
         add(button1);
         add(button2);
@@ -115,33 +115,33 @@ public class TowerSelPanel extends JPanel implements ContextListener {
         }
         int credits = context.getCredits();
 
-        if ((credits >= IConstants.Towers.tower1.getPrice())) {
+        if ((credits >= Constants.Towers.tower1.getPrice())) {
             this.button1.setEnabled(true);
         } else {
             this.button1.setEnabled(false);
         }
 
-        if ((credits >= IConstants.Towers.tower2.getPrice())) {
+        if ((credits >= Constants.Towers.tower2.getPrice())) {
             this.button2.setEnabled(true);
         } else {
             this.button2.setEnabled(false);
         }
-        if ((credits >= IConstants.Towers.tower3.getPrice())) {
+        if ((credits >= Constants.Towers.tower3.getPrice())) {
             this.button3.setEnabled(true);
         } else {
             this.button3.setEnabled(false);
         }
-        if ((credits >= IConstants.Towers.tower4.getPrice())) {
+        if ((credits >= Constants.Towers.tower4.getPrice())) {
             this.button4.setEnabled(true);
         } else {
             this.button4.setEnabled(false);
         }
-        if ((credits >= IConstants.Towers.tower5.getPrice())) {
+        if ((credits >= Constants.Towers.tower5.getPrice())) {
             this.button5.setEnabled(true);
         } else {
             this.button5.setEnabled(false);
         }
-        if ((credits >= IConstants.Towers.tower6.getPrice())) {
+        if ((credits >= Constants.Towers.tower6.getPrice())) {
             this.button6.setEnabled(true);
         } else {
             this.button6.setEnabled(false);

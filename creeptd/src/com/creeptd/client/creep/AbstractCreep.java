@@ -35,11 +35,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.client.creep;
 
-import static com.creeptd.common.IConstants.EAST;
-import static com.creeptd.common.IConstants.NORTH;
-import static com.creeptd.common.IConstants.SOUTH;
-import static com.creeptd.common.IConstants.WEST;
-import static com.creeptd.common.IConstants.WEST_MINUS;
+import static com.creeptd.common.Constants.EAST;
+import static com.creeptd.common.Constants.NORTH;
+import static com.creeptd.common.Constants.SOUTH;
+import static com.creeptd.common.Constants.WEST;
+import static com.creeptd.common.Constants.WEST_MINUS;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -53,7 +53,7 @@ import java.util.logging.Logger;
 import com.creeptd.client.game.GameContext;
 import com.creeptd.client.sound.SoundManagement;
 import com.creeptd.client.tower.Tower;
-import com.creeptd.common.IConstants;
+import com.creeptd.common.Constants;
 
 /**
  * Abstract implementation for a creep.
@@ -65,7 +65,7 @@ public abstract class AbstractCreep implements Creep {
 
     private static Logger logger = Logger.getLogger(AbstractCreep.class.getName());
     private GameContext context;
-    private IConstants.Creeps type;
+    private Constants.Creeps type;
     private long roundID;
     private int playerID;
     private int price;
@@ -172,7 +172,7 @@ public abstract class AbstractCreep implements Creep {
      * @param type
      *            the type of the creep
      */
-    protected AbstractCreep(GameContext context, IConstants.Creeps type) {
+    protected AbstractCreep(GameContext context, Constants.Creeps type) {
         this.context = context;
         this.type = type;
 
@@ -386,7 +386,7 @@ public abstract class AbstractCreep implements Creep {
     /**
      * {@inheritDoc}
      */
-    public IConstants.Creeps getType() {
+    public Constants.Creeps getType() {
         return this.type;
     }
 

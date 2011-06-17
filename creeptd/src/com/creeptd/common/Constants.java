@@ -43,7 +43,11 @@ import java.io.InputStreamReader;
  * 
  * @author andreas
  */
-public interface IConstants {
+public interface Constants {
+    /**
+     * Application version
+     */
+    String VERSION = "0.8.4-4 beta";
 
     /**
      * Default port for server-socket.
@@ -172,7 +176,7 @@ public interface IConstants {
             return this.value;
         }
         
-        public boolean equals(IConstants.Mode m) {
+        public boolean equals(Constants.Mode m) {
             return this.value == m.getValue();
         }
 
@@ -334,7 +338,7 @@ public interface IConstants {
 
             String path = "zufall.jpg";
             String tempStr = null;
-            InputStream res = (InputStream) IConstants.class.getClassLoader().getResourceAsStream(Map.valueOf(map).getFilename());
+            InputStream res = (InputStream) Constants.class.getClassLoader().getResourceAsStream(Map.valueOf(map).getFilename());
             if (res == null) {
                 System.out.println("Cannot open map: " + Map.valueOf(map).getFilename());
 
@@ -372,7 +376,7 @@ public interface IConstants {
 
             String path = "zufall.jpg";
             String tempStr = null;
-            InputStream res = (InputStream) IConstants.class.getClassLoader().getResourceAsStream(Map.valueOf(map).getFilename());
+            InputStream res = (InputStream) Constants.class.getClassLoader().getResourceAsStream(Map.valueOf(map).getFilename());
             if (res == null) {
                 System.out.println("Cannot open map: " + Map.valueOf(map).getFilename());
 
@@ -652,7 +656,7 @@ public interface IConstants {
         private double slowRate;
         private int slowTime;
         private DamageType damageType;
-        private IConstants.Towers next;
+        private Constants.Towers next;
         private Color towerColor;
         private String name;
         private String special;
@@ -746,7 +750,7 @@ public interface IConstants {
          */
         Towers(int price, int range, int speed, int damage, int spashRadius,
                 double damageReductionAtRadius, double slowRate, int slowTime,
-                DamageType damageType, IConstants.Towers next,
+                DamageType damageType, Constants.Towers next,
                 Color towerColor, String name, String special) {
 
             this.price = price;
@@ -815,13 +819,13 @@ public interface IConstants {
          *
          * @return next Towertype after upgrade
          */
-        public IConstants.Towers getNext() {
+        public Constants.Towers getNext() {
             return next;
         }
 
         public int getUpgradeLevel() {
             int level = (this.equals(tower61) || this.equals(tower6)) ? 2 : 4;
-            IConstants.Towers current = this;
+            Constants.Towers current = this;
             while (current.next != null) {
                 current = current.next;
                 level--;
