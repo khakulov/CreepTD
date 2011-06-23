@@ -35,13 +35,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.client.game;
 
-import com.creeptd.client.creep.Creep;
-import com.creeptd.client.creep.CreepFactory;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.logging.Logger;
-import java.util.Iterator;
 
 import com.creeptd.client.network.MessageListener;
 import com.creeptd.client.network.Network;
@@ -49,9 +46,7 @@ import com.creeptd.client.panel.GamePanel;
 import com.creeptd.client.sound.SoundManagement;
 import com.creeptd.client.tower.Tower;
 import com.creeptd.common.Constants;
-import com.creeptd.common.messages.server.BuildCreepRoundMessage;
 import com.creeptd.common.messages.server.ServerChatMessage;
-import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.common.messages.server.RoundMessage;
 import com.creeptd.common.messages.server.ServerMessage;
 import com.creeptd.common.messages.server.StartGameMessage;
@@ -112,6 +107,7 @@ public class GameLoop extends Thread implements MessageListener, Constants {
         this.network.addListener(this);
         this.soundManagement = soundManagement;
         this.network.makeContact();
+        GameContext.setPositionCounter(0);
     }
 
     /**
@@ -303,7 +299,7 @@ public class GameLoop extends Thread implements MessageListener, Constants {
         int cnt = 0;
         GameContext.BoardLocation loc = null;
         GameContext context = null;
-        GameContext.setPositionCounter(0);
+        GameContext.setPositionCounter(players.size());
         for (Integer id : players.keySet()) {
             int position = playersOrder.get(id);
             switch (position) {
@@ -341,7 +337,6 @@ public class GameLoop extends Thread implements MessageListener, Constants {
             context.fireIncomeChangedEvent();
             context.fireLifesChangedEvent();
         }
-        GameContext.setPositionCounter(this.contexts.size());
     }
 
     /**

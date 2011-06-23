@@ -52,7 +52,6 @@ import com.creeptd.client.game.GameContext;
 import com.creeptd.common.Constants;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;

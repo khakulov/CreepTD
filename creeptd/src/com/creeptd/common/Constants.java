@@ -851,17 +851,17 @@ public interface Constants {
         public static String translateSpeed(int value) {
             String speed = "";
             if (value > 50) {
-                speed = "ultra slow";
+                speed = "Ultra slow";
             } else if (value > 20) {
-                speed = "very slow";
+                speed = "Very slow";
             } else if (value > 15) {
-                speed = "slow";
+                speed = "Slow";
             } else if (value > 10) {
-                speed = "medium";
+                speed = "Medium";
             } else if (value > 7) {
-                speed = "fast";
+                speed = "Fast";
             } else if (value > 3) {
-                speed = "very fast";
+                speed = "Very fast";
             } else {
                 speed = "ultra fast";
             }

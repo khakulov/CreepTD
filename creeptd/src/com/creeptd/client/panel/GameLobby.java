@@ -1008,6 +1008,7 @@ public class GameLobby extends GameScreen implements MessageListener {
         }
         this.playerList.setCellRenderer(new PlayerCellRenderer());
         this.playerList.setModel(listModel);
+        this.playerList.repaint();
     }
 
     /**
@@ -1071,6 +1072,7 @@ public class GameLobby extends GameScreen implements MessageListener {
         if (!content.equals(this.gameInfoEditorPane.getText())) {
             this.gameInfoEditorPane.setText(content);
         }
+        this.gameInfoEditorPane.repaint();
     }
 
     /**
