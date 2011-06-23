@@ -37,7 +37,6 @@ package com.creeptd.client.panel;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -54,11 +53,14 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import com.creeptd.client.network.MessageListener;
+import com.creeptd.client.util.Fonts;
 import com.creeptd.common.messages.client.ScoreRequestMessage;
 import com.creeptd.common.messages.server.HighscoreEntry;
 import com.creeptd.common.messages.server.HighscoreResponseMessage;
 import com.creeptd.common.messages.server.ScoreResponseMessage;
 import com.creeptd.common.messages.server.ServerMessage;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * Panel for the highscore.
@@ -68,7 +70,7 @@ import com.creeptd.common.messages.server.ServerMessage;
 public class GameResultPanel extends GameScreen implements MessageListener {
 
     private static final long serialVersionUID = 4925493108175118730L;
-    private final JLabel logoImage;
+    private final JLabel title;
     private JTable highscoreTable;
     private JScrollPane highscoreScrollPane;
     private final JButton back;
@@ -83,19 +85,16 @@ public class GameResultPanel extends GameScreen implements MessageListener {
         this.setLayout(null);
         this.setBackground(Color.BLACK);
 
-        java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/header-gameresults.jpg");
-        logoImage = new JLabel();
-        logoImage.setBounds(225, 10, 450, 100);
-        logoImage.setText("<html><img src=\"" + imageURL + "\"></html>");
+        title = Fonts.getFrameTitle(_("Game results"), 10);
 
-        this.back = new JButton("OK");
+        this.back = new JButton(_("OK"));
         this.back.setBounds(385, 640, 120, 25);
         this.back.setBackground(Color.BLACK);
         this.back.setForeground(Color.GREEN);
 
         this.initHighscoreTable();
 
-        this.add(this.logoImage);
+        this.add(this.title);
         this.add(this.highscoreScrollPane);
         this.add(this.back);
 
@@ -176,7 +175,7 @@ public class GameResultPanel extends GameScreen implements MessageListener {
      *
      */
     private void updateTable() {
-        final Object[] headerNames = new Object[]{"Name", "Points (Total)", "Skill (Total)"};
+        final Object[] headerNames = new Object[]{_("Username"), _("Points (Total)"), _("Skill (Total)")};
 
         final DefaultTableModel model = new DefaultTableModel() {
             private static final long serialVersionUID = 6115678865194002026L;
@@ -206,7 +205,7 @@ public class GameResultPanel extends GameScreen implements MessageListener {
      * @param hrm the highscoreResponseMessage
      */
     private void processHighscoreMessage(HighscoreResponseMessage hrm) {
-        final Object[] headerNames = new Object[]{"Rank", "Name", "Points", "Skill"};
+        final Object[] headerNames = new Object[]{_("Rank"), _("Username"), _("Points (Last)"), _("Skill (Last)")};
         final Vector<Vector<String>> rows = new Vector<Vector<String>>();
         final DefaultTableModel model = new DefaultTableModel() {
             private static final long serialVersionUID = 6115678865194002026L;

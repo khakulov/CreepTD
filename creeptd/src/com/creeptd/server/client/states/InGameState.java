@@ -85,7 +85,7 @@ public class InGameState extends AbstractClientState {
     public AbstractClientState receiveMessage(ClientMessage message) {
         if (message == null) {
             LogoutMessage m = new LogoutMessage();
-            m.setClientId(this.getClient().getClientID());
+            m.setClientId(this.getClient().getId());
             this.game.receive(m);
             AuthenticationService.logout(this.getClient());
             logger.info("client " + this.getClient() + " disconnected in InGameState");
@@ -125,5 +125,10 @@ public class InGameState extends AbstractClientState {
 
     @Override
     public void leave() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof InGameState;
     }
 }

@@ -95,9 +95,9 @@ public class PlayerList implements Iterable<PlayerInGame>, Cloneable {
 
                         public int compare(PlayerInGame p1, PlayerInGame p2) {
                             Client c1 = p1.getClient();
-                            Integer id1 = c1.getClientID();
+                            Integer id1 = c1.getId();
                             Client c2 = p2.getClient();
-                            Integer id2 = c2.getClientID();
+                            Integer id2 = c2.getId();
                             return id1.compareTo(id2);
                         }
                     });
@@ -161,7 +161,7 @@ public class PlayerList implements Iterable<PlayerInGame>, Cloneable {
      */
     private int find(int clientId) {
         for (int i = 0; i < this.players.size(); i++) {
-            if (this.players.get(i).getClient().getClientID() == clientId) {
+            if (this.players.get(i).getClient().getId() == clientId) {
                 return i;
             }
         }

@@ -122,7 +122,7 @@ public class AuthenticatedState extends AbstractClientState {
             return this;
         }
         if (message instanceof RefreshMessage) {
-            this.getClient().send(Lobby.getPlayersMessage());
+            this.getClient().send(Lobby.getCompletePlayersMessage());
             this.getClient().send(GameManager.getGamesMessage());
             return this;
         }
@@ -196,7 +196,7 @@ public class AuthenticatedState extends AbstractClientState {
                 return;
             }
         }
-        Lobby.sendAll(new ServerChatMessage(getClient().getPlayerModel().getName(), message));
+        Lobby.sendAll(new ServerChatMessage(getClient().getPlayerModel().getName(), message, false));
     }
 
     /**
@@ -227,7 +227,7 @@ public class AuthenticatedState extends AbstractClientState {
         }
         if ("/msg".equalsIgnoreCase(command) && player.hasPermission(Permission.MOD_CHAT)) {
             message = "<html><b>" + message + "</b></html>";
-            Lobby.sendAll(new ServerChatMessage("System", message));
+            Lobby.sendAll(new ServerChatMessage("System", message, false));
             return true;
         }
         if ("/kick".equalsIgnoreCase(command) && player.hasPermission(Permission.KICK)) {
@@ -259,7 +259,7 @@ public class AuthenticatedState extends AbstractClientState {
         if ("/unban".equalsIgnoreCase(command) && player.hasPermission(Permission.UNBAN)) {
             Player targetPlayer = AuthenticationService.getPlayer(message);
             if (targetPlayer != null) {
-                Lobby.unBanClient(targetPlayer, this.getClient());
+                Lobby.unbanClient(targetPlayer, this.getClient());
             } else {
                 sendSystemMessage(message + " user not found.");
             }
@@ -274,7 +274,7 @@ public class AuthenticatedState extends AbstractClientState {
      * @param message The message
      */
     private void sendSystemMessage(String message) {
-        this.getClient().send(new ServerChatMessage("System", message));
+        this.getClient().send(new ServerChatMessage("System", message, false));
     }
 
     @Override
@@ -285,5 +285,10 @@ public class AuthenticatedState extends AbstractClientState {
     @Override
     public void leave() {
         Lobby.remove(this.getClient());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof AuthenticatedState;
     }
 }

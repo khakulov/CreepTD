@@ -49,6 +49,9 @@ import javax.swing.JButton;
 import com.creeptd.client.game.GameContext;
 import com.creeptd.common.Constants;
 
+import java.net.URL;
+import static com.creeptd.client.i18n.Translator.*;
+
 public class CreepSendButton extends JButton implements ActionListener, MouseListener {
 
     private static final long serialVersionUID = 1L;
@@ -98,11 +101,12 @@ public class CreepSendButton extends JButton implements ActionListener, MouseLis
         gamepanel.getLastTowerInfoPanel().setVisible(false);
         CreepInfoPanel infoPanel = gamepanel.getCreepInfoPanel();
         infoPanel.getNameInfo().setText(type.getName());
-        infoPanel.getPriceInfo().setText("Price: " + format(type.getPrice()));
-        infoPanel.getIncomeInfo().setText("Income: +" + format(type.getIncome()) + " (" + format(type.getIncomePercentage()) + "%)");
-        infoPanel.getHealthInfo().setText("Health: " + format(type.getHealth()));
-        infoPanel.getSpeedInfo().setText("Speed: " + type.getSpeedString());
-        infoPanel.getSpecialInfo().setText(type.getSpecial());
+        URL imageURL = this.getClass().getClassLoader().getResource("com/creeptd/client/resources/panel");
+        infoPanel.getPriceInfo().setText("<html><img src=\""+imageURL+"/icon_credits.gif\"> &nbsp;" + format(type.getPrice())+"</html>");
+        infoPanel.getIncomeInfo().setText("<html><img src=\""+imageURL+"/icon_income.gif\"> &nbsp;" + format(type.getIncome()) + " (" + format(type.getIncomePercentage()) + "%)</html>");
+        infoPanel.getHealthInfo().setText("<html><img src=\""+imageURL+"/icon_health.gif\"> &nbsp;" + format(type.getHealth())+"</html>");
+        infoPanel.getSpeedInfo().setText("<html><img src=\""+imageURL+"/icon_speed.gif\"> &nbsp;" + _(type.getSpeedString())+"</html>");
+        infoPanel.getSpecialInfo().setText(_(type.getSpecial()));
         infoPanel.setVisible(true);
     }
 

@@ -58,12 +58,17 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import com.creeptd.client.network.MessageListener;
+import com.creeptd.client.util.Fonts;
 import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.CreateGameMessage;
 import com.creeptd.common.messages.server.CreateGameResponseMessage;
 import com.creeptd.common.messages.server.GameDescription;
 import com.creeptd.common.messages.server.ServerMessage;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JCheckBox;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * The create game panel.
@@ -72,7 +77,7 @@ import javax.swing.JCheckBox;
  */
 public class CreateGamePanel extends GameScreen implements MessageListener {
     private static final long serialVersionUID = 1L;
-    private JLabel logoImage;
+    private JLabel title;
     private JLabel name;
     private JLabel player;
     private JLabel map;
@@ -101,24 +106,21 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
     public CreateGamePanel() {
         this.setLayout(null);
         this.setBackground(Color.BLACK);
+        
+        title = Fonts.getFrameTitle(_("Create game"), 70);
 
-        java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/header-creategame.jpg");
-        logoImage = new JLabel();
-        logoImage.setBounds(225, 70, 400, 30);
-        logoImage.setText("<html><img src=\"" + imageURL + "\"></html>");
-
-        name = new JLabel("Name: ");
+        name = new JLabel(_("Game name")+": ");
         name.setBounds(200, 200, 200, 30);
         name.setForeground(Color.GRAY);
         name.setFont(new Font("Arial", Font.PLAIN, 12));
 
         tName = new JTextField();
-        tName.setText("Game of");
+        tName.setText(_("Game of"));
         tName.setBounds(300, 200, 200, 25);
         tName.setFont(new Font("Arial", Font.PLAIN, 12));
         this.setGameScreenFocus(tName);
 
-        player = new JLabel("Players: ");
+        player = new JLabel(_("Players")+": ");
         player.setBounds(200, 250, 200, 25);
         player.setForeground(Color.GRAY);
         player.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -129,7 +131,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         tPlayer.setBounds(300, 250, 200, 25);
         tPlayer.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        lGamemode = new JLabel("Game mode: ");
+        lGamemode = new JLabel(_("Mode")+": ");
         lGamemode.setBounds(200, 450, 200, 25);
         lGamemode.setForeground(Color.GRAY);
         lGamemode.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -140,17 +142,17 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         tGamemode.setBounds(300, 450, 200, 25);
         tGamemode.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        map = new JLabel("Map: ");
+        map = new JLabel(_("Map")+": ");
         map.setBounds(200, 300, 200, 25);
         map.setForeground(Color.GRAY);
         map.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        tMap = new JButton("Select Map");
+        tMap = new JButton(_("Select map"));
         tMap.setBackground(Color.BLACK);
         tMap.setForeground(Color.GREEN);
         tMap.setBounds(300, 300, 200, 25);
 
-        Passwort = new JLabel("Password: ");
+        Passwort = new JLabel(_("Password")+": ");
         Passwort.setBounds(200, 350, 200, 25);
         Passwort.setForeground(Color.GRAY);
         Passwort.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -159,7 +161,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         tPasswort.setBounds(300, 350, 200, 25);
         tPasswort.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        MaxEloPoints = new JLabel("Min/max skill: ");
+        MaxEloPoints = new JLabel(_("Min-Max skill")+": ");
         MaxEloPoints.setBounds(200, 400, 200, 25);
         MaxEloPoints.setForeground(Color.GRAY);
         MaxEloPoints.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -172,12 +174,12 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         tMaxEloPoints.setBounds(420, 400, 80, 25);
         tMaxEloPoints.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        create = new JButton("Create game");
+        create = new JButton(_("Create game"));
         create.setBounds(225, 600, 200, 25);
         create.setBackground(Color.BLACK);
         create.setForeground(Color.GREEN);
 
-        quit = new JButton("Cancel");
+        quit = new JButton(_("Cancel"));
         quit.setBounds(475, 600, 200, 25);
         quit.setBackground(Color.BLACK);
         quit.setForeground(Color.GREEN);
@@ -185,21 +187,20 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         previewDescription = new JLabel("preview");
         previewDescription.setBounds(600, 200, 250, 25);
         previewDescription.setHorizontalAlignment(SwingConstants.CENTER);
-        previewDescription.setText("Random map");
+        previewDescription.setText(_("Random map"));
         previewDescription.setBackground(Color.BLACK);
         previewDescription.setForeground(Color.GREEN);
 
-        String[] players = {"2 Players", "3 Players", "4 Players"};
-        for (String s : players) {
-            tPlayer.addItem(s);
-        }
+        Map<String,String> args = new HashMap<String,String>();
+        args.put("n", "2"); tPlayer.addItem(__("%n% players", args));
+        args.put("n", "3"); tPlayer.addItem(__("%n% players", args));
+        args.put("n", "4"); tPlayer.addItem(__("%n% players", args));
         //don't change the index
-        tGamemode.addItem("ALL vs ALL");
-        tGamemode.addItem("Send to next player");
-        tGamemode.addItem("Send to random player");
-        tGamemode.addItem("Team 2vs2");
+        tGamemode.addItem(_(Constants.Mode.ALLVSALL.toString()));
+        tGamemode.addItem(_(Constants.Mode.SENDNEXT.toString()));
+        tGamemode.addItem(_(Constants.Mode.SENDRANDOM.toString()));
+        tGamemode.addItem(_(Constants.Mode.TEAM2VS2.toString()));
         tGamemode.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 JComboBox tGamemode = (JComboBox) e.getSource();
                 if (tGamemode.getSelectedIndex() == 3) { // Team 2vs2
@@ -212,8 +213,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         // tGamemode.addItem("Last man standing");
 
         try {
-            preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(
-                    "com/creeptd/client/resources/maps/zufall.jpg")));
+            preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("com/creeptd/client/resources/maps/random.jpg")));
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
@@ -224,7 +224,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         previewLabel = new JLabel(preview);
         previewLabel.setBounds(600, 240, 250, 250);
 
-        shufflePlayers = new JCheckBox("Shuffle player positions");
+        shufflePlayers = new JCheckBox(_("Shuffle player positions"));
         shufflePlayers.setSelected(true);
         shufflePlayers.setBounds(300, 490, 200, 25);
         shufflePlayers.setForeground(Color.green);
@@ -239,7 +239,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         this.add(tPasswort);
         this.add(tMaxEloPoints);
         this.add(tMinEloPoints);
-        this.add(logoImage);
+        this.add(title);
         this.add(name);
         this.add(tName);
         this.add(player);
@@ -315,7 +315,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
     private void openCreateGameDialog() {
 
         if (OpenCreateGameDialog == null) {
-            OpenCreateGameDialog = new CreateGameListPanel(this, "CreepTD - Pleace select a map...");
+            OpenCreateGameDialog = new CreateGameListPanel(this, "CreepTD - "+_("Select map"));
         }
 
         OpenCreateGameDialog.setVisible(true);
@@ -329,11 +329,11 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         if (tName.getText().length() != 0) {
             StartGame = true;
         } else {
-            errorDialog("Please enter a name for the game!");
+            errorDialog(_("Please enter a name for the game!"));
             StartGame = false;
         }
         if (tName.getText().length() > 12) {
-            errorDialog("Maximum length of Gamename is 12");
+            errorDialog(_("Maximum length of game name is 12 characters."));
             StartGame = false;
         }
 
@@ -350,7 +350,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
             }
 
             if (maxEloPoints < minEloPoints) {
-                errorDialog("Maximum skill must be larger than minimum skill!");
+                errorDialog(_("Maximum skill must be larger than minimum skill!"));
                 StartGame = false;
 
             } else {
@@ -359,13 +359,13 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         }
         if (tGamemode.getSelectedIndex() == 1 || tGamemode.getSelectedIndex() == 2) {
             if (tPlayer.getSelectedIndex() == 0) {
-                errorDialog("This game mode requires 3 or 4 players!");
+                errorDialog(_("This game mode requires 3 or 4 players!"));
                 StartGame = false;
             }
         }
         if (tGamemode.getSelectedIndex() == 3) {
             if (tPlayer.getSelectedIndex() != 2) {
-                errorDialog("This game mode requires 4 players!");
+                errorDialog(_("This game mode requires 4 players!"));
                 StartGame = false;
             }
         }
@@ -424,7 +424,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
      */
     private void createGame(CreateGameResponseMessage g) {
         if (g.getResponseType().equals(Constants.ResponseType.failed)) {
-            errorDialog("Game already exists!");
+            errorDialog(_("A game of this name already exists."));
 
         } else if (g.getResponseType().equals(Constants.ResponseType.ok)) {
             GameDescription gd = new GameDescription();
@@ -468,7 +468,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         UIManager.put("OptionPane.background", Color.BLACK);
         UIManager.put("Panel.background", Color.BLACK);
         UIManager.put("OptionPane.messageForeground", Color.GREEN);
-        JOptionPane.showMessageDialog(this, msg, "error",
+        JOptionPane.showMessageDialog(this, msg, _("An error occured"),
                 JOptionPane.ERROR_MESSAGE);
     }
 
@@ -479,7 +479,11 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         try {
             preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(
                     Constants.Map.getPicturePath(Constants.Map.getMapById(id).toString()))));
-            previewDescription.setText("Preview " + Constants.Map.getMapById(id).toString());
+            String map = Constants.Map.getMapById(id).toString();
+            if (map.equals("Random_Map")) {
+                map = _("Random map");
+            }
+            previewDescription.setText(map);
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();

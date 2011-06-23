@@ -45,17 +45,28 @@ import javax.swing.JPanel;
 import com.creeptd.client.game.ContextListener;
 import com.creeptd.client.game.GameContext;
 import com.creeptd.common.Constants;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.net.URL;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+import javax.swing.SwingConstants;
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * Panel with Buttons to select Tower.
  * 
  * @author sven
  */
-public class TowerSelPanel extends JPanel implements ContextListener {
+public class TowerSelectPanel extends JPanel implements ContextListener {
 
     private static final long serialVersionUID = -1273757461985784088L;
     private final int height;
     private final int width;
+    private JLabel title;
+    private JPanel towerpanel;
     private JButton button1;
     private JButton button2;
     private JButton button3;
@@ -76,15 +87,33 @@ public class TowerSelPanel extends JPanel implements ContextListener {
      * @param gamepanel
      *            for getting object Gamepanel
      */
-    public TowerSelPanel(GamePanel gamepanel, int width, int height) {
+    public TowerSelectPanel(GamePanel gamepanel, int width, int height) {
         this.height = height;
         this.width = width;
         this.gamepanel = gamepanel;
+        this.setLayout(null);
         this.setBackground(Color.BLACK);
         this.setPreferredSize(new Dimension(this.width, this.height));
         this.setSize(this.width, this.height);
 
-        setLayout(new GridLayout(2, 3));
+        title = new JLabel() {
+            @Override
+            public void paintComponent(Graphics g) {
+                java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/sidebar-title.jpg");
+                Image img = new ImageIcon(imageURL).getImage();
+                g.drawImage(img, 0, 0, null);
+                super.paintComponent(g);
+            }
+        };
+        title.setBounds(0, 0, this.width, 15);
+        title.setForeground(Color.BLACK);
+        title.setFont(new Font("Arial", Font.BOLD, 12));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setText(_("Defend with towers"));
+
+        towerpanel = new JPanel();
+        towerpanel.setBounds(0, 15, this.width, this.height-14);
+        towerpanel.setLayout(new GridLayout(2, 3));
 
         button1 = new TowerBuyButton(gamepanel, Constants.Towers.tower1,
                 "towerIconButton1");
@@ -98,12 +127,14 @@ public class TowerSelPanel extends JPanel implements ContextListener {
                 "towerIconButton5");
         button6 = new TowerBuyButton(gamepanel, Constants.Towers.tower6,
                 "towerIconButton6");
-        add(button1);
-        add(button2);
-        add(button3);
-        add(button4);
-        add(button5);
-        add(button6);
+        towerpanel.add(button1);
+        towerpanel.add(button2);
+        towerpanel.add(button3);
+        towerpanel.add(button4);
+        towerpanel.add(button5);
+        towerpanel.add(button6);
+        add(title);
+        add(towerpanel);
     }
 
     /**

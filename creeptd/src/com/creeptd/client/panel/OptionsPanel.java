@@ -36,14 +36,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.creeptd.client.panel;
 
 import com.creeptd.client.Core;
+import com.creeptd.client.util.Fonts;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+
+import javax.swing.border.LineBorder;
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  *
@@ -61,18 +64,15 @@ public class OptionsPanel extends JDialog {
         this.setBounds(Core.getInstance().getCreatorX()+250, Core.getInstance().getCreatorY()+200, 400, 200);
         this.getContentPane().setForeground(Color.GREEN);
         this.getContentPane().setBackground(Color.BLACK);
-        this.setTitle("CreepTD - Options");
+        this.setTitle("CreepTD - "+_("Options"));
         this.setResizable(false);
-
-        title = new JLabel();
-        title.setBounds(20, 2, 360, 50);
-        URL imageURL = this.getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/header-options.jpg");
-        title.setText("<html><img src=\"" + imageURL + "\"></html>");
+        
+        title = Fonts.getFrameTitle(_("Options"), 0, this);
 
         soundsCheckBox = new JCheckBox();
-        soundsCheckBox.setText("Play sounds in game");
+        soundsCheckBox.setText(_("Play sounds in game"));
         soundsCheckBox.setSelected(sounds);
-        soundsCheckBox.setBounds(130, 70, 160, 30);
+        soundsCheckBox.setBounds(100, 70, 190, 30);
         soundsCheckBox.setBackground(Color.BLACK);
         soundsCheckBox.setForeground(Color.GREEN);
         soundsCheckBox.addActionListener(new ActionListener() {
@@ -84,13 +84,16 @@ public class OptionsPanel extends JDialog {
                 } else {
                     sounds = false;
                 }
-                Core.getInstance().getCoreManagementSound().setMute(!sounds);
+                Core.getInstance().getSoundManagement().setMute(!sounds);
             }
         });
 
         closeButton = new JButton();
         closeButton.setBounds(150, 125, 110, 30);
-        closeButton.setText("Close");
+        closeButton.setBackground(Color.BLACK);
+        closeButton.setForeground(Color.GREEN);
+        closeButton.setBorder(new LineBorder(Color.GRAY, 1));
+        closeButton.setText(_("Close"));
         closeButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {

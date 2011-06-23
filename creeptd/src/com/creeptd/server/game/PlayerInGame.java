@@ -56,8 +56,8 @@ public class PlayerInGame {
 
     private Client client;
     private boolean gameOver;
-    private int takedLive = 0;
-    private int live = 20;
+    private int takenLifes = 0;
+    private int lifes = 20;
     private int credits;
     private int income;
     private HashMap<Integer, String> anticheatTowerId = new HashMap<Integer, String>();
@@ -65,14 +65,13 @@ public class PlayerInGame {
     private List<AnticheatItem> items = new ArrayList<AnticheatItem>();
     private long anticheatLastTick = 300L;
     private boolean connected = true;
+    private int gameOverPosition = 0;
 
     private static enum AnticheatType {
-
         CREDIT, INCOME
     }
 
     private static class AnticheatItem {
-
         public long tick;
         public AnticheatType type;
         public int value;
@@ -115,37 +114,54 @@ public class PlayerInGame {
      *
      * @return the gameOver flag.
      */
-    public boolean getGameOver() {
+    public boolean isGameOver() {
         return this.gameOver;
     }
 
     /**
      * Sets the gameOver flag.
+     *
+     * @param gameOverPosition The position after game over or 0 if not game over
      */
-    public void gameOver() {
-        this.gameOver = true;
+    public void setGameOver(int gameOverPosition) {
+        if (gameOverPosition > 0) {
+            this.gameOver = true;
+            this.gameOverPosition = gameOverPosition;
+        } else {
+            this.gameOver = false;
+            this.gameOverPosition = gameOverPosition;
+        }
     }
 
     /**
-     * Incrase Takedlive
+     * Get the game over position.
+     *
+     * @return Game over position, 0 if not game over
      */
-    public void incraseTakedLive() {
-        this.takedLive++;
+    public int getGameOverPosition() {
+        return gameOverPosition;
     }
 
     /**
-     * Take live
+     * Incrase TakenLifes
      */
-    public void takeLive() {
-        this.live--;
+    public void increaseTakenLifes() {
+        this.takenLifes++;
     }
 
-    public int getLive() {
-        return this.live;
+    /**
+     * Take life
+     */
+    public void takeLife() {
+        this.lifes--;
     }
 
-    public int getTakedLive() {
-        return this.takedLive;
+    public int getLifes() {
+        return this.lifes;
+    }
+
+    public int getTakenLifes() {
+        return this.takenLifes;
     }
 
     public boolean isConnected() {
@@ -358,10 +374,8 @@ public class PlayerInGame {
         /*
          * KICK
          */
-        state.getGame().sendAll(
-                new ServerChatMessage("Server", "<span style=\"color:red;\">" + this.getClient().getPlayerModel().getName() + " was kicked by <b>System</b></span>"));
-        state.getGame().sendAll(
-                new ServerChatMessage("Server", this.getClient().getPlayerModel().getName() + " has left..."));
+        state.getGame().sendAll(new ServerChatMessage("Server", "<span style=\"color:red;\">" + this.getClient().getPlayerModel().getName() + " was kicked by <b>System</b></span>", false));
+        state.getGame().sendAll(new ServerChatMessage(this.getClient().getPlayerModel().getName(), "has left...", true));
         // TODO state.removeClient(this.getClient(), "Kick");
         this.getClient().disconnect();
 

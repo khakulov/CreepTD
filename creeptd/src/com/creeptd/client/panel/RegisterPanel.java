@@ -53,12 +53,16 @@ import javax.swing.UIManager;
 
 import com.creeptd.client.Core;
 import com.creeptd.client.network.MessageListener;
+import com.creeptd.client.util.Fonts;
 import com.creeptd.common.Constants;
 import com.creeptd.common.Password;
 import com.creeptd.common.messages.client.LoginRequestMessage;
 import com.creeptd.common.messages.client.RegistrationRequestMessage;
 import com.creeptd.common.messages.server.RegistrationResponseMessage;
 import com.creeptd.common.messages.server.ServerMessage;
+
+import javax.swing.SwingConstants;
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * RegisterPanel to register users in the database.
@@ -69,7 +73,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
     private JLabel name;
     private JLabel password;
     private JLabel info2;
-    private JLabel logoImage;
+    private JLabel title;
     private JLabel password2;
     private JLabel email;
     private JTextField lName;
@@ -91,34 +95,31 @@ public class RegisterPanel extends GameScreen implements MessageListener {
 
         this.setLayout(null);
         this.setBackground(Color.BLACK);
+        
+        title = Fonts.getFrameTitle(_("Create an account"), 50);
 
-        java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/header-register.jpg");
-        logoImage = new JLabel();
-        logoImage.setBounds(225, 50, 450, 100);
-        logoImage.setText("<html><img src=\"" + imageURL + "\"></html>");
-
-        email = new JLabel("Email");
+        email = new JLabel(_("Email"));
         email.setBounds(350, 402, 200, 30);
         email.setForeground(Color.GRAY);
         email.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        name = new JLabel("Username (*)");
+        name = new JLabel(_("Username")+" (*)");
         name.setBounds(350, 220, 200, 30);
         name.setForeground(Color.GRAY);
         name.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        password = new JLabel("Password (*)");
+        password = new JLabel(_("Password")+" (*)");
         password.setBounds(350, 282, 200, 25);
         password.setForeground(Color.GRAY);
         password.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        password2 = new JLabel("Repeat password (*)");
+        password2 = new JLabel(_("Repeat password")+" (*)");
         password2.setBounds(350, 342, 200, 25);
         password2.setForeground(Color.GRAY);
         password2.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        info2 = new JLabel("Fields marked with (*) are required");
-        info2.setBounds(350, 450, 200, 25);
+        info2 = new JLabel(_("Fields marked with (*) are required"));
+        info2.setBounds(350, 450, 350, 25);
         info2.setForeground(Color.GRAY);
         info2.setFont(new Font("Arial", Font.PLAIN, 11));
 
@@ -141,12 +142,12 @@ public class RegisterPanel extends GameScreen implements MessageListener {
         lPassword2.setEchoChar('*');
         lPassword2.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        register = new JButton("Create account");
+        register = new JButton(_("Create account"));
         register.setBounds(230, 550, 200, 25);
         register.setBackground(Color.BLACK);
         register.setForeground(Color.GREEN);
 
-        back = new JButton("Cancel");
+        back = new JButton(_("Cancel"));
         back.setBounds(470, 550, 200, 25);
         back.setBackground(Color.BLACK);
         back.setForeground(Color.GREEN);
@@ -159,7 +160,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
         this.add(register);
         this.add(lPassword2);
         this.add(password2);
-        this.add(logoImage);
+        this.add(title);
         this.add(lEmail);
         this.add(email);
         this.add(back);
@@ -227,7 +228,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
             RegistrationResponseMessage response = (RegistrationResponseMessage) m;
             if (response.getResponseType() == Constants.ResponseType.username) {
 
-                errorDialog("Username already exists!");
+                errorDialog(_("Username already exists!"));
                 register.setEnabled(true);
                 lName.requestFocus();
             }
@@ -235,7 +236,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
                 UIManager.put("OptionPane.background", Color.BLACK);
                 UIManager.put("Panel.background", Color.BLACK);
                 UIManager.put("OptionPane.messageForeground", Color.GREEN);
-                JOptionPane.showMessageDialog(this, "Registration Successful", "Thank You", 2);
+                JOptionPane.showMessageDialog(this, _("Account created"), _("Thank you!"), 2);
                 getCore().popScreen();
                 // Automatic login after sign up
                 LoginRequestMessage loginMessage = new LoginRequestMessage();
@@ -246,7 +247,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
                 getCore().getNetwork().sendMessage(loginMessage);
             }
             if (response.getResponseType() == Constants.ResponseType.failed) {
-                errorDialog("Your registration could not be completed. Please check your inputs!");
+                errorDialog(_("Your account could not be created. Please check your inputs!"));
                 register.setEnabled(true);
                 lName.requestFocus();
             }
@@ -273,23 +274,22 @@ public class RegisterPanel extends GameScreen implements MessageListener {
 
         if (!this.isInDictionary(lName.getText().toLowerCase())) {
             if (lName.getText().equals("") || String.valueOf(lPassword.getPassword()).equals("") || String.valueOf(lPassword2.getPassword()).equals("")) {
-                errorDialog("Please fill out all required fields");
+                errorDialog(_("Please fill out all the required fields."));
                 lName.requestFocus();
             } else if (lName.getText().length() > 16) {
-                errorDialog("Maximum length of Username is 16");
+                errorDialog(_("Maximum length of username is 16."));
                 lName.requestFocus();
-            } else if (!pMatchesPwd) {
-                errorDialog("Only the characters a-z, A-Z and 0-9 are allowed for the password");
+            } else if (lPassword.getPassword().length < 5 || lPassword.getPassword().length > 32) {
+                errorDialog("Minimum password length is 5, maximum is 32 characters.");
                 lPassword.requestFocus();
-            } else if (!String.valueOf(lPassword.getPassword()).equals(
-                    String.valueOf(lPassword2.getPassword()))) {
-                errorDialog("The passwords you entered weren't identical");
+            } else if (!String.valueOf(lPassword.getPassword()).equals(String.valueOf(lPassword2.getPassword()))) {
+                errorDialog(_("The passwords you entered weren't identical."));
                 lPassword.requestFocus();
             } else if (!pMatchesName) {
-                errorDialog("Only the characters a-z, A-Z and 0-9 are allowed for the name");
+                errorDialog(_("Only the characters a-z, A-Z and 0-9 are allowed for the name."));
                 lName.requestFocus();
             } else if (!pMatchesEmail && !lEmail.getText().equals("")) {
-                errorDialog("Please specify a valid email address or none");
+                errorDialog(_("Please specify a valid email address or none."));
                 lEmail.requestFocus();
             } else {
                 request.setPassword(String.valueOf(lPassword.getPassword()));
@@ -300,7 +300,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
                 register.setEnabled(false);
             }
         } else {
-            errorDialog("Your Nickname includes prohibited Words!");
+            errorDialog(_("Your Nickname includes prohibited Words!"));
             lName.requestFocus();
         }
     }
@@ -325,8 +325,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
         UIManager.put("OptionPane.background", Color.BLACK);
         UIManager.put("Panel.background", Color.BLACK);
         UIManager.put("OptionPane.messageForeground", Color.GREEN);
-        JOptionPane.showMessageDialog(this, msg, "error",
-                JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, msg, _("An error occured"), JOptionPane.ERROR_MESSAGE);
     }
 }
 

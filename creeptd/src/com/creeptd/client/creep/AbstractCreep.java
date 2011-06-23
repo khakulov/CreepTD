@@ -54,6 +54,7 @@ import com.creeptd.client.game.GameContext;
 import com.creeptd.client.sound.SoundManagement;
 import com.creeptd.client.tower.Tower;
 import com.creeptd.common.Constants;
+import com.creeptd.common.messages.client.CreepEscapedMessage;
 
 /**
  * Abstract implementation for a creep.
@@ -101,7 +102,6 @@ public abstract class AbstractCreep implements Creep {
     private float yOld;
     private AffineTransform translation;
     private AffineTransform rotation;
-    private SoundManagement sound;
     private double deltaChanged = 0;
 
     /**
@@ -175,8 +175,6 @@ public abstract class AbstractCreep implements Creep {
     protected AbstractCreep(GameContext context, Constants.Creeps type) {
         this.context = context;
         this.type = type;
-
-        this.sound = context.getSoundManagement();
 
         // set the position at this point to avoid that towers recognize
         // the creep with the wrong position at the first appearance of the
@@ -281,8 +279,9 @@ public abstract class AbstractCreep implements Creep {
         // if the creep is death...
         if (this.health <= 0) {
             // ...play sound
-            if (sound != null) {
-                sound.creepDiesSound(this.type);
+            SoundManagement sm = this.context.getSoundManagement();
+            if (sm != null) {
+                sm.creepDiesSound(this.type);
             }
             // ...remove the creep
             context.getCreeps().remove(this);
@@ -290,7 +289,7 @@ public abstract class AbstractCreep implements Creep {
             context.setCredits(context.getCredits() + getBounty());
         }
     }
-
+    
     private void updateHealthBar() {
         // calculate remaining percent of hit points
         float healthPercent = (float) health / (float) healthMax * 100;
@@ -436,9 +435,7 @@ public abstract class AbstractCreep implements Creep {
 
             // apply the rotation to the creep
             g.transform(rotation);
-
             g.drawImage(image, 0, 0, null);
-
             g.setTransform(save);
         }
 
@@ -492,16 +489,26 @@ public abstract class AbstractCreep implements Creep {
                 // for simplicity reset the segment
                 // later we need to remove a life from the player
                 this.segment = 0;
-                // add the creep to the transfer collection
-                // this moves the creep to the next player
-                context.getTransfer().add(this);
-                context.removeLive();
-                logger.info("Remove life from " + context.getPlayerName() + " by: " + this.senderId + " with " + this.getType().getName() + " (" + context.getLives() + " Lifes now)");
 
-                // play transfer music
-                if (sound != null) {
-                    sound.creepGoesToNextPlayerSound(this.type);
+                // Vote for taken life
+                if (this.health > 0) {
+                    logger.info("Voting to remove life from " + context.getPlayerName() + ": original sender=" + this.getSenderId()+ ", creep=" + this.getType().getName()+" ("+this.getID()+")");
+                    // Send a life taken message (fromPlayer loses a life)
+                    CreepEscapedMessage ltm = new CreepEscapedMessage();
+                    ltm.setCreepId(this.getID());
+                    ltm.setCreepType(this.getType().name());
+                    ltm.setFromPlayerId(this.getPlayerID());
+                    ltm.setCreatorId(this.getSenderId());
+                    ltm.setCreepHealth(this.getHealth());
+                    ltm.setRoundId(context.getGameLoop().getRoundId());
+                    context.getNetwork().sendMessage(ltm);
+                } else {
+                    SoundManagement sm = this.context.getSoundManagement();
+                    if (sm != null) {
+                        sm.creepDiesSound(this.type);
+                    }
                 }
+                context.getCreeps().remove(this);
                 return;
             }
         }

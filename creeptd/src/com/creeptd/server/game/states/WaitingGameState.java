@@ -134,7 +134,7 @@ public class WaitingGameState extends AbstractGameState {
         StartGameMessage sgm = new StartGameMessage();
         List<Integer> list = new LinkedList<Integer>();
         for (PlayerInGame p : this.getGame().getPlayers()) {
-            list.add(p.getClient().getClientID());
+            list.add(p.getClient().getId());
         }
         sgm.setPlayers(list);
         sgm.setMapID(this.getGame().getMapId());
@@ -161,7 +161,7 @@ public class WaitingGameState extends AbstractGameState {
         logger.info("Kicking " + player.getClient() + " from game '" + this.getGame() + "'");
         player.getClient().send(new KickedMessage());
         PlayerQuitMessage pqm = new PlayerQuitMessage();
-        pqm.setPlayerID(player.getClient().getClientID());
+        pqm.setPlayerID(player.getClient().getId());
         pqm.setPlayerName(player.getClient().getPlayerModel().getName());
         this.getGame().removePlayer(player);
         this.getGame().sendAll(pqm);
@@ -176,7 +176,7 @@ public class WaitingGameState extends AbstractGameState {
                 this.getGame().removePlayer(p);
             }
         }
-        this.getGame().sendAll(new PlayerQuitMessage(sender.getClient().getPlayerModel().getName(), "", sender.getClient().getClientID()));
+        this.getGame().sendAll(new PlayerQuitMessage(sender.getClient().getPlayerModel().getName(), "", sender.getClient().getId()));
         if (this.getGame().numPlayers() == 0) {
             return new TerminatedGameState(this.getGame());
         }

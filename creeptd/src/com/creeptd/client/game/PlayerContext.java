@@ -38,57 +38,27 @@ package com.creeptd.client.game;
 import com.creeptd.client.network.Network;
 import com.creeptd.client.sound.SoundManagement;
 import com.creeptd.common.Constants;
-import com.creeptd.common.messages.client.GameOverMessage;
 
 /**
  * The GameContext for the player.
+ * 
  * @author Philipp
  *
  */
 public class PlayerContext extends GameContext {
-
-    private boolean deathMsgSent = false;
     
     /**
      * Creates a new instance of PlayerContext.
-     * @param location the boardLocation (GameContext.BoardLocation)
-     * @param network the current network object
-     * @param managementSound Sound object for sound
-     * @param map the map
+     * 
+     * @param location The boardLocation (GameContext.BoardLocation)
+     * @param network The current network object
+     * @param map The map
+     * @param gameLoop The game loop
+     * @param playerId The player's id
+     * @param playerName The player's name
      */
-    public PlayerContext(BoardLocation location, Network network, SoundManagement managementSound, Constants.Map map, GameLoop gameLoop, int player_id, String player_name) {
-        super(location, network, managementSound, map, gameLoop, player_id, player_name);
+    public PlayerContext(BoardLocation location, Network network, SoundManagement managementSound, Constants.Map map, GameLoop gameLoop, int playerId, String playerName) {
+        super(location, network, managementSound, map, gameLoop, playerId, playerName);
 
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void postUpdate(long tickNumber) {
-        // TODO Auto-generated method stub
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void preUpdate(long tickNumber) {
-        // TODO Auto-generated method stub
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void sendDeathMessage() {
-        if (!deathMsgSent) {
-            System.out.println("Death msg sent for " + getPlayerName());
-            GameOverMessage gom = new GameOverMessage();
-            gom.setPosition(getWinningPosition());
-            this.getNetwork().sendMessage(gom);
-            deathMsgSent = true;
-        }
-        super.sendDeathMessage();
     }
 }

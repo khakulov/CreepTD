@@ -32,10 +32,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.server.game.states;
 
-import java.awt.Point;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -46,7 +44,7 @@ import com.creeptd.common.messages.client.ChangeStrategyMessage;
 import com.creeptd.common.messages.client.ExitGameMessage;
 import com.creeptd.common.messages.client.GameMessage;
 import com.creeptd.common.messages.client.GameOverMessage;
-import com.creeptd.common.messages.client.LiveTakedMessage;
+import com.creeptd.common.messages.client.CreepEscapedMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
 import com.creeptd.common.messages.client.SellTowerMessage;
 import com.creeptd.common.messages.client.ClientChatMessage;
@@ -54,18 +52,24 @@ import com.creeptd.common.messages.client.UpgradeTowerMessage;
 import com.creeptd.common.messages.server.BuildCreepRoundMessage;
 import com.creeptd.common.messages.server.BuildTowerRoundMessage;
 import com.creeptd.common.messages.server.ChangeStrategyRoundMessage;
-import com.creeptd.common.messages.server.ServerChatMessage;
+import com.creeptd.common.messages.server.PlayerGameOverMessage;
+import com.creeptd.common.messages.server.PlayerLosesLifeMessage;
 import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.common.messages.server.RoundMessage;
 import com.creeptd.common.messages.server.SellTowerRoundMessage;
+import com.creeptd.common.messages.server.TransferCreepMessage;
 import com.creeptd.common.messages.server.UpgradeTowerRoundMessage;
 import com.creeptd.server.HighscoreService;
 import com.creeptd.server.Server;
 import com.creeptd.server.game.Game;
 import com.creeptd.server.game.PlayerInGame;
 import com.creeptd.server.game.TickThread;
+import com.creeptd.server.game.modes.GameMode;
+import com.creeptd.server.game.modes.Team2vs2GameMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * GameState for a game that's running (has started).
@@ -75,11 +79,16 @@ public class RunningGameState extends AbstractGameState implements
 
     private int nextTowerId;
     private long maxTick;
+    private long roundId = 0;
     private final ArrayList<PlayerInGame> playerPositions = new ArrayList<PlayerInGame>();
     private long startDate;
     TickThread tickThread;
     private static Logger logger = Logger.getLogger(RunningGameState.class);
     private List<List> incomeLog = new LinkedList<List>(); // Round1(Player1 inc, ...), Round2(Player1 inc, ...)
+    private Integer currentCreepId = 1;
+    private final Object currentCreepIdLock = new Object();
+    private final Map<String,Integer> lifeTakenVoting = new HashMap<String,Integer>();
+    private GameMode gameMode;
 
     /**
      * Constructor.
@@ -89,26 +98,35 @@ public class RunningGameState extends AbstractGameState implements
      */
     public RunningGameState(Game game) {
         super(game);
+        this.gameMode = GameMode.forGame(game);
         this.nextTowerId = 1;
         this.maxTick = 0;
-        synchronized(this.playerPositions) {
-            for (int i=0; i<game.getMaxPlayers(); i++) {
+        List<PlayerInGame> players = this.getGame().getPlayers();
+        Iterator<PlayerInGame> i = players.iterator();
+        while (i.hasNext()) {
+            i.next();
+            synchronized (this.playerPositions) {
                 this.playerPositions.add(null);
             }
-            logger.info(game+" Initialized with "+this.playerPositions.size()+" players");
         }
+        logger.info(game + " Initialized with " + this.playerPositions.size() + " players");
         this.startDate = System.currentTimeMillis() / 1000;
         tickThread = new TickThread(this, Constants.TICK_MS * 1000000);
     }
+
+    private boolean gameStarted = false;
 
     /**
      * Advance the maxTick counter and send a "ROUND n OK" message to all
      * players.
      */
     public void tick() {
+        roundId = this.maxTick + Constants.USER_ACTION_DELAY;
+
+        // First tick, roundId = 50
         if (this.maxTick == 0) {
             RoundMessage message = new RoundMessage();
-            message.setRoundId(this.maxTick + Constants.USER_ACTION_DELAY);
+            message.setRoundId(roundId);
             this.getGame().sendAll(message);
         }
 
@@ -116,7 +134,7 @@ public class RunningGameState extends AbstractGameState implements
 
         if ((this.maxTick < Constants.USER_ACTION_DELAY * 10) && (this.maxTick % Constants.USER_ACTION_DELAY == 0)) {
             RoundMessage message = new RoundMessage();
-            message.setRoundId(this.maxTick + Constants.USER_ACTION_DELAY);
+            message.setRoundId(roundId);
             this.getGame().sendAll(message);
         }
 
@@ -125,6 +143,8 @@ public class RunningGameState extends AbstractGameState implements
             message.setRoundId(this.maxTick + (Constants.USER_ACTION_DELAY * 10));
             this.getGame().sendAll(message);
         }
+        
+        this.gameMode.onTick(this.maxTick); // Call the listener
 
         if (this.maxTick % (Constants.INCOME_TIME / Constants.TICK_MS) == 0) {
             List<Integer> incomeLogEntry = new LinkedList<Integer>();
@@ -132,12 +152,17 @@ public class RunningGameState extends AbstractGameState implements
                 if (p.isConnected()) {
                     p.anticheat_updateMoney(this.maxTick);
                     if (p.anticheat_getCurrentMoney() < 0) {
-                        processIntegrity(p.getClient().getClientID());
+                        processIntegrity(p.getClient().getId());
                         incomeLogEntry.add(p.anticheat_getCurrentIncome());
                     }
                 }
             }
             incomeLog.add(incomeLogEntry);
+            if (!gameStarted) {
+                gameStarted = true;
+                this.gameMode.onGameStart();
+            }
+            this.gameMode.onNewIncome();
         }
     }
 
@@ -168,8 +193,8 @@ public class RunningGameState extends AbstractGameState implements
             this.handle((ChangeStrategyMessage) message, sender);
         } else if (message instanceof SellTowerMessage) {
             this.handle((SellTowerMessage) message, sender);
-        } else if (message instanceof LiveTakedMessage) {
-            this.handle((LiveTakedMessage) message);
+        } else if (message instanceof CreepEscapedMessage) {
+            return this.handle((CreepEscapedMessage) message, sender);
         } else if (message instanceof GameOverMessage) {
             this.handle((GameOverMessage) message, sender);
         } else if (message instanceof ExitGameMessage) {
@@ -215,40 +240,118 @@ public class RunningGameState extends AbstractGameState implements
 
     }
 
-    private void handle(LiveTakedMessage m) {
+    private AbstractGameState handle(CreepEscapedMessage m, PlayerInGame messageSender) {
         PlayerInGame from = this.getGame().findPlayer(m.getFromPlayerId());
-        PlayerInGame to = this.getGame().findPlayer(m.getToPlayerId());
-        PlayerInGame sender = this.getGame().findPlayer(m.getSenderId());
+        PlayerInGame creator = this.getGame().findPlayer(m.getCreatorId());
+        
+        // Check message format
+        if (from == null || creator == null) {
+            logger.warn("Got a malformed LifeTakenMessage sent by "+messageSender+": from="+from+", creator="+creator);
+            return this;
+        }
+        // Transfer creep only if the voting (50%+ rule) is successful
+        if (voteCreepEscaped(m.getRoundId(), from.getClient().getId(), m.getCreepId())) {
+            // Close the voting on success
+            closeCreepEscapedVote(m.getRoundId(), from.getClient().getId(), m.getCreepId());
+            
+            // Send player loses life message only, if there are lifes left
+            if (from.getLifes() > 0) {
+                // Take the life
+                from.takeLife();
+                from.anticheat_transferThisCreep(m.getCreepType(), m.getRoundId());
+                creator.increaseTakenLifes();
 
-        if (from != null) {
-            from.takeLive();
-            from.anticheat_transferThisCreep(m.getCreepType(), m.getRoundId());
+                this.gameMode.onLifeTaken(from); // Call the event
+
+                // Send a message about the lost life to all connected clients
+                PlayerLosesLifeMessage pllm = new PlayerLosesLifeMessage();
+                pllm.setRoundId(this.getRoundId());
+                pllm.setPlayerId(from.getClient().getId());
+                pllm.setCreatorId(creator.getClient().getId());
+                pllm.setCreepType(m.getCreepType());
+                pllm.setCreepId(m.getCreepId());
+                this.getGame().sendAll(pllm);
+
+                // If player is dead, sent game over message to all clients
+                if (this.gameMode.isDead(from) && !from.isGameOver()) {
+                    this.playerGameOver(from, 0); // Automatic sort
+                    if (this.gameOverForAll()) {
+                        this.endGame();
+                        return new EndedGameState(this.getGame());
+                    }
+                }
+            }
+
+            // Find the transfer contexts and send the transfer messages
+            List<PlayerInGame> transfers = this.gameMode.findTransfers(creator, from);
+            for (PlayerInGame p : transfers) {
+                p.anticheat_receivedThisCreep(m.getCreepType(), m.getRoundId());
+                TransferCreepMessage tcm = new TransferCreepMessage();
+                tcm.setRoundId(this.getRoundId());
+                tcm.setPlayerId(p.getClient().getId());
+                tcm.setFromId(from.getClient().getId());
+                tcm.setCreatorId(creator.getClient().getId());
+                tcm.setCreepId(m.getCreepId());
+                tcm.setCreepType(m.getCreepType());
+                tcm.setCreepHealth(m.getCreepHealth());
+                this.getGame().sendAll(tcm);
+            }
         }
-        if (to != null) {
-            to.anticheat_receivedThisCreep(m.getCreepType(), m.getRoundId());
+        return this;
+    }
+
+    /**
+     * Vote for taking a life from a player.
+     *
+     * @param roundId The current round
+     * @param playerId The player losing the life
+     * @param creepId The creep comming through
+     * @return true on voting success, else false
+     */
+    private boolean voteCreepEscaped(long roundId, int playerId, int creepId) {
+        String key = roundId+":"+playerId+":"+creepId;
+        Integer count = this.lifeTakenVoting.get(key);
+        if (count == null) {
+            count = 0;
+        } else if (count == -1) {
+            return false; // Voting has already ended
         }
-        if (sender != null) {
-            sender.incraseTakedLive();
+        count++;
+        if (count > (int) (this.getGame().numConnectedPlayers()/2)) { // 50%+ voting
+            this.lifeTakenVoting.put(key, new Integer(-1));
+            return true;
+        } else {
+            this.lifeTakenVoting.put(key, count);
+            return false;
         }
+    }
+
+    /**
+     * Close voting.
+     *
+     * All entries, that are left at the end and are not set to -1 (closed),
+     * give us a decent hint about the asynchronity of the game.
+     *
+     * @param roundId The round's id
+     * @param playerId The player losing the life
+     * @param creepId The creep comming through
+     */
+    private void closeCreepEscapedVote(long roundId, int playerId, int creepId) {
+        String key = roundId+":"+playerId+":"+creepId;
+        this.lifeTakenVoting.put(key, new Integer(-1));
     }
 
     /**
      * Handles the BuildTowerMessage.
      *
-     * @param m
-     *            the message
+     * @param m The message
      */
     private void handle(BuildTowerMessage m) {
-        String type = m.getTowerType();
-        Point position = m.getPosition();
-        int senderId = m.getClientId();
-        long roundID = this.maxTick + Constants.USER_ACTION_DELAY;
-
         BuildTowerRoundMessage n = new BuildTowerRoundMessage();
-        n.setRoundId(roundID);
-        n.setPlayerId(senderId);
-        n.setTowerType(type);
-        n.setTowerPosition(position);
+        n.setRoundId(this.getRoundId());
+        n.setPlayerId(m.getClientId());
+        n.setTowerType(m.getTowerType());
+        n.setTowerPosition(m.getPosition());
         n.setTowerId(this.nextTowerId++);
         this.getGame().sendAll(n);
 
@@ -270,8 +373,6 @@ public class RunningGameState extends AbstractGameState implements
      */
     private void handle(UpgradeTowerMessage m, PlayerInGame sender) {
         int towerId = m.getTowerId();
-        long roundID = this.maxTick + Constants.USER_ACTION_DELAY;
-
         if (towerId <= 0) {
             logger.error("Invalid tower id (tried to upgrade tower " + towerId + ")");
             return;
@@ -281,7 +382,7 @@ public class RunningGameState extends AbstractGameState implements
         }
 
         UpgradeTowerRoundMessage n = new UpgradeTowerRoundMessage();
-        n.setRoundId(roundID);
+        n.setRoundId(this.getRoundId());
         n.setPlayerId(m.getClientId());
         n.setTowerId(towerId);
         this.getGame().sendAll(n);
@@ -292,10 +393,8 @@ public class RunningGameState extends AbstractGameState implements
     /**
      * Handles the SellTowerMessage.
      *
-     * @param m
-     *            the message.
-     * @param sender
-     *            the player who sent the message.
+     * @param m The message
+     * @param sender The player who sent the message
      */
     private void handle(SellTowerMessage m, PlayerInGame sender) {
         int towerId = m.getTowerId();
@@ -310,12 +409,21 @@ public class RunningGameState extends AbstractGameState implements
         }
 
         SellTowerRoundMessage n = new SellTowerRoundMessage();
-        n.setRoundId(this.maxTick + Constants.USER_ACTION_DELAY);
+        n.setRoundId(this.getRoundId());
         n.setPlayerId(m.getClientId());
         n.setTowerId(towerId);
         this.getGame().sendAll(n);
 
         //sender.anticheat_TowerSold(m.getTowerId(), m.getRoundId());
+    }
+
+    /**
+     * Get current round id.
+     *
+     * @return The current round id
+     */
+    private long getRoundId() {
+        return this.maxTick + Constants.USER_ACTION_DELAY;
     }
 
     /**
@@ -325,113 +433,43 @@ public class RunningGameState extends AbstractGameState implements
      *            the message
      */
     private void handle(BuildCreepMessage m) {
-        String type = m.getCreepType();
-        int senderId = m.getClientId();
-        long roundID = this.maxTick + Constants.USER_ACTION_DELAY;
-
-        if ((this.getGame().getMode().equals(Constants.Mode.ALLVSALL)) && (this.getGame().numPlayers() >= 2)) {
-            for (PlayerInGame p : this.getGame().getPlayers()) {
-                if ((p.getClient().getClientID() != senderId) && (!p.getGameOver())) {
-                    BuildCreepRoundMessage n = new BuildCreepRoundMessage();
-                    n.setRoundId(roundID);
-                    n.setCreepType(type);
-                    n.setSenderId(senderId);
-                    n.setPlayerId(p.getClient().getClientID());
-                    this.getGame().sendAll(n);
-                    p.anticheat_receivedThisCreep(type, m.getRoundId());
-                }
+        PlayerInGame sender = this.getGame().findPlayer(m.getClientId());
+        sender.anticheat_sentThisCreep(m.getCreepType(), this.getRoundId());
+        
+        List<PlayerInGame> receivers = this.gameMode.findReceivers(sender);
+        for (PlayerInGame p : receivers) {
+            BuildCreepRoundMessage bcrm = new BuildCreepRoundMessage();
+            synchronized (this.currentCreepIdLock) {
+                bcrm.setCreepId(this.currentCreepId);
+                this.currentCreepId++;
             }
-        } else if ((this.getGame().getMode().equals(Constants.Mode.SENDRANDOM)) && (this.getGame().numPlayers() > 2)) {
-            List<PlayerInGame> pl = new ArrayList<PlayerInGame>(this.getGame().getPlayers()); // Work with a copy
-            while (!pl.isEmpty()) {
-                PlayerInGame p = pl.get(new Random().nextInt(pl.size()));
-                if (p != null) {
-                    if ((p.getClient().getClientID() != senderId)) {
-                        if (!p.getGameOver()) {
-                            BuildCreepRoundMessage bcrm = new BuildCreepRoundMessage();
-                            bcrm.setRoundId(roundID);
-                            bcrm.setCreepType(type);
-                            bcrm.setSenderId(senderId);
-                            bcrm.setPlayerId(p.getClient().getClientID());
-                            this.getGame().sendAll(bcrm);
-                            p.anticheat_receivedThisCreep(type, m.getRoundId());
-                            break;
-                        } else {
-                            pl.remove(p);
-                        }
-                    } else {
-                        pl.remove(p);
-                    }
-                } else {
-                    logger.error("Random send mode error. Player was null.");
-                    break;
-                }
-            }
-        } else if (this.getGame().getMode().equals(Constants.Mode.TEAM2VS2)) { // Team 2vs2
-            List<PlayerInGame> pl = this.getGame().getPlayers();
-            int senderPosition = 0;
-            Iterator<PlayerInGame> it = pl.iterator();
-            while (it.hasNext()) {
-                if (it.next().getClient().getClientID() == senderId) {
-                    break;
-                }
-                senderPosition++;
-            }
-            PlayerInGame receiver = null;
-            if (senderPosition <= 1) { // Team A (top)
-                receiver = pl.get(2);
-            } else { // Team B (bottom)
-                receiver = pl.get(0);
-            }
-            BuildCreepRoundMessage n = new BuildCreepRoundMessage();
-            n.setRoundId(roundID);
-            n.setCreepType(type);
-            n.setSenderId(senderId);
-            n.setPlayerId(receiver.getClient().getClientID());
-            this.getGame().sendAll(n);
-
-            receiver.anticheat_receivedThisCreep(type, m.getRoundId());
-            
-        } else {
-            // Send next
-            List<PlayerInGame> pl = this.getGame().getPlayers();
-            Iterator<PlayerInGame> it = pl.iterator();
-            PlayerInGame receiver = null;
-            while (it.hasNext()) {
-                if (it.next().getClient().getClientID() == senderId) {
-                    if (it.hasNext()) {
-                        receiver = it.next();
-                    } else {
-                        receiver = pl.get(0);
-                    }
-                }
-            }
-            BuildCreepRoundMessage n = new BuildCreepRoundMessage();
-            n.setRoundId(roundID);
-            n.setCreepType(type);
-            n.setSenderId(senderId);
-            n.setPlayerId(receiver.getClient().getClientID());
-            this.getGame().sendAll(n);
-
-            receiver.anticheat_receivedThisCreep(type, m.getRoundId());
+            bcrm.setRoundId(this.getRoundId());
+            bcrm.setCreepType(m.getCreepType());
+            bcrm.setSenderId(m.getClientId());
+            bcrm.setPlayerId(p.getClient().getId());
+            this.getGame().sendAll(bcrm);
+            p.anticheat_receivedThisCreep(m.getCreepType(), m.getRoundId());
         }
     }
 
     /**
      * Handles the GameOverMessage.
      *
-     * @param m
-     *            the message
-     * @param sender
-     *            the player who sent the message.
+     * @param m the message
+     * @param sender the player who sent the message.
      * @return the new state.
      */
     private AbstractGameState handle(GameOverMessage m, PlayerInGame sender) {
-        this.playerGameOver(sender, m.getPosition());
-        logger.info("Player "+sender+" sent winningPosition="+m.getPosition());
-        if (this.gameOverForAll()) {
-            this.endGame();
-            return new EndedGameState(this.getGame());
+        // The game over message sent by the client is useful for us only when
+        // clients decide to be game over, before the server side calculation
+        // decides so. There should be no use case currently.
+        if (!this.gameMode.isDead(sender)) {
+            logger.info("Player " + sender + " sent game over, position=" + m.getPosition());
+            this.playerGameOver(sender, 0); // Automatic sort, don't trust clients
+            if (this.gameOverForAll()) {
+                this.endGame();
+                return new EndedGameState(this.getGame());
+            }
         }
         return this;
     }
@@ -461,11 +499,7 @@ public class RunningGameState extends AbstractGameState implements
         // Don't remove, set disconnected. We'll need the complete players array!
         // Removal of players is done when entering EndedGameState
         player.setConnected(false);
-        ServerChatMessage chatMsg = new ServerChatMessage();
-        chatMsg.setPlayerName(player.getClient().getPlayerModel().getName());
-        chatMsg.setMessage("has left the game");
-        this.getGame().sendAll(chatMsg);
-        this.getGame().sendAll(new PlayerQuitMessage(player.getClient().getPlayerModel().getName(), "", player.getClient().getClientID()));
+        this.getGame().sendAll(new PlayerQuitMessage(player.getClient().getPlayerModel().getName(), "", player.getClient().getId()));
         if (this.gameOverForAll()) {
             this.endGame();
             return new EndedGameState(this.getGame());
@@ -477,75 +511,51 @@ public class RunningGameState extends AbstractGameState implements
     }
 
     private void playerGameOver(PlayerInGame player, int submitted_position) {
+        if (player.isGameOver()) return;
         int position = 0;
         synchronized (this.playerPositions) {
             if (!this.playerPositions.contains(player)) {
-                if (submitted_position > 0 && submitted_position <= this.getGame().getMaxPlayers() && this.playerPositions.get(submitted_position-1) == null) {
+                if (submitted_position > 0 && submitted_position <= this.getGame().getMaxPlayers() && this.playerPositions.get(submitted_position - 1) == null) {
                     position = submitted_position;
-                    this.playerPositions.set(position-1, player);
-                    logger.info(this.getGame()+" Setting player "+player+" to position "+position+" (Submitted by player)");
+                    this.playerPositions.set(position - 1, player);
+                    logger.info(this.getGame() + " Setting player " + player + " to position " + position + " (Submitted by player)");
                 } else if (this.getGame().getMode().equals(Constants.Mode.TEAM2VS2) && submitted_position == 2 &&
-                            this.playerPositions.get(1) != null && this.playerPositions.get(0) == null) {
-                        this.playerPositions.set(0, player);
-                        logger.info(this.getGame()+" Setting player "+player+" to position 1 (Team 2vs2 over)");
+                        this.playerPositions.get(1) != null && this.playerPositions.get(0) == null) {
+                    this.playerPositions.set(0, player);
+                    logger.info(this.getGame() + " Setting player " + player + " to position 1 (Team 2vs2 over)");
                 } else {
                     for (position = this.getGame().getMaxPlayers(); position >= 1; position--) {
-                        if (this.playerPositions.get(position-1) == null) {
-                            this.playerPositions.set(position-1, player);
-                            logger.info(this.getGame()+" Setting player "+player+" to position "+position+" (Automatic sort)");
+                        if (this.playerPositions.get(position - 1) == null) {
+                            this.playerPositions.set(position - 1, player);
+                            logger.info(this.getGame() + " Setting player " + player + " to position " + position + " (Automatic sort)");
                             break;
                         }
                     }
                 }
-                position = this.playerPositions.indexOf(player);
-                logger.info("Game over for " + player + " (position: #" + (position+1) + ")");
             }
+            position = this.playerPositions.indexOf(player)+1;
+            logger.info("Game over for " + player + " (position: #" + position+ ")");
         }
-        player.gameOver();
+        player.setGameOver(position);
+        PlayerGameOverMessage pgom = new PlayerGameOverMessage();
+        pgom.setRoundId(this.getRoundId());
+        pgom.setPlayerId(player.getClient().getId());
+        pgom.setWinner(this.gameMode.isWinner(player));
+        this.getGame().sendAll(pgom);
+        this.gameMode.onPlayerGameOver(player); // Call the event
     }
 
     private boolean gameOverForAll() {
-        PlayerInGame winplayer = null;
-
-        // Team 2vs2
-        if (this.getGame().getGameDescription().getGameMode().equals(Constants.Mode.TEAM2VS2)) {
-            boolean isover = false;
-            List<PlayerInGame> players = this.getGame().getPlayers();
-            if (players.get(0).getGameOver() && players.get(1).getGameOver()) {
-                if (!players.get(2).getGameOver()) {
-                    playerGameOver(players.get(2), 1);
-                }
-                if (!players.get(3).getGameOver()) {
-                    playerGameOver(players.get(3), 2);
-                }
-                return true;
-            }
-            if (players.get(2).getGameOver() && players.get(3).getGameOver()) {
-                if (!players.get(0).getGameOver()) {
-                    playerGameOver(players.get(0), 1);
-                }
-                if (!players.get(1).getGameOver()) {
-                    playerGameOver(players.get(1), 2);
-                }
-                return true;
-            }
-            return false;
-        }
-
-        // Other modes
-        for (PlayerInGame p : this.getGame().getPlayers()) {
-            if (!p.getGameOver()) {
-                if (winplayer == null) {
-                    winplayer = p;
-                } else {
-                    return false;
+        boolean gameOver = this.gameMode.isGameOver();
+        if (gameOver) {
+            for (PlayerInGame p : this.getGame().getPlayers()) {
+                if (!p.isGameOver()) {
+                    playerGameOver(p, 0); // Automatic sort
                 }
             }
+            return true;
         }
-        if (winplayer != null) {
-            this.playerGameOver(winplayer, 0); // last player is sorted automatically
-        }
-        return true;
+        return false;
     }
     private boolean ended = false;
 
@@ -557,10 +567,10 @@ public class RunningGameState extends AbstractGameState implements
         for (PlayerInGame p : this.getGame().getPlayers()) {
             synchronized (this.playerPositions) {
                 if (!this.playerPositions.contains(p)) {
-                    for (int position = this.getGame().getMaxPlayers(); position>=1; position--) {
-                        if (this.playerPositions.get(position-1) == null) {
-                            this.playerPositions.set(position-1, p);
-                            logger.info(this.getGame()+" Added missing player "+p+" at position "+position);
+                    for (int position = this.getGame().getMaxPlayers(); position >= 1; position--) {
+                        if (this.playerPositions.get(position - 1) == null) {
+                            this.playerPositions.set(position - 1, p);
+                            logger.info(this.getGame() + " Added missing player " + p + " at position " + position);
                             break;
                         }
                     }
@@ -569,8 +579,8 @@ public class RunningGameState extends AbstractGameState implements
         }
 
         // Fix positions for team mode
-        if (this.getGame().getMode().equals(Constants.Mode.TEAM2VS2)) {
-            List <PlayerInGame> players = this.getGame().getPlayers();
+        if (this.gameMode instanceof Team2vs2GameMode) {
+            List<PlayerInGame> players = this.getGame().getPlayers();
             synchronized (this.playerPositions) {
                 if (this.playerPositions.get(0).equals(players.get(0)) || this.playerPositions.get(0).equals(players.get(1))) {
                     // Team A wins
@@ -588,28 +598,39 @@ public class RunningGameState extends AbstractGameState implements
                     this.playerPositions.add(players.get(1));
                 }
             }
-            logger.info(this.getGame()+" Set 'Team 2vs2' positions ("+this.playerPositions.size()+" players)");
+            logger.info(this.getGame() + " Set 'Team 2vs2' positions (" + this.playerPositions.size() + " players)");
+        }
+
+        // Update winning order to clients
+        for (PlayerInGame p : this.getGame().getPlayers()) {
+            PlayerGameOverMessage pgom = new PlayerGameOverMessage();
+            pgom.setPlayerId(p.getClient().getId());
+            pgom.setRoundId(this.getRoundId());
+            pgom.setWinner(this.gameMode.isWinner(p));
+            this.getGame().sendAll(pgom);
         }
 
         this.ended = true;
         this.tickThread.terminate();
+
+        this.gameMode.onGameOver(); // Call the event
 
         if (!Server.isLANVersion()) { // No saving for LAN games
             long endDate = System.currentTimeMillis() / 1000;
             if (endDate - startDate > 60) {
                 String positionLog = "";
                 synchronized (this.playerPositions) {
-                    for (int i=0; i<this.playerPositions.size(); i++) {
+                    for (int i = 0; i < this.playerPositions.size(); i++) {
                         if (!positionLog.equals("")) {
                             positionLog += ", ";
                         }
-                        positionLog += ""+this.playerPositions.get(i)+" is #"+(i+1);
+                        positionLog += "" + this.playerPositions.get(i) + " is #" + (i + 1);
                     }
-                    logger.info("Saving scores: "+positionLog);
+                    logger.info("Saving scores: " + positionLog);
                     HighscoreService.createHighscoreEntry(this.playerPositions, this.getGame());
                 }
             } else {
-                logger.info("Not saving scores, duration of game " + this.getGame() + " was too short ("+(endDate - startDate)+" seconds)");
+                logger.info("Not saving scores, duration of game " + this.getGame() + " was too short (" + (endDate - startDate) + " seconds)");
             }
             // Save Game in DB (player locations, player positions, ...)
             synchronized (this.playerPositions) {
@@ -621,7 +642,7 @@ public class RunningGameState extends AbstractGameState implements
     public void processIntegrity(int clientId) {
         List<PlayerInGame> pl = this.getGame().getPlayers();
         for (PlayerInGame p : pl) {
-            if (p.getClient().getClientID() == clientId) {
+            if (p.getClient().getId() == clientId) {
                 logger.warn("Integrity missmatch: " + p.getClient().getPlayerModel().getName());
                 p.anticheat_kickAndBan(this);
             }

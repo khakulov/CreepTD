@@ -47,7 +47,7 @@ public interface Constants {
     /**
      * Application version
      */
-    String VERSION = "0.8.4-3 beta";
+    String VERSION = "0.8.5-3 beta";
 
     /**
      * Default port for server-socket.
@@ -200,7 +200,7 @@ public interface Constants {
      */
     static enum Map {
 
-        Random_Map("com/creeptd/client/resources/maps/zufall.map"),
+        Random_Map("com/creeptd/client/resources/maps/random.map"),
         REDWORLD("com/creeptd/client/resources/maps/map_red.map"),
         ARENA("com/creeptd/client/resources/maps/map_arena.map"),
         ASTEROID("com/creeptd/client/resources/maps/map_asteroid.map"),
@@ -336,7 +336,7 @@ public interface Constants {
          */
         public static String getPicturePath(String map) {
 
-            String path = "zufall.jpg";
+            String path = "random.jpg";
             String tempStr = null;
             InputStream res = (InputStream) Constants.class.getClassLoader().getResourceAsStream(Map.valueOf(map).getFilename());
             if (res == null) {
@@ -374,7 +374,7 @@ public interface Constants {
          */
         public static String getPictureThumbnailPath(String map) {
 
-            String path = "zufall.jpg";
+            String path = "random.jpg";
             String tempStr = null;
             InputStream res = (InputStream) Constants.class.getClassLoader().getResourceAsStream(Map.valueOf(map).getFilename());
             if (res == null) {
@@ -472,7 +472,7 @@ public interface Constants {
         creep12(60000, 8, 1200000, 65, 4800, 0, "Huge Titan", "Tough"),
         creep13(100000, 7, 1400000, 65, 7000, 500, "Zeus", "Regenerates"), // was: health=1500000
         creep14(200000, 7, 2500000, 80, 14000, 0, "Phoenix", "Slow immunity"),
-        creep15(400000, 7, 6000000, 140, 28000, 0, "Express Raptor", "Super fast"),
+        creep15(400000, 7, 6000000, 140, 28000, 0, "Express Raptor", "Very fast"),
         creep16(1000000, 7, 15000000, 70, 56000, 0, "Fat Colossus", "Very tough");
         private int price;
         private int incomePercentage;
@@ -584,19 +584,19 @@ public interface Constants {
         public static String translateSpeed(int value) {
             String speed = "";
             if (value > 100) {
-                speed = "ultra fast";
+                speed = "Ultra fast";
             } else if (value > 80) {
-                speed = "very fast";
+                speed = "Very fast";
             } else if (value > 70) {
-                speed = "fast";
+                speed = "Fast";
             } else if (value > 65) {
-                speed = "medium";
+                speed = "Medium";
             } else if (value > 60) {
-                speed = "slow";
+                speed = "Slow";
             } else if (value > 55) {
-                speed = "very slow";
+                speed = "Very slow";
             } else {
-                speed = "ultra slow";
+                speed = "Ultra slow";
             }
             return speed;
         }
@@ -624,9 +624,9 @@ public interface Constants {
         tower11(100, 45, 13, 50, 0, 0.0, 0, 0, DamageType.normal, tower12, Color.BLUE, "Basictower lvl 2", "Cheap upgrades"),
         tower1(50, 35, 13, 25, 0, 0.0, 0, 0, DamageType.normal, tower11, Color.GREEN, "Basictower lvl 1", "Cheap upgrades"),
 
-        tower23(3000, 55, 18, 100, 25, 0.7, 0.50, 50, DamageType.slow, null, Color.WHITE, "Slowtower lvl 4", "Splash slows targets"),
-        tower22(400, 50, 17, 75, 0, 0.0, 0.45, 50, DamageType.slow, tower23, Color.RED, "Slowtower lvl 3", "Slows target"),
-        tower21(200, 45, 16, 50, 0, 0.0, 0.35, 40, DamageType.slow, tower22, Color.BLUE, "Slowtower lvl 2", "Slows target"),
+        tower23(3000, 55, 18, 100, 25, 0.7, 0.50, 50, DamageType.slow, null, Color.WHITE, "Slowtower lvl 4", "Slows target ((Splash at LVL4)"),
+        tower22(400, 50, 17, 75, 0, 0.0, 0.45, 50, DamageType.slow, tower23, Color.RED, "Slowtower lvl 3", "Slows target (Splash at LVL4)t"),
+        tower21(200, 45, 16, 50, 0, 0.0, 0.35, 40, DamageType.slow, tower22, Color.BLUE, "Slowtower lvl 2", "Slows target (Splash at LVL4)"),
         tower2(100, 35, 15, 25, 0, 0.0, 0.30, 40, DamageType.slow, tower21, Color.GREEN, "Slowtower lvl 1", "Slows target (Splash at LVL4)"),
 
         tower33(7500, 55, 10, 1150, 35, 0.5, 0, 0, DamageType.normal, null, Color.WHITE, "Splashtower lvl 4", "Splash damage"),

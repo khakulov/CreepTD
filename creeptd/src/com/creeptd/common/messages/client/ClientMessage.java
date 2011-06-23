@@ -70,8 +70,8 @@ public abstract class ClientMessage extends Message {
             message = new BuildTowerMessage();
         } else if (ChangeStrategyMessage.PATTERN.matcher(messageString).matches()) {
             message = new ChangeStrategyMessage();
-        } else if (LiveTakedMessage.PATTERN.matcher(messageString).matches()) {
-            message = new LiveTakedMessage();
+        } else if (CreepEscapedMessage.PATTERN.matcher(messageString).matches()) {
+            message = new CreepEscapedMessage();
         } else if (CreateGameMessage.PATTERN.matcher(messageString).matches()) {
             message = new CreateGameMessage();
         } else if (DeleteRequestMessage.PATTERN.matcher(messageString).matches()) {

@@ -85,17 +85,15 @@ public class ChatPanel extends JPanel {
         this.setLayout(null);
 
         this.jScrollPanejchatdialog = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        jScrollPanejchatdialog.setBounds(256, 302, 417, 278);
-        this.setSize(233, 230);
-        this.jScrollPanejchatdialog.setBounds(0, 0, 233, 230);
+        this.jScrollPanejchatdialog.setBounds(0, 0, this.width, this.height-25);
         this.chatdialog = new PlayerChat(this.jScrollPanejchatdialog);
         this.jScrollPanejchatdialog.setViewportView(this.chatdialog);
         this.chatdialog.setShowDatum(false);
 
         this.message = new JTextField();
         this.message.setEditable(true);
-        this.message.setFont(new Font("Arial", 0, 16));
-        this.message.setBounds(0, 230, 233, 25);
+        this.message.setFont(new Font("Arial", 0, 13));
+        this.message.setBounds(0, this.height-25, this.width, 25);
 
         this.add(jScrollPanejchatdialog);
         this.add(message);
@@ -103,7 +101,7 @@ public class ChatPanel extends JPanel {
         this.message.requestFocus(); // cursor on the message-textfield
 
         message.addKeyListener(new KeyAdapter() {
-
+            @Override
             public void keyPressed(KeyEvent evt) {
                 sendText(evt);
             }
@@ -153,7 +151,7 @@ public class ChatPanel extends JPanel {
      */
     public final void setMessage(String nickname, String newMessage) {
         this.chatdialog.sendChatText(nickname, newMessage, gamepanel.getCore());
-        managementSound = gamepanel.getCore().getCoreManagementSound();
+        managementSound = gamepanel.getCore().getSoundManagement();
         if (managementSound != null) {
             managementSound.clapSound();
         }

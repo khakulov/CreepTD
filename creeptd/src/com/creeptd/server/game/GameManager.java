@@ -120,8 +120,8 @@ public class GameManager implements GameObserverInterface {
                     for (PlayerInGame player : players) {
                         if (player.getClient().getPlayerModel().getName().equalsIgnoreCase(receiverName)) {
                             if (player.isConnected()) {
-                                player.getClient().send(new ServerChatMessage("Server", message));
-                                sender.send(new ServerChatMessage("Server", message));
+                                player.getClient().send(new ServerChatMessage("Server", message, false));
+                                sender.send(new ServerChatMessage("Server", message, false));
                                 return true;
                             } else {
                                 return false;

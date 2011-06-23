@@ -48,13 +48,14 @@ import com.creeptd.common.messages.MessageUtil;
  */
 public class ServerChatMessage extends ServerMessage {
 
-    private static final String REG_EXP = "MSG\\s\"([^\"]+)\"\\s\"([^\"]+)\"";
+    private static final String REG_EXP = "MSG\\s\"([^\"]+)\"\\s\"([^\"]+)\"\\s(0|1)";
     /**
      * pattern for regular expression.
      */
     public static final Pattern PATTERN = Pattern.compile(REG_EXP);
     private String playerName;
     private String message;
+    private Boolean translate = false;
 
     /**
      * Default constructor.
@@ -67,10 +68,11 @@ public class ServerChatMessage extends ServerMessage {
      * @param playerName the name of the sender
      * @param message the message
      */
-    public ServerChatMessage(String playerName, String message) {
+    public ServerChatMessage(String playerName, String message, Boolean translate) {
         super();
         this.playerName = playerName;
         this.message = message;
+        this.translate = translate;
     }
 
     /**
@@ -101,12 +103,20 @@ public class ServerChatMessage extends ServerMessage {
         this.message = message;
     }
 
+    public Boolean getTranslate() {
+        return translate;
+    }
+
+    public void setTranslate(Boolean translate) {
+        this.translate = translate;
+    }
+
     /**
      * @return the String representation of the message.
      */
     @Override
     public String getMessageString() {
-        return "MSG \"" + MessageUtil.prepareToSend(this.playerName) + "\" \"" + MessageUtil.prepareToSend(this.message) + "\"";
+        return "MSG \"" + MessageUtil.prepareToSend(this.playerName) + "\" \"" + MessageUtil.prepareToSend(this.message) + "\" "+(this.translate ? "1" : "0");
     }
 
     /**
@@ -118,6 +128,7 @@ public class ServerChatMessage extends ServerMessage {
         if (matcher.matches()) {
             this.setPlayerName(matcher.group(1));
             this.setMessage(matcher.group(2));
+            this.setTranslate(matcher.group(3).equals("1"));
         }
 
     }
@@ -134,7 +145,7 @@ public class ServerChatMessage extends ServerMessage {
             return false;
         }
         ServerChatMessage m = (ServerChatMessage) o;
-        return this.playerName.equals(m.getPlayerName()) && this.message.equals(m.getMessage());
+        return this.playerName.equals(m.getPlayerName()) && this.message.equals(m.getMessage()) && this.translate.equals(m.getTranslate());
     }
 
     /**
@@ -143,6 +154,6 @@ public class ServerChatMessage extends ServerMessage {
      */
     @Override
     public int hashCode() {
-        return this.playerName.hashCode() ^ this.message.hashCode();
+        return this.playerName.hashCode() ^ this.message.hashCode() ^ this.translate.hashCode();
     }
 }

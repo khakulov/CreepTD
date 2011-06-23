@@ -62,6 +62,8 @@ import com.creeptd.client.tower.StrategyFactory;
 import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.ExitGameMessage;
 
+import static com.creeptd.client.i18n.Translator.*;
+
 /**
  * The GamePanel class is the container for all other game related panels.
  * 
@@ -72,8 +74,8 @@ public class GamePanel extends GameScreen {
 
     private static final long serialVersionUID = -5720168895966087312L;
     private BoardPanel boardPanel;
-    private TowerSelPanel towerPanel;
-    private CreepSelPanel creepPanel;
+    private TowerSelectPanel towerPanel;
+    private CreepSelectPanel creepPanel;
     private ChatPanel chatPanel;
     private GameInfoPanel gameInfoPanel;
     private BuildTowerInfoPanel buildTowerInfoPanel;
@@ -129,7 +131,7 @@ public class GamePanel extends GameScreen {
         this.gameInfoPanel.setBounds(700, 0, 233, 100);
         this.add(gameInfoPanel);
 
-        this.quit = new JButton("Quit");
+        this.quit = new JButton(_("Quit"));
         this.quit.setFont(new Font("Helvetica", Font.PLAIN, 9));
         this.quit.setBounds(143, 10, 80, 20);
         this.quit.setEnabled(false);
@@ -146,13 +148,13 @@ public class GamePanel extends GameScreen {
                     getCore().popScreen();
                 }
                 if (loop.isRunning()) {
-                    loop.setRunning(false);
+                    loop.terminate();
                 }
                 loop.setGameOver(false);
             }
         });
 
-        this.options = new JButton("Options");
+        this.options = new JButton(_("Options"));
         this.options.setFont(new Font("Helvetica", Font.PLAIN, 9));
         this.options.setBounds(143, 35, 80, 20);
         this.options.setBackground(Color.BLACK);
@@ -167,7 +169,7 @@ public class GamePanel extends GameScreen {
         this.gameInfoPanel.add(this.quit);
 
         // TowerSelPanel
-        this.towerPanel = new TowerSelPanel(this, 233, 100);
+        this.towerPanel = new TowerSelectPanel(this, 233, 100);
         this.towerPanel.setBounds(700, 100, 233, 100);
         this.add(towerPanel);
 
@@ -203,13 +205,13 @@ public class GamePanel extends GameScreen {
         this.add(noInfoPanel);
 
         // CreepSelPanel
-        this.creepPanel = new CreepSelPanel(this, 233, 120);
-        this.creepPanel.setBounds(700, 325, 233, 120);
+        this.creepPanel = new CreepSelectPanel(this, 233, 135);
+        this.creepPanel.setBounds(700, 325, this.creepPanel.getWidth(), this.creepPanel.getHeight());
         this.add(creepPanel);
 
         // ChatPanel
-        this.chatPanel = new ChatPanel(this, 233, 255);
-        this.chatPanel.setBounds(700, 445, 233, 255);
+        this.chatPanel = new ChatPanel(this, 233, 240);
+        this.chatPanel.setBounds(700, 460, this.chatPanel.getWidth(), this.chatPanel.getHeight());
         this.add(chatPanel);
 
         this.doLayout();
@@ -352,6 +354,9 @@ public class GamePanel extends GameScreen {
         //Add the shortcuts
         for (int i = 0; i < creeps.length; i++) {
             addShortcut(shortcuts[i], new SendAction(creeps[i], this));
+            if (shortcuts[i].equals("Y")) {
+                addShortcut("Z", new SendAction(creeps[i], this)); // English layout
+            }
             addShortcut("shift " + shortcuts[i], new SendWaveAction(creeps[i], this));
         }
 
@@ -416,14 +421,14 @@ public class GamePanel extends GameScreen {
     /**
      * @return the towerPanel
      */
-    public TowerSelPanel getTowerPanel() {
+    public TowerSelectPanel getTowerPanel() {
         return towerPanel;
     }
 
     /**
      * @return the creepPanel
      */
-    public CreepSelPanel getCreepPanel() {
+    public CreepSelectPanel getCreepPanel() {
         return creepPanel;
     }
 

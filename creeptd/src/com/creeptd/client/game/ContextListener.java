@@ -36,11 +36,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.creeptd.client.game;
 
 /**
- * Interface for a ContextListener.
+ * A context listener.
+ *
  * This interface should be used by all classes interested in
  * updates on gamestates or game information.
- * @author philipp
  *
+ * @author Philipp
  */
 public interface ContextListener {
 

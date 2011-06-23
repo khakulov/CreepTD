@@ -35,61 +35,91 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.common.messages.server;
 
-import java.util.Enumeration;
+import com.creeptd.common.messages.MessageUtil;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import java.util.Hashtable;
-
-import com.creeptd.common.messages.MessageUtil;
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Message from server to client, containing the actual players list.
  * 
- * @author andreas
- *
+ * @author andreas, Daniel
  */
 public class PlayersMessage extends ServerMessage {
 
-    private static final String REG_EXP_PLAYERS = "PLAYERS((\\sPLAYER\\s\"([^\"]+)\"\\s([0-9]+)\\s([0-9]+))*)";
-    private static final String REG_EXP_PLAYER = "(\\s)*\"([^\"]+)\"\\s([0-9]+)\\s([0-9]+)(\\s)*";
-    /**
-     * pattern for regular expression.
-     */
+    private static final String REG_EXP_PLAYERS = "PLAYERS((\\sPLAYER\\s\"([^\"]+)\"\\s([0-9]+)\\s\"([^\"]+)\"\\s([0-9]+)\\s([0-9]+))*)";
+    private static final String REG_EXP_PLAYER = "[\\s]*\"([^\"]+)\"\\s([0-9]+)\\s\"([^\"]+)\"\\s([0-9]+)\\s([0-9]+)(\\s)*";
     public static final Pattern PATTERN = Pattern.compile(REG_EXP_PLAYERS);
     public static final Pattern PATTERN_PLAYER = Pattern.compile(REG_EXP_PLAYER);
-    private Hashtable<String, List<Integer>> playerNames;
+    /** List of players contained in this message */
+    private List<Player> players = new LinkedList<Player>();
+
+    /**
+     * A player struct.
+     */
+    public class Player {
+        public String operation;
+        public int id;
+        public String name;
+        public int points;
+        public int skill;
+
+        /** Create player from message */
+        Player(String message) {
+            Matcher matcher = PATTERN_PLAYER.matcher(message);
+            if (matcher.matches()) {
+                this.operation = matcher.group(1);
+                this.id = Integer.parseInt(matcher.group(2));
+                this.name = matcher.group(3);
+                this.points = Integer.parseInt(matcher.group(4));
+                this.skill = Integer.parseInt(matcher.group(5));
+            }
+        }
+
+        /** Create player from details */
+        Player(String operation, int id, String name, int points, int skill) {
+            this.operation = operation;
+            this.id = id;
+            this.name = name;
+            this.points = points;
+            this.skill = skill;
+        }
+
+        @Override
+        public String toString() {
+            return "PLAYER \""+this.operation+"\" "+this.id+" \""+MessageUtil.prepareToSend(this.name)+"\" "+this.points+" "+this.skill;
+        }
+    }
 
     /**
      * Default constructor.
      */
     public PlayersMessage() {
         super();
-        this.playerNames = new Hashtable<String, List<Integer>>();
     }
 
     /**
-     * @param playerNames the playerNames to set. None of the names may be null.
+     * Get players.
+     *
+     * @return The players
      */
-    public PlayersMessage(Hashtable<String, List<Integer>> playerNames) {
-        super();
-        setPlayerNames(playerNames);
+    public List<Player> getPlayers() {
+        return this.players;
     }
-
+    
     /**
-     * @return the playerNames
+     * Add a player.
+     * 
+     * @param id Player's id
+     * @param name Player's name
+     * @param points Player's points
+     * @param skill Player's skill
      */
-    public Hashtable<String, List<Integer>> getPlayerNames() {
-        return this.playerNames;
-    }
-
-    /**
-     * @param playerNames the playerNames to set. None of the names may be null.
-     */
-    public void setPlayerNames(Hashtable<String, List<Integer>> playerNames) {
-        this.playerNames = playerNames;
+    public void addPlayer(String operation, int id, String name, int points, int skill) {
+        Player p = new Player(operation, id, name, points, skill);
+        this.players.add(p);
     }
 
     /**
@@ -97,19 +127,13 @@ public class PlayersMessage extends ServerMessage {
      */
     @Override
     public String getMessageString() {
-
-        String message_player = "";
         String message = "PLAYERS";
-        Enumeration<String> e = this.playerNames.keys();
-        while (e.hasMoreElements()) {
-            String key = (String) e.nextElement();
-
-            message_player += " PLAYER";
-            message_player += " \"" + MessageUtil.prepareToSend(key) + "\"";
-            message_player += " " + this.playerNames.get(key).get(0); // Exp
-            message_player += " " + this.playerNames.get(key).get(1); // Elo
+        Iterator<Player> i = this.players.iterator();
+        while (i.hasNext()) {
+            Player p = i.next();
+            message += " "+p.toString();
         }
-        return message + message_player;
+        return message;
     }
 
     /**
@@ -119,40 +143,15 @@ public class PlayersMessage extends ServerMessage {
     public void initWithMessage(String messageString) {
         Matcher matcher = PATTERN.matcher(messageString);
         if (matcher.matches()) {
-            String playerMessagePart = matcher.group(1);
-            String[] splitPlayerMessagePart = playerMessagePart.split("PLAYER");
-
-            for (String player : splitPlayerMessagePart) {
-                Matcher matcher_player = PATTERN_PLAYER.matcher(player);
-
-                if (matcher_player.matches()) {
-                    List<Integer> l = new ArrayList<Integer>();
-                    l.add(Integer.parseInt(matcher_player.group(3)));
-                    l.add(Integer.parseInt(matcher_player.group(4)));
-                    this.playerNames.put(matcher_player.group(2), l);
-
+            String playersMessage = matcher.group(1);
+            String[] splitMessage = playersMessage.split("PLAYER");
+            for (String playerMessage : splitMessage) {
+                Matcher pmatcher = PATTERN_PLAYER.matcher(playerMessage);
+                if (pmatcher.matches()) {
+                    Player p = new Player(playerMessage);
+                    this.players.add(p);
                 }
             }
         }
-    }
-
-    /**
-     * Returns true if o is a PlayersMessage instance with the same set of
-     * players as this object.
-     * @param o the object to compare to.
-     * @return true if o is equal to this object.
-     */
-    @Override
-    public boolean equals(Object o) {
-        return (o instanceof PlayersMessage) && this.playerNames.equals(((PlayersMessage) o).getPlayerNames());
-    }
-
-    /**
-     * Returns a hash code for this object.
-     * @return a hash code
-     */
-    @Override
-    public int hashCode() {
-        return this.playerNames.hashCode();
     }
 }

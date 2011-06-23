@@ -46,20 +46,20 @@ import com.creeptd.common.messages.MessageUtil;
  * @author andreas
  * 
  */
-public class BuildCreepRoundMessage extends ServerMessage implements
-        GameMessage {
+public class BuildCreepRoundMessage extends ServerMessage implements GameMessage {
 
     /**
      * Regular expression for this message.
      */
     private static final String REG_EXP =
-            "ROUND\\s([0-9]+):\\sPLAYER\\s([0-9]+)\\s" + "GETS\\sCREEP\\s\"([^\"]+)\"\\sFROM\\s([0-9]+)";
+            "ROUND\\s([0-9]+):\\sPLAYER\\s([0-9]+)\\s" + "GETS\\sCREEP\\s#([0-9]+)\\s\"([^\"]+)\"\\sFROM\\s([0-9]+)";
     /**
      * Pattern for regular expression.
      */
     public static final Pattern PATTERN = Pattern.compile(REG_EXP);
     private Long roundId;
     private Integer playerId;
+    private Integer creepId;
     private Integer senderId;
     private String creepType;
 
@@ -91,6 +91,14 @@ public class BuildCreepRoundMessage extends ServerMessage implements
      */
     public void setPlayerId(Integer playerId) {
         this.playerId = playerId;
+    }
+
+    public Integer getCreepId() {
+        return creepId;
+    }
+
+    public void setCreepId(Integer creepId) {
+        this.creepId = creepId;
     }
 
     /**
@@ -128,7 +136,7 @@ public class BuildCreepRoundMessage extends ServerMessage implements
      */
     @Override
     public String getMessageString() {
-        return "ROUND " + this.roundId + ": PLAYER " + this.playerId + " GETS CREEP \"" + MessageUtil.prepareToSend(this.creepType) + "\" FROM " + this.senderId;
+        return "ROUND " + this.roundId + ": PLAYER " + this.playerId + " GETS CREEP #"+this.creepId+" \"" + MessageUtil.prepareToSend(this.creepType) + "\" FROM " + this.senderId;
     }
 
     /**
@@ -141,8 +149,9 @@ public class BuildCreepRoundMessage extends ServerMessage implements
         if (matcher.matches()) {
             this.setRoundId(Long.parseLong(matcher.group(1)));
             this.setPlayerId(Integer.parseInt(matcher.group(2)));
-            this.setCreepType(matcher.group(3));
-            this.setSenderId(Integer.parseInt(matcher.group(4)));
+            this.setCreepId(Integer.parseInt(matcher.group(3)));
+            this.setCreepType(matcher.group(4));
+            this.setSenderId(Integer.parseInt(matcher.group(5)));
         }
 
     }
@@ -160,7 +169,7 @@ public class BuildCreepRoundMessage extends ServerMessage implements
             return false;
         }
         BuildCreepRoundMessage m = (BuildCreepRoundMessage) o;
-        return this.roundId == m.getRoundId() && this.playerId == m.getPlayerId() && this.senderId == m.getSenderId() && this.creepType.equals(m.getCreepType());
+        return this.roundId == m.getRoundId() && this.playerId == m.getPlayerId() && this.senderId == m.getSenderId() && this.creepType.equals(m.getCreepType()) && this.creepId == m.getCreepId();
     }
 
     /**
@@ -170,6 +179,6 @@ public class BuildCreepRoundMessage extends ServerMessage implements
      */
     @Override
     public int hashCode() {
-        return (int) (this.roundId ^ this.playerId ^ this.senderId);
+        return (int) (this.roundId ^ this.playerId ^ this.creepId ^ this.creepType.hashCode() ^ this.senderId);
     }
 }

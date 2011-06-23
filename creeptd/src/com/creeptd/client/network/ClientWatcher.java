@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.client.network;
 
+import com.creeptd.client.Core;
 import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +49,8 @@ import com.creeptd.common.messages.client.PongMessage;
 import com.creeptd.common.messages.server.GameMessage;
 import com.creeptd.common.messages.server.PingMessage;
 import com.creeptd.common.messages.server.ServerMessage;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * Watches for incomming messages form the Server.
@@ -77,6 +80,7 @@ public class ClientWatcher extends Thread {
     /**
      * run method.
      */
+    @Override
     public void run() {
         while (!interrupt) {
 
@@ -123,20 +127,15 @@ public class ClientWatcher extends Thread {
      * Method to handle the error exceptions.
      */
     public void errorHandling() {
-        String[] options = {"Ok"};
+        String[] options = {_("OK")};
         UIManager.put("OptionPane.background", Color.BLACK);
         UIManager.put("Panel.background", Color.BLACK);
         UIManager.put("OptionPane.messageForeground", Color.GREEN);
-        int n = JOptionPane.showOptionDialog(null,
-                "Connection aborted!", "Server error",
+        JOptionPane.showOptionDialog(null, _("Connection aborted."), _("An error occured"),
                 JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE,
                 null, options, options[0]);
-        if (n == JOptionPane.OK_OPTION) {
-            this.network.shutdown();
-            this.network.getCore().clearScreen();
-            this.network.getCore().pushScreen(new LoginPanel());
-
-        }
-        System.out.println(n);
+        this.network.shutdown();
+        Core.getInstance().clearScreen();
+        Core.getInstance().pushScreen(new LoginPanel());
     }
 }

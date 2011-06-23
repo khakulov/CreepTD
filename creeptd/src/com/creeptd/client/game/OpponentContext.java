@@ -40,33 +40,22 @@ import com.creeptd.common.Constants;
 
 /**
  * The GameContext for opponents.
+ * 
  * @author Philipp
  */
 public class OpponentContext extends GameContext {
 
     /**
      * Creates a new instance of OpponentContext.
-     * @param location the boardLocation (GameContext.BoardLocation)
-     * @param network the current network object
-     * @param map the map
+     *
+     * @param location The boardLocation (GameContext.BoardLocation)
+     * @param network The current network object
+     * @param map The map
+     * @param gameLoop The game loop
+     * @param playerId The player's id
+     * @param playerName The player's name
      */
-    public OpponentContext(BoardLocation location, Network network, Constants.Map map, GameLoop gameLoop, int player_id, String player_name) {
-        super(location, network, null, map, gameLoop, player_id, player_name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void postUpdate(long roundID) {
-        // TODO Auto-generated method stub
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void preUpdate(long roundID) {
-        // TODO Auto-generated method stub
+    public OpponentContext(BoardLocation location, Network network, Constants.Map map, GameLoop gameLoop, int playerId, String playerName) {
+        super(location, network, null, map, gameLoop, playerId, playerName);
     }
 }

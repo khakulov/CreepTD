@@ -61,6 +61,7 @@ import javax.swing.UIManager;
 
 import com.creeptd.client.network.MessageListener;
 import com.creeptd.client.sound.SoundManagement;
+import com.creeptd.client.util.Fonts;
 import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.ExitGameMessage;
 import com.creeptd.common.messages.client.KickPlayerRequestMessage;
@@ -73,6 +74,8 @@ import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.common.messages.server.ServerMessage;
 import com.creeptd.common.messages.server.StartGameMessage;
 import com.creeptd.common.messages.server.StartGameResponseMessage;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * The WaitingGamePanel is coming directly to the CreateGamePanel.
@@ -96,7 +99,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
     private JScrollPane jScrollPanejcontextinfodialog = new JScrollPane();
     private JScrollPane jScrollPanejwPlayersdialog = new JScrollPane();
     private JScrollPane jScrollPanejchatdialog = null;
-    private JLabel logoImage = new JLabel();
+    private JLabel title = new JLabel();
     private JLabel description;
     private JTextField message = new JTextField();
     private ImageIcon preview;
@@ -132,10 +135,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         this.setBackground(Color.BLACK);
         this.minimumPlayerNumber = minimumPlayerNumber;
 
-        java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/header-gamewaiting.jpg");
-        logoImage = new JLabel();
-        logoImage.setBounds(225, 5, 450, 100);
-        logoImage.setText("<html><img src=\"" + imageURL + "\"></html>");
+        title = Fonts.getFrameTitle(_("Waiting for players..."), 5);
 
         description = new JLabel();
         description.setBounds(256, 110, 417, 124);
@@ -145,7 +145,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         kick.setBackground(Color.BLACK);
         kick.setForeground(Color.GREEN);
         kick.setBounds(688, 270, 75, 25);
-        kick.setText("Kick");
+        kick.setText(_("Kick"));
         kick.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent evt) {
@@ -156,7 +156,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         start.setBackground(Color.BLACK);
         start.setForeground(Color.GREEN);
         start.setBounds(688, 246, 75, 25);
-        start.setText("Start");
+        start.setText(_("Start"));
         start.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent evt) {
@@ -174,7 +174,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         quit.setBackground(Color.BLACK);
         quit.setForeground(Color.GREEN);
         quit.setBounds(688, 294, 75, 25);
-        quit.setText("Quit");
+        quit.setText(_("Quit"));
         quit.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent evt) {
@@ -192,7 +192,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         send.setBackground(Color.BLACK);
         send.setForeground(Color.WHITE);
         send.setBounds(688, 604, 75, 25);
-        send.setText("Send");
+        send.setText(_("Send"));
         send.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent evt) {
@@ -249,7 +249,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         add(send);
         add(description);
         //Labels
-        add(logoImage);
+        add(title);
         add(previewLabel);
         add(locationLabel);
 
@@ -269,18 +269,22 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
     public void start() {
         this.gamePanel = new GamePanel();
         getCore().getNetwork().addListener(this);
-        managementSound = this.getCore().getCoreManagementSound();
+        managementSound = this.getCore().getSoundManagement();
         if (!getCore().isGamecreator()) {
             kick.setEnabled(false);
             start.setEnabled(false);
         }
 
         String gamename = this.getCore().getActiveGame().getGameName();
-        if (gamename.equals("Game of")) {
+        if (gamename.equals(_("Game of"))) {
             gamename += " ("+getCore().getPlayerName()+")";
         }
         if (gamename.length() > 30) gamename = gamename.substring(0, 27)+"...";
-        description.setText("<html><p style=\"padding-bottom: 3; color: yellow;\"><b>„"+gamename+"”</b></p><table width=\"180px\"><tr><td>Map: </td><td>" + Constants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString() + "</td></tr><tr><td>Players:  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>Min/Max:  </td><td>" + ((this.getCore().getActiveGame().getMinEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMinEloPoints()) + "/" + ((this.getCore().getActiveGame().getMaxEloPoints() == 0) ? "all" : this.getCore().getActiveGame().getMaxEloPoints()) + "</td></tr>" + "<tr><td>Mode:  </td><td>" + this.getCore().getActiveGame().getGameModeString() + "</td></tr>" + "<tr><td>Password:  </td><td>" + ("".equals(this.getCore().getActiveGame().getPassword()) ? "(not set)" : this.getCore().getActiveGame().getPassword()) + "</td></tr>" + "</td></tr></table></html>");
+        String map = Constants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString();
+        if (map.equals("Random_Map")) {
+            map = _("Random map");
+        }
+        description.setText("<html><p style=\"padding-bottom: 3; color: yellow;\"><b>„"+gamename+"”</b></p><table width=\"180px\"><tr><td>"+_("Map")+": </td><td>" + map + "</td></tr><tr><td>"+_("Players")+":  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>"+_("Min-Max")+":  </td><td>" + ((this.getCore().getActiveGame().getMinEloPoints() == 0) ? _("all") : this.getCore().getActiveGame().getMinEloPoints()) + "-" + ((this.getCore().getActiveGame().getMaxEloPoints() == 0) ? _("all") : this.getCore().getActiveGame().getMaxEloPoints()) + "</td></tr>" + "<tr><td>"+_("Mode")+":  </td><td>" + _(this.getCore().getActiveGame().getGameModeString()) + "</td></tr>" + "<tr><td>"+_("Password")+":  </td><td>" + ("".equals(this.getCore().getActiveGame().getPassword()) ? _("(not set)") : this.getCore().getActiveGame().getPassword()) + "</td></tr>" + "</td></tr></table></html>");
 
         try {
             preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(Constants.Map.getPicturePath(Constants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString()))));
@@ -390,7 +394,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             if (managementSound != null) {
                 managementSound.hornbeepSound();
             }
-            this.chatdialog.sendChatText("System", pjm.getPlayerName() + "[" + pjm.getPlayerExperience() + "/" + pjm.getPlayerElopoints() + "]" + " has joined!", getCore());
+            this.chatdialog.sendChatText("System", pjm.getPlayerName() + "[" + pjm.getPlayerExperience() + "/" + pjm.getPlayerElopoints() + "]" + " "+_("has joined!"), getCore());
 
             changeButton();
 
@@ -404,7 +408,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
                 UIManager.put("OptionPane.JButton.setForground", Color.BLACK);
                 UIManager.put("Panel.background", Color.BLACK);
                 UIManager.put("OptionPane.messageForeground", Color.GREEN);
-                JOptionPane.showMessageDialog(this, "Could not start game!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, _("Sorry, the game could not be started."), _("An error occured"), JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -424,18 +428,16 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             UIManager.put("OptionPane.JButton.setForground", Color.BLACK);
             UIManager.put("Panel.background", Color.BLACK);
             UIManager.put("OptionPane.messageForeground", Color.GREEN);
-            JOptionPane.showMessageDialog(this, "You were kicked by the creator of the game", "Sorry", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, _("You have been kicked by the creator of the game."), _("Sorry"), JOptionPane.ERROR_MESSAGE);
             getCore().popScreen();
         }
 
         if (m instanceof StartGameMessage) {
             StartGameMessage sgm = (StartGameMessage) m;
             List<Integer> list = sgm.getPlayers();
-
             for (int i = 0; i < list.size(); i++) {
                 this.playersOrder.put(list.get(i), i);
             }
-
             this.mapId = sgm.getMapID();
             getCore().switchScreen(this.gamePanel);
             gamePanel.getLoop().setPlayersOrder(this.playersOrder);
@@ -448,19 +450,21 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         if (m instanceof PlayerQuitMessage) {
             PlayerQuitMessage pqm = (PlayerQuitMessage) m;
             DefaultListModel dl = (DefaultListModel) this.playerlist.getModel();
-
             if (managementSound != null) {
                 managementSound.hornbeepSound();
             }
             dl.removeElement(pqm.getPlayerName());
             removePlayer(pqm.getPlayerName());
-            this.chatdialog.sendChatText("System", pqm.getPlayerName() + " has left...", getCore());
-
+            this.chatdialog.sendChatText("System", pqm.getPlayerName() + " "+_("has left..."), getCore());
         }
 
         if (m instanceof ServerChatMessage) {
-            ServerChatMessage mm = (ServerChatMessage) m;
-            this.chatdialog.sendChatText(mm.getPlayerName(), mm.getMessage(), getCore());
+            ServerChatMessage scm = (ServerChatMessage) m;
+            String msg = scm.getMessage();
+            if (scm.getTranslate()) {
+                msg = _(msg);
+            }
+            this.chatdialog.sendChatText(scm.getPlayerName(), msg, getCore());
 
             if (managementSound != null) {
                 managementSound.clapSound();

@@ -45,6 +45,12 @@ import com.creeptd.client.game.ContextListener;
 import com.creeptd.client.game.GameContext;
 import com.creeptd.client.game.OpponentContext;
 import com.creeptd.client.game.PlayerContext;
+import java.awt.Cursor;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * Class painting the game information about the player and his opponents.
@@ -63,9 +69,9 @@ public class GameInfoPanel extends JPanel implements ContextListener {
     private JLabel income;
     private JLabel playerLives;
     private JLabel incomeCounter;
-    private JLabel opponent1Lives;
+    /* private JLabel opponent1Lives;
     private JLabel opponent2Lives;
-    private JLabel opponent3Lives;
+    private JLabel opponent3Lives; */
 
     /**
      * Creates a new GameInfoPanel.
@@ -75,23 +81,25 @@ public class GameInfoPanel extends JPanel implements ContextListener {
         this.setLayout(null);
         this.setBackground(Color.BLACK);
 
-        incomeCounter = new JLabel("Next income in: ");
+        Map<String,String> args = new HashMap<String,String>();
+        args.put("t", "...");
+        incomeCounter = new JLabel(__("New income in %t%", args));
         incomeCounter.setForeground(Color.WHITE);
-        incomeCounter.setBounds(0, 0, 233, 15);
+        incomeCounter.setBounds(5, 5, 233, 15);
 
-        credits = new JLabel("Credits: ");
+        credits = new JLabel(_("Credits")+": ");
         credits.setForeground(Color.WHITE);
-        credits.setBounds(0, 15, 233, 15);
+        credits.setBounds(5, 25, 233, 15);
 
-        income = new JLabel("Income: ");
+        income = new JLabel(_("Income")+": ");
         income.setForeground(Color.WHITE);
-        income.setBounds(0, 30, 233, 15);
+        income.setBounds(5, 45, 233, 15);
 
-        playerLives = new JLabel("Lives: ");
+        playerLives = new JLabel(_("Lifes")+": ");
         playerLives.setForeground(Color.WHITE);
-        playerLives.setBounds(0, 45, 233, 15);
+        playerLives.setBounds(5, 65, 233, 15);
 
-        opponent1Lives = new JLabel();
+        /* opponent1Lives = new JLabel();
         opponent1Lives.setForeground(Color.WHITE);
         opponent1Lives.setBounds(0, 60, 233, 13);
 
@@ -101,15 +109,15 @@ public class GameInfoPanel extends JPanel implements ContextListener {
 
         opponent3Lives = new JLabel();
         opponent3Lives.setForeground(Color.WHITE);
-        opponent3Lives.setBounds(0, 86, 233, 13);
+        opponent3Lives.setBounds(0, 86, 233, 13); */
 
         this.add(incomeCounter);
         this.add(credits);
         this.add(income);
         this.add(playerLives);
-        this.add(opponent1Lives);
+        /* this.add(opponent1Lives);
         this.add(opponent2Lives);
-        this.add(opponent3Lives);
+        this.add(opponent3Lives); */
 
     }
 
@@ -149,7 +157,9 @@ public class GameInfoPanel extends JPanel implements ContextListener {
      */
     public void creditsChanged(GameContext context) {
         if (context.equals(playerContext)) {
-            this.credits.setText("Credits: " + format(context.getCredits()));
+            URL imageURL = this.getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/icon_credits.gif");
+            this.credits.setText("<html><img src=\""+imageURL+"\"> &nbsp;" + format(context.getCredits())+"</html>");
+            this.credits.setToolTipText(_("Your current amount of credits."));
             this.repaint();
         }
     }
@@ -159,7 +169,9 @@ public class GameInfoPanel extends JPanel implements ContextListener {
      */
     public void incomeChanged(GameContext context) {
         if (context.equals(playerContext)) {
-            this.income.setText("Income: " + format(context.getIncome()));
+            URL imageURL = this.getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/icon_income.gif");
+            this.income.setText("<html><img src=\""+imageURL+"\"> &nbsp;" + format(context.getIncome())+"</html>");
+            this.income.setToolTipText(_("The income you receive every round."));
             this.repaint();
         }
     }
@@ -168,16 +180,17 @@ public class GameInfoPanel extends JPanel implements ContextListener {
      * {@inheritDoc}
      */
     public void livesChanged(GameContext context) {
-
         if (context == playerContext) {
-            this.playerLives.setText("Lives: " + context.getLives());
-        } else if (context.equals(opponent1Context)) {
-            this.opponent1Lives.setText(context.getPlayerName() + ": " + context.getLives());
+            URL imageURL = this.getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/icon_lifes.gif");
+            this.playerLives.setText("<html><img src=\""+imageURL+"\"> &nbsp;"+ context.getLifes()+"</html>");
+            this.playerLives.setToolTipText(_("Lifes left."));
+        } /* else if (context.equals(opponent1Context)) {
+            this.opponent1Lives.setText(context.getPlayerName() + ": " + context.getLifes());
         } else if (context.equals(opponent2Context)) {
-            this.opponent2Lives.setText(context.getPlayerName() + ": " + context.getLives());
+            this.opponent2Lives.setText(context.getPlayerName() + ": " + context.getLifes());
         } else if (context.equals(opponent3Context)) {
-            this.opponent3Lives.setText(context.getPlayerName() + ": " + context.getLives());
-        }
+            this.opponent3Lives.setText(context.getPlayerName() + ": " + context.getLifes());
+        } */
         this.repaint();
     }
 
@@ -186,7 +199,9 @@ public class GameInfoPanel extends JPanel implements ContextListener {
      * @param counter time to next income
      */
     public void setIncomeCounter(int counter) {
-        this.incomeCounter.setText("New income in " + counter);
+        Map<String,String> args = new HashMap<String,String>();
+        args.put("t", counter+"");
+        this.incomeCounter.setText(__("New income in %t%", args));
 
     }
 

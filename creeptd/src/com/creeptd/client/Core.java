@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.client;
 
+import com.creeptd.client.i18n.Translator;
 import java.awt.Dimension;
 import java.util.Stack;
 import java.util.logging.Logger;
@@ -55,6 +56,7 @@ import java.util.Random;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -83,8 +85,9 @@ public class Core extends JPanel {
     private Integer playerElopoints = 1500;
     private Integer playerId;
     private GameDescription activeGame;
-    private SoundManagement coreManagementSound;
+    private SoundManagement soundManagement;
     private Object creator;
+    private Translator translator;
     
     /**
      * Creates a new core instance.
@@ -98,10 +101,13 @@ public class Core extends JPanel {
         }
 
         network = new Network(host, port, this);
-        coreManagementSound = new SoundManagement();
+        soundManagement = new SoundManagement();
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);
         instance = this;
+        this.translator = new Translator();
+        
+        ToolTipManager.sharedInstance().setInitialDelay(500);
     }
 
     public static Core getInstance() {
@@ -242,6 +248,14 @@ public class Core extends JPanel {
         screen.start();
     }
 
+    public Translator getTranslator() {
+        return this.translator;
+    }
+    
+    public void setLanguage(String lang) {
+        this.translator = new Translator(lang);
+    }
+
     /**
      * Getter for the network.
      *
@@ -256,8 +270,8 @@ public class Core extends JPanel {
      *
      * @return SoundManagement
      */
-    public SoundManagement getCoreManagementSound() {
-        return coreManagementSound;
+    public SoundManagement getSoundManagement() {
+        return soundManagement;
     }
     
     /**

@@ -52,13 +52,17 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import com.creeptd.client.network.MessageListener;
+import com.creeptd.client.util.Fonts;
 import com.creeptd.common.Constants;
+import com.creeptd.common.Password;
 import com.creeptd.common.messages.client.DeleteRequestMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
 import com.creeptd.common.messages.client.UpdateDataRequestMessage;
 import com.creeptd.common.messages.server.DeleteResponseMessage;
 import com.creeptd.common.messages.server.ServerMessage;
 import com.creeptd.common.messages.server.UpdateDataResponseMessage;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * RegisterPanel to register users in the database.
@@ -74,7 +78,7 @@ public class ProfilPanel extends GameScreen implements MessageListener {
     private static final long serialVersionUID = 7804821539529169821L;
     private JLabel name;
     private JLabel password;
-    private JLabel logoImage;
+    private JLabel title;
     private JLabel password2;
     private JLabel email;
     private JLabel oldPassword;
@@ -95,32 +99,29 @@ public class ProfilPanel extends GameScreen implements MessageListener {
         this.setLayout(null);
         this.setBackground(Color.BLACK);
 
-        java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/header-editprofile.jpg");
-        logoImage = new JLabel();
-        logoImage.setBounds(225, 50, 450, 100);
-        logoImage.setText("<html><img src=\"" + imageURL + "\"></html>");
+        title = Fonts.getFrameTitle(_("Edit account"), 50);
 
-        email = new JLabel("New Email");
+        email = new JLabel(_("New email"));
         email.setBounds(350, 470, 200, 30);
         email.setForeground(Color.GRAY);
         email.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        name = new JLabel("Username");
+        name = new JLabel(_("Username"));
         name.setBounds(350, 170, 200, 30);
         name.setForeground(Color.GRAY);
         name.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        password = new JLabel("New password");
+        password = new JLabel(_("New password"));
         password.setBounds(350, 322, 200, 25);
         password.setForeground(Color.GRAY);
         password.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        password2 = new JLabel("Confirm new password");
+        password2 = new JLabel(_("Repeat new password"));
         password2.setBounds(350, 397, 200, 25);
         password2.setForeground(Color.GRAY);
         password2.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        oldPassword = new JLabel("Actual password");
+        oldPassword = new JLabel(_("Actual password"));
         oldPassword.setBounds(350, 247, 200, 25);
         oldPassword.setForeground(Color.GRAY);
         oldPassword.setFont(new Font("Arial", Font.PLAIN, 11));
@@ -150,17 +151,17 @@ public class ProfilPanel extends GameScreen implements MessageListener {
         loldPassword.setFont(new Font("Arial", Font.PLAIN, 12));
         this.setGameScreenFocus(loldPassword);
 
-        confirm = new JButton("Confirm");
+        confirm = new JButton(_("Confirm"));
         confirm.setBounds(225, 550, 200, 25);
         confirm.setBackground(Color.BLACK);
         confirm.setForeground(Color.GREEN);
 
-        back = new JButton("Back");
+        back = new JButton(_("Back"));
         back.setBounds(475, 550, 200, 25);
         back.setBackground(Color.BLACK);
         back.setForeground(Color.GREEN);
 
-        delete = new JButton("Delete Account");
+        delete = new JButton(_("Delete account"));
         delete.setBounds(350, 600, 200, 25);
         delete.setBackground(Color.BLACK);
         delete.setForeground(Color.GREEN);
@@ -174,7 +175,7 @@ public class ProfilPanel extends GameScreen implements MessageListener {
         this.add(confirm);
         this.add(lPassword2);
         this.add(password2);
-        this.add(logoImage);
+        this.add(title);
         this.add(lEmail);
         this.add(email);
         this.add(back);
@@ -264,12 +265,11 @@ public class ProfilPanel extends GameScreen implements MessageListener {
                 UIManager.put("OptionPane.background", Color.BLACK);
                 UIManager.put("Panel.background", Color.BLACK);
                 UIManager.put("OptionPane.messageForeground", Color.GREEN);
-                JOptionPane.showMessageDialog(this, "Change Successful",
-                        "Thank You", 2);
+                JOptionPane.showMessageDialog(this, _("Update successful"), _("Thank you!"), 2);
                 getCore().popScreen();
             }
             if (udResponsem.getResponseType() == Constants.ResponseType.failed) {
-                errorDialog("Unknown error");
+                errorDialog(_("Unknown error."));
                 confirm.setEnabled(true);
                 lPassword.requestFocus();
             }
@@ -294,7 +294,6 @@ public class ProfilPanel extends GameScreen implements MessageListener {
      */
     public void confirmProcess() {
         getCore().getNetwork().makeContact();
-        UpdateDataRequestMessage udrm = new UpdateDataRequestMessage();
 
         Pattern pWord = Pattern.compile("[a-zA-Z_0-9]*");
         Pattern pEmail = Pattern.compile("^\\S+@\\S+$");
@@ -303,21 +302,21 @@ public class ProfilPanel extends GameScreen implements MessageListener {
         boolean pMatchesPwd = mPassword.matches();
         boolean pMatchesEmail = mEmail.matches();
 
-        if (!pMatchesPwd) {
-            errorDialog("only a-zA-Z and 0-9 is allowed");
+        if (lPassword.getPassword().length < 5 || lPassword.getPassword().length > 32) {
+            errorDialog(_("Minimum password length is 5, maximum is 32 characters."));
             lPassword.requestFocus();
         } else if (!String.valueOf(lPassword.getPassword()).equals(
                 String.valueOf(lPassword2.getPassword()))) {
-            errorDialog("The passwords you entered weren't identical");
+            errorDialog(_("The passwords you entered weren't identical."));
             lPassword.requestFocus();
         } else if (!pMatchesEmail && !lEmail.getText().equals("")) {
-            errorDialog("Not a valid email address!");
+            errorDialog(_("Please specify a valid email address or none."));
             lEmail.requestFocus();
         } else if (String.valueOf(loldPassword.getPassword()).equals(String.valueOf(lPassword.getPassword()))) {
-            errorDialog("Your actual password and your " + "new password are the same!");
+            errorDialog(_("Your actual password and your new password are the same!"));
             lEmail.requestFocus();
-
         } else {
+            UpdateDataRequestMessage udrm = new UpdateDataRequestMessage();
             if (lEmail.getText() == null) {
                 lEmail.setText("");
                 udrm.setEmail(lEmail.getText());
@@ -327,12 +326,12 @@ public class ProfilPanel extends GameScreen implements MessageListener {
             if (String.valueOf(lPassword.getPassword()) == null) {
                 udrm.setPassword("");
             } else {
-                udrm.setPassword(String.valueOf(lPassword.getPassword()));
+                udrm.setPassword(Password.encodePassword(String.valueOf(lPassword.getPassword())));
             }
             if (String.valueOf(loldPassword.getPassword()) == null) {
                 udrm.setOldPassword("");
             } else {
-                udrm.setOldPassword(String.valueOf(loldPassword.getPassword()));
+                udrm.setOldPassword(Password.encodePassword(String.valueOf(loldPassword.getPassword())));
             }
             udrm.setClientId(getCore().getPlayerId());
 
@@ -360,12 +359,12 @@ public class ProfilPanel extends GameScreen implements MessageListener {
      */
     public void deleteProcess() {
 
-        String[] options = {"Yes", "No"};
+        String[] options = {_("Yes"), _("No")};
         UIManager.put("OptionPane.background", Color.BLACK);
         UIManager.put("Panel.background", Color.BLACK);
         UIManager.put("OptionPane.messageForeground", Color.GREEN);
-        int n = JOptionPane.showOptionDialog(this, "Are you sure?",
-                "Account Deletion", JOptionPane.YES_NO_OPTION,
+        int n = JOptionPane.showOptionDialog(this, _("Are you really sure?"),
+                _("Delete account"), JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         if (n == JOptionPane.YES_OPTION) {
             DeleteRequestMessage drm = new DeleteRequestMessage();

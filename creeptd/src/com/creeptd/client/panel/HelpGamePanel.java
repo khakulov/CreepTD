@@ -51,6 +51,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import static com.creeptd.client.i18n.Translator.*;
+
 /**
  * The HelpGamePanel gives a help for players. It describes how the game works.
  * It gives also informations about our team.
@@ -76,7 +78,7 @@ public class HelpGamePanel extends JDialog {
      */
     public HelpGamePanel() {
         this.init();
-        this.setTitle("CreepTD - Help");
+        this.setTitle("CreepTD - "+_("Help"));
         this.index = getClass().getClassLoader().getResource("com/creeptd/client/resources/help/index.html");
     }
 
@@ -126,7 +128,7 @@ public class HelpGamePanel extends JDialog {
         content.setBounds(0, 0, 620, 690);
         content.setBackground(Color.BLACK);
 
-        this.quit = new JButton("Exit Help");
+        this.quit = new JButton(_("Close"));
         this.quit.setBackground(Color.BLACK);
         this.quit.setForeground(Color.GREEN);
         this.quit.setBounds(265, 620, 100, 30);
@@ -151,7 +153,7 @@ public class HelpGamePanel extends JDialog {
                     }
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                    System.out.println("HTML-Seite konnte nicht geladen werden!");
+                    System.out.println("HTML page could not be loaded!");
                 }
             }
         });
@@ -185,7 +187,7 @@ public class HelpGamePanel extends JDialog {
                 htmlDisplay.setPage(this.index);
             } catch (IOException ex) {
                 ex.printStackTrace();
-                System.out.println("HTML-Seite konnte nicht geladen werden!");
+                System.out.println("HTML page could not be loaded!");
             }
         }
     }

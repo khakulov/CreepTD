@@ -104,6 +104,10 @@ public class AuthenticationService {
             logger.error("Registration failed (username used)");
             return Constants.ResponseType.username;
         }
+        if (registrationRequestMessage.getUsername().equalsIgnoreCase("Server")) {
+            logger.error("Registration failed (username not allowed)");
+            return Constants.ResponseType.username;
+        }
         try {
             EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
             EntityTransaction entityTransaction = entityManager.getTransaction();
@@ -152,8 +156,8 @@ public class AuthenticationService {
             String password = updateDataRequestMessage.getPassword();
             String mail = updateDataRequestMessage.getEmail();
             if ((oldPassword != null) && (oldPassword.length() > 0) && (password != null) && (password.length() > 0)) {
-                if (Password.encodePassword(player.getPassword()).equals(oldPassword)) {
-                    player.setAndEncodePassword(password);
+                if (player.getPassword().equals(oldPassword)) {
+                    player.setPassword(password);
                     update = true;
                 }
             }

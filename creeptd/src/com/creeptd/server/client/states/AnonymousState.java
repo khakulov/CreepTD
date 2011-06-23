@@ -92,7 +92,6 @@ public class AnonymousState extends AbstractClientState {
             LoginRequestMessage loginRequestMessage = (LoginRequestMessage) message;
             LoginResponseMessage loginResponseMessage = new LoginResponseMessage();
             String clientVersion = loginRequestMessage.getVersion();
-
             // Check Version
             if (!clientVersion.equals(Server.getVersion())) {
                 logger.warn("client " + this.getClient() + " has wrong version: " + clientVersion);
@@ -100,19 +99,15 @@ public class AnonymousState extends AbstractClientState {
                 this.getClient().send(loginResponseMessage);
                 return this;
             }
-
             // Check BanList
-            if (AuthenticationService.isBanned(this.getClient(),
-                    loginRequestMessage)) {
+            if (AuthenticationService.isBanned(this.getClient(), loginRequestMessage)) {
                 logger.warn("blocked user try to login: " + loginRequestMessage.getUsername());
                 loginResponseMessage.setResponseType(Constants.ResponseType.failed);
                 this.getClient().send(loginResponseMessage);
                 return this;
             }
-
             // Check login
-            if (!AuthenticationService.login(this.getClient(),
-                    loginRequestMessage)) {
+            if (!AuthenticationService.login(this.getClient(), loginRequestMessage)) {
                 loginResponseMessage.setResponseType(Constants.ResponseType.failed);
                 this.getClient().send(loginResponseMessage);
                 return this;
@@ -141,5 +136,10 @@ public class AnonymousState extends AbstractClientState {
     @Override
     public void leave() {
         // do nothing
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof AnonymousState;
     }
 }

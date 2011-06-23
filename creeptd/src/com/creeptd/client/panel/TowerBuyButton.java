@@ -50,6 +50,9 @@ import javax.swing.JButton;
 import com.creeptd.client.game.GameContext;
 import com.creeptd.common.Constants;
 
+import java.net.URL;
+import static com.creeptd.client.i18n.Translator.*;
+
 public class TowerBuyButton extends JButton implements ActionListener,
         MouseListener {
 
@@ -126,11 +129,12 @@ public class TowerBuyButton extends JButton implements ActionListener,
     private void updateTowerInfo() {
         BuildTowerInfoPanel towerInfo = gamepanel.getTowerInfoPanel();
         towerInfo.getNameInfo().setText(type.getName());
-        towerInfo.getPriceInfo().setText("Price: " + format(type.getPrice()));
-        towerInfo.getDamageInfo().setText("Damage: " + format(type.getDamage()));
-        towerInfo.getSpeedInfo().setText("Speed: " + type.getSpeedString());
-        towerInfo.getRangeInfo().setText("Range: " + (int) type.getRange());
-        towerInfo.getSpecialInfo().setText(type.getSpecial());
+        URL imageURL = this.getClass().getClassLoader().getResource("com/creeptd/client/resources/panel");
+        towerInfo.getPriceInfo().setText("<html><img src=\""+imageURL+"/icon_credits.gif\"> &nbsp;"+format(type.getPrice())+"</html>");
+        towerInfo.getDamageInfo().setText("<html><img src=\""+imageURL+"/icon_damage.gif\"> &nbsp;"+format(type.getDamage())+"</html>");
+        towerInfo.getSpeedInfo().setText("<html><img src=\""+imageURL+"/icon_speed.gif\"> &nbsp;"+_(type.getSpeedString())+"</html>");
+        towerInfo.getRangeInfo().setText("<html><img src=\""+imageURL+"/icon_range.gif\"> &nbsp;"+(int) type.getRange()+"</html>");
+        towerInfo.getSpecialInfo().setText(_(type.getSpecial()));
         towerInfo.setVisible(true);
     }
 

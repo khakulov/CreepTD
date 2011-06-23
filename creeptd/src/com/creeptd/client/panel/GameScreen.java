@@ -82,7 +82,7 @@ public abstract class GameScreen extends JPanel implements MouseListener, MouseM
         if (!initialized) {
             this.initialized = true;
             this.core = core;
-            this.soundM = core.getCoreManagementSound();
+            this.soundM = core.getSoundManagement();
             this.addMouseListener(this);
             this.addMouseMotionListener(this);
         }

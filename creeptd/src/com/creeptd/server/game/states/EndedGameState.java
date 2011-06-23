@@ -45,9 +45,11 @@ import com.creeptd.common.messages.client.GameMessage;
 import com.creeptd.common.messages.client.GameOverMessage;
 import com.creeptd.common.messages.client.LogoutMessage;
 import com.creeptd.common.messages.client.ClientChatMessage;
+import com.creeptd.common.messages.client.CreepEscapedMessage;
 import com.creeptd.common.messages.client.SellTowerMessage;
 import com.creeptd.common.messages.client.UpgradeTowerMessage;
 import com.creeptd.common.messages.server.PlayerQuitMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.server.game.Game;
 import com.creeptd.server.game.PlayerInGame;
 import java.util.List;
@@ -98,7 +100,8 @@ public class EndedGameState extends AbstractGameState {
                 message instanceof BuildTowerMessage ||
                 message instanceof SellTowerMessage ||
                 message instanceof UpgradeTowerMessage ||
-                message instanceof ChangeStrategyMessage) {
+                message instanceof ChangeStrategyMessage ||
+                message instanceof CreepEscapedMessage) {
             return this; // Silently ignore
         } else {
             logger.warn("Cannot handle message: " + message);
@@ -134,7 +137,12 @@ public class EndedGameState extends AbstractGameState {
 
     private AbstractGameState removePlayer(PlayerInGame sender) {
         this.getGame().removePlayer(sender);
-        this.getGame().sendAll(new PlayerQuitMessage(sender.getClient().getPlayerModel().getName(), "", sender.getClient().getClientID()));
+        this.getGame().sendAll(new PlayerQuitMessage(sender.getClient().getPlayerModel().getName(), "", sender.getClient().getId()));
+        ServerChatMessage scm = new ServerChatMessage();
+        scm.setMessage("has left...");
+        scm.setPlayerName(sender.getClient().getPlayerModel().getName());
+        scm.setTranslate(true);
+        this.getGame().sendAll(scm);
         if (this.getGame().numPlayers() == 0) {
             return new TerminatedGameState(this.getGame());
         }

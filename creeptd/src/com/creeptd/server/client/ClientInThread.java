@@ -74,7 +74,7 @@ public class ClientInThread extends Thread {
         super();
         this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         this.client = client;
-        this.setName("Client " + client.getClientID() + ": InThread");
+        this.setName("Client " + client.getId() + ": InThread");
     }
 
     /**
@@ -87,13 +87,13 @@ public class ClientInThread extends Thread {
             try {
                 String messageString = this.bufferedReader.readLine();
                 if (messageString == null || messageString.equals("")) {
-                    logger.warn("Client " + this.client.getClientID() + " disconnected (Protocol aborted)");
+                    logger.warn("Client " + this.client.getId() + " disconnected (Protocol aborted)");
                     this.client.disconnect();
                     continue;
                 }
                 ClientMessage message = ClientMessage.renderMessageString(messageString);
                 if (message instanceof InvalidMessage) {
-                    logger.warn("Client " + this.client.getClientID() + " received invalid message " + messageString);
+                    logger.warn("Client " + this.client.getId() + " received invalid message " + messageString);
                     continue;
                 }
                 if (message instanceof PongMessage) {
@@ -105,10 +105,10 @@ public class ClientInThread extends Thread {
                 this.inactivityCount = 0;
                 this.client.receive(message);
             } catch (SocketException e) {
-                logger.warn("Client " + this.client.getClientID() + " disconnected (Socket closed)");
+                logger.warn("Client " + this.client.getId() + " disconnected (Socket closed)");
                 this.client.disconnect();
             } catch (NullPointerException e) {
-                logger.warn("Client " + this.client.getClientID() + " disconnected (Connection closed)");
+                logger.warn("Client " + this.client.getId() + " disconnected (Connection closed)");
                 this.client.disconnect();
             } catch (SocketTimeoutException e) {
                 if (this.inactivityCount > 60) {
@@ -116,7 +116,7 @@ public class ClientInThread extends Thread {
                     // Pingpong spielt...
                     // 30sek * 60 = 0.5 h
                     if ((this.client.getPlayerModel() == null) || (!this.client.getPlayerModel().hasPermission(Permission.NO_TIMEOUT))) {
-                        logger.warn("Client " + this.client.getClientID() + " has been inactive for too long");
+                        logger.warn("Client " + this.client.getId() + " has been inactive for too long");
                         this.client.disconnect();
                         continue;
                     } else {
@@ -131,13 +131,13 @@ public class ClientInThread extends Thread {
                     this.inactivityCount++;
                     continue;
                 }
-                logger.warn("Client " + this.client.getClientID() + " timeout (Got no response to PING)");
+                logger.warn("Client " + this.client.getId() + " timeout (Got no response to PING)");
                 this.client.disconnect();
             } catch (IOException e) {
-                logger.warn("Client " + this.client.getClientID() + " disconnected (I/O error): "+e);
+                logger.warn("Client " + this.client.getId() + " disconnected (I/O error): "+e);
                 this.client.disconnect();
             } catch (Throwable e) {
-                logger.warn("Client " + this.client.getClientID() + " disconnected (Exotic exception): "+e);
+                logger.warn("Client " + this.client.getId() + " disconnected (Exotic exception): "+e);
                 this.client.disconnect();
             }
         }

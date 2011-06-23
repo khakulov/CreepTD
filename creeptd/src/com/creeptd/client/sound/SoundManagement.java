@@ -226,7 +226,7 @@ public class SoundManagement {
      * @return true if the last thread terminated false if the last thread not
      *         terminated
      */
-    public boolean creepGoesToNextPlayerSound(Constants.Creeps t) {
+    public boolean creepEscapedSound(Constants.Creeps t) {
 
         if (usedThreadCreepGoesToNextPlayerS.getState() != Thread.State.TERMINATED || mute) {
             return false;

@@ -38,6 +38,10 @@ package com.creeptd.client.panel;
 import com.creeptd.client.Core;
 import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.common.messages.client.StartGameRequestMessage;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * Countdown when starting game. 
@@ -57,9 +61,10 @@ public class WaitingGameCountdownThread extends Thread {
     /**
      *
      */
+    @Override
     public void run() {
         ClientChatMessage m = new ClientChatMessage();
-        m.setMessage("GAME START COUNTDOWN 3");
+        m.setMessage(_("GAME STARTS IN 3..."));
         core.getNetwork().sendMessage(m);
         for (int i = 2; i > 0; i--) {
             try {
@@ -67,7 +72,9 @@ public class WaitingGameCountdownThread extends Thread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            m.setMessage("in " + i);
+            Map<String,String> args = new HashMap<String,String>();
+            args.put("n", i+"");
+            m.setMessage(__("in %n%...", args));
             core.getNetwork().sendMessage(m);
         }
         core.getNetwork().sendMessage(new StartGameRequestMessage());

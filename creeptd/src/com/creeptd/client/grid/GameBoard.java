@@ -35,7 +35,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.client.grid;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -53,11 +52,11 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 import com.creeptd.client.game.GameContext;
-import com.creeptd.client.game.PlayerContext;
 import com.creeptd.client.game.GameContext.BoardLocation;
 import com.creeptd.client.tower.Tower;
 import com.creeptd.common.Constants;
 import com.creeptd.common.messages.client.BuildTowerMessage;
+import java.awt.RenderingHints;
 
 /**
  * Holds the whole grid and acts as an mouseListener on the BoardPanel.
@@ -126,39 +125,35 @@ public class GameBoard implements MouseListener, MouseMotionListener {
     }
 
     /**
-     * dummy method for a fake map :).
+     * Load the map
      */
     public void loadMap() {
-
         String filename = "";
 
+        // Initialize the grid
         gridArray = new Grid[x][y];
-
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
-                gridArray[i][j] = new EmptyGrid(i * Grid.SIZE, j * Grid.SIZE,
-                        this.context);
+                gridArray[i][j] = new EmptyGrid(i * Grid.SIZE, j * Grid.SIZE, this.context);
             }
         }
 
+        // Read map file
         ArrayList<String> lineWithPath = new ArrayList<String>();
         ArrayList<String> lineWithHoly = new ArrayList<String>();
         String tempStr = null;
 
-        InputStream res =
-                this.getClass().getClassLoader().getResourceAsStream(
-                this.context.getMap().getFilename());
+        InputStream res = this.getClass().getClassLoader().getResourceAsStream(this.context.getMap().getFilename());
         if (res == null) {
             logger.severe("Cannot open map!");
         }
         br = new BufferedReader(new InputStreamReader(res));
-
         try {
             while ((tempStr = br.readLine()) != null) {
-                if (tempStr.contains(",")) {
+                if (tempStr.contains(",")) { // Path, e.g. 10,9
                     lineWithPath.add(tempStr);
                 }
-                if (tempStr.contains(";")) {
+                if (tempStr.contains(";")) { // Holy land, e.g. 10;9
                     lineWithHoly.add(tempStr);
                 }
                 if (tempStr.contains(".bmp") || tempStr.contains(".png") || tempStr.contains(".jpg")) {
@@ -245,20 +240,15 @@ public class GameBoard implements MouseListener, MouseMotionListener {
             /* draws a filled, blended, rect around the current
              * player, turn it off or on, just as you like it
              */
-            if (this.context instanceof PlayerContext && playerContextAlphaColor != null) {
-
+            /* if (this.context instanceof PlayerContext && playerContextAlphaColor != null) {
                 //g2d.setColor(playerContextAlphaColor);
                 //g2d.drawRect(0, 0, 319, 320);
-
-                AlphaComposite myAlpha = AlphaComposite.getInstance(
-                        AlphaComposite.SRC_OVER, 0.12f);
+                AlphaComposite myAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.12f);
                 g2d.setComposite(myAlpha);
                 g2d.fillRoundRect(0, 0, 320, 320, 20, 20);
-                AlphaComposite noAlpha = AlphaComposite.getInstance(
-                        AlphaComposite.SRC_OVER, 1.0f);
+                AlphaComposite noAlpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
                 g2d.setComposite(noAlpha);
-            }
-
+            } */
 
 
             for (int i = 0; i < gridArray.length; i++) {
@@ -275,7 +265,6 @@ public class GameBoard implements MouseListener, MouseMotionListener {
                     }
                 }
             }
-
 
             g2d.dispose();
             clearImg = false;
@@ -583,7 +572,7 @@ public class GameBoard implements MouseListener, MouseMotionListener {
                 btm.setClientId(context.getPlayerId());
                 btm.setPosition(new Point(g.getLocation()[0], g.getLocation()[1]));
                 btm.setTowerType(tower.toString());
-                btm.setRoundId(context.getGameLoop().getRoundID());
+                btm.setRoundId(context.getGameLoop().getRoundId());
                 context.getNetwork().sendMessage(btm);
                 context.setCredits(context.getCredits() - tower.getPrice());
                 g.setOccupiedStatus(true);

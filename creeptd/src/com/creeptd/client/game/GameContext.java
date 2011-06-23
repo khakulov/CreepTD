@@ -35,9 +35,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.client.game;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
@@ -58,56 +55,73 @@ import com.creeptd.client.tower.Tower;
 import com.creeptd.client.tower.TowerFactory;
 import com.creeptd.common.Constants;
 import com.creeptd.common.Password;
+import com.creeptd.common.messages.client.AsyncronousMessage;
 import com.creeptd.common.messages.client.BuildCreepMessage;
 import com.creeptd.common.messages.client.ChangeStrategyMessage;
 import com.creeptd.common.messages.client.ExitGameMessage;
+import com.creeptd.common.messages.client.GameOverMessage;
 import com.creeptd.common.messages.client.SellTowerMessage;
-import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.common.messages.client.UpgradeTowerMessage;
 import com.creeptd.common.messages.server.BuildCreepRoundMessage;
 import com.creeptd.common.messages.server.BuildTowerRoundMessage;
 import com.creeptd.common.messages.server.ChangeStrategyRoundMessage;
 import com.creeptd.common.messages.server.GameMessage;
+import com.creeptd.common.messages.server.PlayerGameOverMessage;
+import com.creeptd.common.messages.server.PlayerLosesLifeMessage;
+import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.common.messages.server.SellTowerRoundMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
+import com.creeptd.common.messages.server.TransferCreepMessage;
 import com.creeptd.common.messages.server.UpgradeTowerRoundMessage;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * Abstract class representing the context for one player.
  * 
  * @author Philipp
- * 
  */
 public abstract class GameContext {
 
+    /** Logging functionality */
     private static Logger logger = Logger.getLogger(GameContext.class.getName());
 
     /**
      * Enumeration for the four positions where a GameBoard can be.
      *
      * @author Philipp
-     *
      */
     public static enum BoardLocation {
+        TOPLEFT(30, 30, 320, 320),
+        BOTTOMLEFT(30, 350, 320, 320),
+        TOPRIGHT(350, 30, 320, 320),
+        BOTTOMRIGHT(350, 350, 320, 320);
 
-        TOPLEFT(30, 30, 320, 320), BOTTOMLEFT(30, 350, 320, 320), TOPRIGHT(350,
-        30, 320, 320), BOTTOMRIGHT(350, 350, 320, 320);
+        /** X coordinate */
         private final double x;
+        /** Y coordinate */
         private final double y;
+        /** Width */
         private final int width;
+        /** Height */
         private final int height;
+        /** Bound rectangle */
         private final Rectangle bounds;
 
         /**
          * BoardLocation constructor.
          *
-         * @param x
-         *            the x position
-         * @param y
-         *            the y position
-         * @param width
-         *            the width
-         * @param height
-         *            the height
+         * @param x the x position
+         * @param y the y position
+         * @param width the width
+         * @param height the height
          */
         BoardLocation(double x, double y, int width, int height) {
             this.x = x;
@@ -156,63 +170,77 @@ public abstract class GameContext {
         /**
          * Getter for the bounding box.
          *
-         * @return a Rectangle specifying the bounding box
+         * @return A Rectangle specifying the bounding box
          */
         public Rectangle getBounds() {
             return bounds;
         }
     }
+    
+    /** The player's id */
     private int playerId;
+    /** The player's name */
     private String playerName;
+    /** Listeners for this context */
     private ArrayList<ContextListener> contextListeners;
-    private List<Tower> towers;
-    private List<Creep> creeps;
-    private List<Creep> transfer; // creeps for context switch
-    // private List<Integer> towerIDs; //builded tower IDs
+    /** Towers inside the contex */
+    private final List<Tower> towers;
+    /** Creeps inside the ontext */
+    private final List<Creep> creeps;
+    /** Credit amount of this player */
     private int credits = Constants.CREDITS;
     private String credits_hash = null;
+    /** Income amount of this player */
     private int income = Constants.START_INCOME;
     private String income_hash = null;
-    private int lives = Constants.LIVES;
+    /** Lifes amount of this player */
+    private int lifes = Constants.LIVES;
     private String lives_hash = null;
+    /** This context's game board */
     private GameBoard gameBoard;
+    /** The board's location (TOPLEFT, ...) */
     private BoardLocation location;
-    private AffineTransform save = null;
+    /** The boards translation matrix */
     private AffineTransform translation = new AffineTransform();
+    /** Reference to the underlying network */
     private Network network;
+    /** Reference to the underlying game loop */
     private GameLoop gameLoop;
-    private SoundManagement managementSound;
-    private boolean deathsoundPlayed = false;
-    // default map
-    private Constants.Map mapfile = Constants.Map.REDWORLD;
+    /** Reference to sound management (null for no sound, e.g. in opponent contexts) */
+    private SoundManagement soundManagement;
+    /** The map */
+    private Constants.Map mapfile = Constants.Map.Random_Map;
+    /** Next tower to build */
     private Constants.Towers nextTower = null;
+    /** Selected tower */
     private Tower selectedTower = null;
-    private static Integer winningPosition = 0;
-    private boolean dead = false;
+    /** Start counter for "loading...", "game starting in..", 5, 4 etc. */
     private int startCounter = Constants.INCOME_TIME / 1000;
-    private long lastCreepSent = 0;
-    private long lastWaveSent = 0;
+    /** Flag if this context is a winner or not */
+    private boolean winner = false;
+    // Creep times
+    private long lastCreepSentTime = 0;
+    private long lastWaveSentTime = 0;
     private long lastWaveDelay = 0;
-    public int takedlives;
+    /** The amount of lifes taken from other players */
+    public int takenLifes;
+    /** Flag if the game over sound has been played already */
     private boolean endSoundPlayed = false;
+    /** Counter for the player's position after game over */
+    private static Integer positionCounter;
+    /** A heart image */
+    private static Image oneHeartImg = Toolkit.getDefaultToolkit().getImage(GameContext.class.getClassLoader().getResource("com/creeptd/client/resources/panel/icon_onelife.gif"));
+    /** A half heart image */
+    private static Image halfHeartImg = Toolkit.getDefaultToolkit().getImage(GameContext.class.getClassLoader().getResource("com/creeptd/client/resources/panel/icon_halflife.gif"));
 
-    /**
-     * @return the startCounter
-     */
-    public int getStartCounter() {
-        return startCounter;
+
+    /** Set the static position counter */
+    public static void setPositionCounter(int value) {
+        positionCounter = value;
     }
 
     /**
-     * @param startCounter
-     *            the startCounter to set
-     */
-    public void setStartCounter(int startCounter) {
-        this.startCounter = startCounter;
-    }
-
-    /**
-     * Implementation for default init.
+     * Create a game context.
      *
      * @param location The boardLocation (GameContext.BoardLocation)
      * @param network The current network connection object
@@ -229,109 +257,83 @@ public abstract class GameContext {
         this.setGameBoard(new GameBoard(this));
         this.towers = Collections.synchronizedList(new ArrayList<Tower>());
         this.creeps = Collections.synchronizedList(new ArrayList<Creep>());
-        this.transfer = Collections.synchronizedList(new ArrayList<Creep>());
         this.contextListeners = new ArrayList<ContextListener>();
-        this.managementSound = mSound;
+        this.soundManagement = mSound;
         this.setPlayerId(player_id);
         this.setPlayerName(player_name);
         this.setCredits(credits);
         this.setIncome(income);
-        this.setLives(lives);
-        synchronized (GameContext.winningPosition) {
-            GameContext.winningPosition++;
-        }
+        this.setLifes(lifes);
+    }
+
+
+    /**
+     * Get the start counter value.
+     *
+     * @return The start counter value (0 if game has begun)
+     */
+    public int getStartCounter() {
+        return startCounter;
     }
 
     /**
-     * A hook for special pre-update work.
+     * Set the start counter value.
      *
-     * @param roundID
-     *            the current tick
+     * @param startCounter The start counter value to set
      */
-    public abstract void preUpdate(long roundID);
-
-    /**
-     * A hook for special post-update work.
-     *
-     * @param roundID
-     *            the current tick
-     */
-    public abstract void postUpdate(long roundID);
+    public void setStartCounter(int startCounter) {
+        this.startCounter = startCounter;
+    }
 
     /**
      * Update the context by one tick.
      *
-     * @param roundID
-     *            the current tick
+     * @param roundID The current tick
      */
     public void update(long roundID) {
-        // if lives are 0, the player is dead!
-
-        preUpdate(roundID);
-
         ArrayList<Tower> towersCopy = new ArrayList<Tower>(getTowers());
         ArrayList<Creep> creepsCopy = new ArrayList<Creep>(getCreeps());
 
-        // update towers only if the player is not dead
+        // Update towers if the player is not dead
         if (!this.isDead()) {
             for (Tower t : towersCopy) {
                 t.update(roundID);
             }
-        } else {
-            if (!deathsoundPlayed) {
-                if (managementSound != null) {
-                    // managementSound.gameOver();
-                }
-                deathsoundPlayed = true;
-            }
         }
-
+        // Update creeps
         for (Creep c : creepsCopy) {
             c.update(roundID);
         }
 
-        // has to happen after the creeps received their update, otherwise they
-        // are duplicated...
-        ArrayList<Creep> transferCopy = new ArrayList<Creep>(getTransfer());
-
-        // remove creeps which are transferred
-        for (Creep c : transferCopy) {
-            getCreeps().remove(c);
-        }
-        postUpdate(roundID);
-
-        // check all gamemessage and invoke actions...
+        // Get game messages and invoke actions
         ArrayList<GameMessage> queueCopy = new ArrayList<GameMessage>(network.getQueue());
-
         for (GameMessage gm : queueCopy) {
             if (gm.getPlayerId() == this.playerId) {
-                // take actions
                 processMessage(gm, roundID);
-                // remove from queue
                 network.getQueue().remove(gm);
             }
         }
     }
 
     /**
-     * Process a message from the server and invoke the action associated with
-     * it.
+     * Process a message from the server.
      *
-     * @param gm
-     *            the server message
-     * @param roundId
-     *            the current round id
+     * @param gm The server message
+     * @param roundId The current round id
      */
     private void processMessage(GameMessage gm, long roundId) {
-
-        int update_Round = (int) (gm.getRoundId() - roundId);
-        if (update_Round <= 0) {
-            logger.warning("ProcessMessage is out of sync!");
-            if (managementSound != null) {
-                managementSound.error();
-                this.sendDeathMessage();
-                return;
+        int updateRound = (int) (gm.getRoundId() - roundId);
+        if (updateRound <= 0) {
+            if (soundManagement != null) {
+                soundManagement.error();
             }
+            this.getGameLoop().setAsynchronous(true);
+            AsyncronousMessage am = new AsyncronousMessage();
+            am.setClientId(this.getPlayerId());
+            am.setCurrentRoundId(roundId);
+            am.setReceivedRoundId(gm.getRoundId());
+            this.getNetwork().sendMessage(am);
+            logger.warning("Asynchronicity detected, server informed - let's hope for the best");
         }
 
         if (gm instanceof BuildTowerRoundMessage) {
@@ -342,9 +344,9 @@ public abstract class GameContext {
                 Tower t = TowerFactory.createTower(this, Constants.Towers.valueOf(Constants.Towers.class, btrm.getTowerType()),
                         grid);
                 t.setBuilding(true);
-                t.setBuildTime(update_Round);
+                t.setBuildTime(updateRound);
                 t.setId(btrm.getTowerId());
-                this.addtower(t);
+                this.addTower(t);
 
             }
 
@@ -356,7 +358,7 @@ public abstract class GameContext {
                 if (tower.getId() == utrm.getTowerId()) {
                     upgradeTower = tower;
                     // set UpgradTime
-                    upgradeTower.setUpgradeTime(update_Round, true);
+                    upgradeTower.setUpgradeTime(updateRound, true);
                     upgradeTower.setUpgrading(true);
                     break;
                 }
@@ -370,7 +372,7 @@ public abstract class GameContext {
                     FindCreepStrategy fcs = StrategyFactory.getStrategyForName(
                             csm.getStrategyType(), tower);
                     fcs.setCreepLock(csm.isLocked());
-                    ((AbstractTower) tower).setChangeStrategyTime(update_Round);
+                    ((AbstractTower) tower).setChangeStrategyTime(updateRound);
                     ((AbstractTower) tower).setSelectedStrategy(fcs);
                     break;
                 }
@@ -383,28 +385,82 @@ public abstract class GameContext {
             for (Tower tower : towers) {
                 if (tower.getId() == strm.getTowerId() && tower.isReady()) {
                     sellTower = tower;
-                    sellTower.setSellTime(update_Round);
+                    sellTower.setSellTime(updateRound);
                     sellTower.setSelling(true);
                     break;
                 }
             }
         } else if (gm instanceof BuildCreepRoundMessage) {
             BuildCreepRoundMessage bcrm = (BuildCreepRoundMessage) gm;
-            Creep c = CreepFactory.createCreep(this, Constants.Creeps.valueOf(
-                    Constants.Creeps.class, bcrm.getCreepType()));
-            c.setBuildTime(update_Round);
+            Creep c = CreepFactory.createCreep(this, Constants.Creeps.valueOf(bcrm.getCreepType()));
+            c.setID(bcrm.getCreepId());
+            c.setBuildTime(updateRound);
             c.setSenderId(bcrm.getSenderId());
             c.setPlayerID(bcrm.getPlayerId());
-
-            if (!this.isDead()) { //  || this.getGameLoop().getGameMode().equals(Constants.Mode.TEAM2VS2)
-                this.getCreeps().add(c);
-            } else {
-                this.getTransfer().add(c);
+            this.getCreeps().add(c);
+            if (!this.isDead() && this.soundManagement != null) {
+                this.soundManagement.creepWarnSound(c.getType());
             }
 
-            // play sound now
-            if (managementSound != null) {
-                managementSound.creepWarnSound(c.getType());
+        // Server says: There is a creep transfered to this context
+        } else if (gm instanceof TransferCreepMessage) {
+            TransferCreepMessage tcm = (TransferCreepMessage) gm;
+            Creep c = CreepFactory.createCreep(this, Constants.Creeps.valueOf(tcm.getCreepType()));
+            c.setID(tcm.getCreepId());
+            c.setBuildTime(updateRound);
+            c.setSenderId(tcm.getCreatorId());
+            c.setPlayerID(tcm.getPlayerId());
+            c.setHealth(tcm.getCreepHealth());
+            this.getCreeps().add(c);
+            if (!this.isDead() && this.soundManagement != null) {
+                this.soundManagement.creepWarnSound(c.getType());
+            }
+
+        // Server says: This context loses a life
+        } else if (gm instanceof PlayerLosesLifeMessage) {
+            PlayerLosesLifeMessage pllm = (PlayerLosesLifeMessage) gm;
+            GameContext sender = this.findContextByPlayerId(pllm.getCreatorId());
+            this.removeLife();
+            sender.takenLifes++;
+            if (this.soundManagement != null) {
+                this.soundManagement.creepEscapedSound(Constants.Creeps.valueOf(pllm.getCreepType()));
+            }
+
+        // Server says: This player has quit, create a message
+        } else if (gm instanceof PlayerQuitMessage) {
+            PlayerQuitMessage pqm = (PlayerQuitMessage) gm;
+            ServerChatMessage scm = new ServerChatMessage();
+            scm.setPlayerName(this.getPlayerName());
+            scm.setMessage(_("has left..."));
+            this.getGameLoop().update(scm);
+
+        // Server says: This context is game over
+        } else if (gm instanceof PlayerGameOverMessage) {
+            PlayerGameOverMessage pgom = (PlayerGameOverMessage) gm;
+            if (this.lifes > 0) {
+                this.setLifes(0);
+                this.sendDeathMessage(); // Sets winning position
+                this.fireLifesChangedEvent();
+            }
+            this.setWinner(pgom.isWinner()); // May be updated later
+
+        // Server says: This context receives a creep
+        } else if (gm instanceof BuildCreepRoundMessage) {
+            BuildCreepRoundMessage bcrm = (BuildCreepRoundMessage) gm;
+            GameContext sender = this.findContextByPlayerId(bcrm.getSenderId());
+            if (sender != null) {
+                Creep c = CreepFactory.createCreep(this, Constants.Creeps.valueOf(bcrm.getCreepType()));
+                c.setPlayerID(bcrm.getPlayerId());
+                c.setSenderId(bcrm.getSenderId());
+                synchronized (this.creeps) {
+                    this.creeps.add(c);
+                }
+                if (this.getSoundManagement() != null) {
+                    this.getSoundManagement().creepWarnSound(c.getType());
+                }
+            } else {
+                // Should never happen
+                logger.warning("Received a build creep message but sender id "+bcrm.getSenderId()+" is not in game");
             }
         }
     }
@@ -412,129 +468,89 @@ public abstract class GameContext {
     /**
      * Paint the the context with its elements.
      *
-     * @param g
-     *            the graphics object
+     * @param g The graphics object
      */
     public void paint(Graphics2D g) {
-
+        // Render game board with antialiasing
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setFont(new Font("Verdana", Font.PLAIN, 10));
-
-        save = g.getTransform();
+        AffineTransform previousTransform = g.getTransform();
         translation.setToIdentity();
         translation.translate(this.getLocation().getX(), this.getLocation().getY());
         g.transform(translation);
-
         this.getGameBoard().paint(g);
-
-        for (Creep c : getCreeps()) {
-            c.paint(g);
+        
+        // Render creeps without antialiasing (performance++ & looks better, rly)
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        synchronized (creeps) {
+            for (Creep c : creeps) {
+                c.paint(g);
+            }
         }
 
+        // Render towers etc. with antialiasing
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         synchronized (towers) {
             for (Tower t : getTowers()) {
                 t.paintEffect(g);
             }
         }
-
         if ((startCounter >= 0) && (this instanceof PlayerContext)) {
             if (startCounter > 8) {
-                g.setColor(Color.GRAY);
-                g.setFont(new Font("Verdana", Font.BOLD, 30));
-                g.drawString("loading...", 100, 160);
+                g.setColor(Color.WHITE);
+                drawCentered(g, new Font("Verdana", Font.BOLD, 30), _("Loading..."), 0);
             } else if (startCounter > 5) {
                 g.setColor(Color.RED);
-                g.setFont(new Font("Verdana", Font.BOLD, 20));
-                g.drawString("Game starting in...", 70, 160);
+                drawCentered(g, new Font("Verdana", Font.BOLD, 20), _("Game starting in..."), 0);
             } else if (startCounter > 0) {
                 g.setColor(Color.RED);
-                g.setFont(new Font("Verdana", Font.BOLD, 200));
-                g.drawString(String.valueOf(startCounter), 95, 230);
+                drawCentered(g, new Font("Verdana", Font.BOLD, 200), String.valueOf(startCounter), 150);
             } else {
                 g.setColor(Color.RED);
+                drawCentered(g, new Font("Verdana", Font.BOLD, 100), _("GO!"), 67);
                 g.setFont(new Font("Verdana", Font.BOLD, 190));
-                g.drawString("GO", 5, 230);
             }
         }
-
         paintPlayerInfo(g);
 
-        boolean drawWinner = false;
-        boolean drawGameover = false;
-        boolean drawDead = false;
-
-        // Team 2vs2 mode
-        if (this.getGameLoop().getGameMode().equals(Constants.Mode.TEAM2VS2)) {
-            GameContext[] players = this.getGameLoop().getOrderedPlayers();
-
-            // Check if Team A is dead
-            if (players[0].isDead() && players[1].isDead()) {
-                if (this.playerId != players[0].getPlayerId() && this.playerId != players[1].getPlayerId()) {
-                    drawWinner = true; // If not in Team A, you are a winner
-                } else {
-                    drawGameover = true; // etc.
-                }
-                // Check if Team B is dead
-            } else if (players[2].isDead() && players[3].isDead()) {
-                if (this.playerId != players[2].getPlayerId() && this.playerId != players[3].getPlayerId()) {
-                    drawWinner = true;
-                } else {
-                    drawGameover = true;
+        // Draw game over or winner, if dead
+        if (this.isDead()) {
+            if (!this.isWinner()) {
+                g.setColor(Color.WHITE);
+                g.setFont(new Font("Verdana", Font.BOLD, 45));
+                drawCentered(g, new Font("Verdana", Font.BOLD, 45), _("Game Over"), 0);
+                if (this instanceof PlayerContext) {
+                    drawCentered(g, new Font("Verdana", Font.BOLD, 15), _("Sad but true"), 20);
+                    if (!this.endSoundPlayed) {
+                        this.getGameLoop().getSoundManagement().gameOver();
+                        this.endSoundPlayed = true;
+                    }
                 }
             } else {
-                if (this.isDead()) {
-                    drawDead = true;
+                g.setColor(Color.WHITE);
+                drawCentered(g, new Font("Verdana", Font.BOLD, 45), _("Winner"), 0);
+                if (this instanceof PlayerContext) {
+                    drawCentered(g, new Font("Verdana", Font.BOLD, 15), _("Press ESC to leave"), 20);
+                    if (!this.endSoundPlayed) {
+                        this.getGameLoop().getSoundManagement().gameOver();
+                        this.endSoundPlayed = true;
+                    }
                 }
-            }
-
-            // All other modes
-        } else {
-            synchronized (GameContext.winningPosition) {
-                if (this.isDead()) {
-                    drawGameover = true;
-                } else if (!this.isDead() && GameContext.winningPosition <= 1) {
-                    drawWinner = true;
-                }
-            }
-        }
-
-        // Draw winner/gameover
-        if (drawWinner) {
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Verdana", Font.BOLD, 45));
-            g.drawString("Winner", 80, 140);
-            if (this instanceof PlayerContext) {
-                g.setFont(new Font("Verdana", Font.BOLD, 15));
-                g.drawString("Press ESC to leave", 90, 180);
-                if (!this.endSoundPlayed) {
-                    this.getGameLoop().getSoundManagement().gameOver();
-                    this.endSoundPlayed = true;
-                }
-            }
-        } else if (drawGameover) {
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Verdana", Font.BOLD, 45));
-            g.drawString("Game Over", 25, 140);
-            if (this instanceof PlayerContext) {
-                g.setFont(new Font("Verdana", Font.BOLD, 15));
-                g.drawString("Sad but true", 100, 180);
-                if (!this.endSoundPlayed) {
-                    this.getGameLoop().getSoundManagement().gameOver();
-                    this.endSoundPlayed = true;
-                }
-            }
-
-        } else if (drawDead) {
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Verdana", Font.BOLD, 45));
-            g.drawString("Dead", 90, 140);
-            if (this instanceof PlayerContext) {
-                g.setFont(new Font("Verdana", Font.BOLD, 15));
-                g.drawString("Hope for your mate", 90, 180);
             }
         }
 
         // Reset transformation
-        g.setTransform(save);
+        g.setTransform(previousTransform);
+    }
+
+    private void drawCentered(Graphics2D g, Font f, String s, int offset_y) {
+        int width = 320;
+        int height = 350;
+        FontMetrics fm = g.getFontMetrics(f);
+        int x = width/2-fm.stringWidth(s)/2;
+        int y = height/2-fm.getAscent()/2 + offset_y;
+        g.setFont(f);
+        g.drawString(s, x, y);
     }
 
     /**
@@ -544,38 +560,70 @@ public abstract class GameContext {
      *            the graphics context
      */
     private void paintPlayerInfo(Graphics2D g) {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         StringBuffer sb = new StringBuffer();
         sb.append(this.playerName);
-        sb.append(" | Lives: ");
-        sb.append(this.lives);
+        sb.append(" | ");
+        /* if (this.lifes == 1) {
+            sb.append(_("1 life"));
+        } else {
+            Map<String,String> args = new HashMap<String,String>();
+            args.put("n", this.lifes+"");
+            sb.append(__("%n% lifes", args));
+        } */
+        sb.append(this.lifes);
 
         g.setColor(Color.WHITE);
         if (this instanceof PlayerContext) {
-            g.setColor(Color.GREEN);
-            g.setFont(new Font("Verdana", Font.BOLD, 12));
+            g.setColor(Color.YELLOW);
+            g.setFont(new Font("Verdana", Font.BOLD, 11));
         } else {
-            g.setFont(new Font("Verdana", Font.PLAIN, 10));
+            g.setFont(new Font("Verdana", Font.PLAIN, 11));
         }
+        int hearts_x = 0;
+        int hearts_y = 0;
         switch (location) {
             case TOPLEFT:
                 g.drawString(sb.toString(), 10, -10);
+                hearts_x = 310;
+                hearts_y = -23;
                 break;
             case TOPRIGHT:
                 g.drawString(sb.toString(), 10, -10);
+                hearts_x = 310;
+                hearts_y = -23;
                 break;
             case BOTTOMLEFT:
-                g.drawString(sb.toString(), 10, 335);
+                g.drawString(sb.toString(), 10, 337);
+                hearts_x = 310;
+                hearts_y = 323;
                 break;
             case BOTTOMRIGHT:
-                g.drawString(sb.toString(), 10, 335);
+                g.drawString(sb.toString(), 10, 337);
+                hearts_x = 310;
+                hearts_y = 323;
                 break;
             default:
                 break;
         }
+        for (int i=this.getLifes(); i>0; i--) {
+            if (i == 1) {
+                hearts_x -= 9;
+                AffineTransform at = new AffineTransform();
+                at.setToTranslation(hearts_x, hearts_y);
+                g.drawImage(oneHeartImg, at, null);
+            } else {
+                hearts_x -= 6;
+                AffineTransform at = new AffineTransform();
+                at.setToTranslation(hearts_x, hearts_y);
+                g.drawImage(halfHeartImg, at, null);
+            }
+        }
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     }
 
     public boolean readyForNewWave() {
-        if (lastWaveSent + this.lastWaveDelay < System.currentTimeMillis()) {
+        if (lastWaveSentTime + this.lastWaveDelay < System.currentTimeMillis()) {
             return true;
         } else {
             return false;
@@ -583,7 +631,7 @@ public abstract class GameContext {
     }
 
     public boolean readyForNewCreep() {
-        if (lastCreepSent + Constants.CREEP_DELAY < System.nanoTime()) {
+        if (lastCreepSentTime + Constants.CREEP_DELAY < System.nanoTime()) {
             return true;
         } else {
             return false;
@@ -598,11 +646,11 @@ public abstract class GameContext {
             BuildCreepMessage bcm = new BuildCreepMessage();
             bcm.setClientId(this.getPlayerId());
             bcm.setCreepType(type.toString());
-            bcm.setRoundId(this.gameLoop.getRoundID());
+            bcm.setRoundId(this.gameLoop.getRoundId());
             this.network.sendMessage(bcm);
             this.setCredits(this.getCredits() - type.getPrice());
             this.setIncome(this.getIncome() + type.getIncome());
-            lastCreepSent = System.nanoTime();
+            lastCreepSentTime = System.nanoTime();
             return true;
         }
         return false;
@@ -618,7 +666,7 @@ public abstract class GameContext {
     public void sendCreepsWave(final Constants.Creeps type) {
 
         if (this.getCredits() >= type.getPrice() && startCounter < 0 && !this.isDead()) {
-            lastWaveSent = System.currentTimeMillis();
+            lastWaveSentTime = System.currentTimeMillis();
             final GameContext context = this;
             new Thread() {
 
@@ -669,7 +717,7 @@ public abstract class GameContext {
             SellTowerMessage stm = new SellTowerMessage();
             stm.setClientId(getPlayerId());
             stm.setTowerId(t.getId());
-            stm.setRoundId(this.gameLoop.getRoundID());
+            stm.setRoundId(this.gameLoop.getRoundId());
             getNetwork().sendMessage(stm);
             fireSelectedChangedEvent("sell");
             t.getGrid().setOccupiedStatus(true);
@@ -696,7 +744,7 @@ public abstract class GameContext {
             UpgradeTowerMessage utm = new UpgradeTowerMessage();
             utm.setClientId(getPlayerId());
             utm.setTowerId(t.getId());
-            utm.setRoundId(this.gameLoop.getRoundID());
+            utm.setRoundId(this.gameLoop.getRoundId());
             getNetwork().sendMessage(utm);
             setCredits(getCredits() - t.getType().getNext().getPrice());
             this.fireSelectedChangedEvent("upgrade");
@@ -722,22 +770,34 @@ public abstract class GameContext {
         return true;
     }
 
+    private boolean deathMsgSent = false;
+    
     /**
      * Sends the game over msg to the server.
      */
     public synchronized void sendDeathMessage() {
-        if (!this.dead) {
-            synchronized (GameContext.winningPosition) {
-                GameContext.winningPosition--;
+        if (!this.deathMsgSent) {
+            if (this instanceof PlayerContext) {
+                logger.info("I am dead");
+                GameOverMessage gom = new GameOverMessage();
+                gom.setClientId(this.getPlayerId());
+                gom.setPosition(positionCounter);
+                this.getNetwork().sendMessage(gom);
+            } else {
+                logger.info(this.getPlayerName()+" is dead");
             }
-            this.dead = true;
+            synchronized (positionCounter) {
+                positionCounter--; // static
+            }
+            this.deathMsgSent = true;
         }
+        // We finally set the player game over (this.dead), when the server says so
     }
 
     /**
      * Fires an event when the lives changed.
      */
-    protected void fireLivesChangedEvent() {
+    protected void fireLifesChangedEvent() {
         for (ContextListener cl : contextListeners) {
             cl.livesChanged(this);
         }
@@ -773,14 +833,37 @@ public abstract class GameContext {
     }
 
     /**
-     * Tests if this context has no more lives left.
+     * Check if this context is a winner.
      *
-     * @return true if the player with this context is dead
+     * @return true on winner, else false
      */
-    public boolean isDead() {
-        return (lives <= 0);
+    public boolean isWinner() {
+        return this.winner;
     }
 
+    /**
+     * Set if this context is a winner.
+     *
+     * @param winner true for winner, else false
+     */
+    public void setWinner(boolean winner) {
+        this.winner = winner;
+    }
+
+    /**
+     * Check if this context is dead.
+     *
+     * @return true on dead, else false
+     */
+    public boolean isDead() {
+        return this.lifes <= 0;
+    }
+
+    /**
+     * Set a tower's strategy.
+     *
+     * @param fcs The strategy to set
+     */
     public void setStrategy(FindCreepStrategy fcs) {
         Tower t = this.selectTower();
         if ((t != null) && (!this.isDead()) && (t.isReady()) && (!t.getGrid().isOccupied())) {
@@ -799,10 +882,9 @@ public abstract class GameContext {
     /**
      * Adds a tower to the context.
      *
-     * @param t
-     *            the tower
+     * @param t The tower
      */
-    public void addtower(Tower t) {
+    public void addTower(Tower t) {
         synchronized (towers) {
             this.getTowers().add(t);
         }
@@ -812,8 +894,7 @@ public abstract class GameContext {
     /**
      * Removes a tower from the context.
      *
-     * @param t
-     *            the tower to remove
+     * @param t The tower to remove
      */
     public void removeTower(Tower t) {
         this.getGameBoard().removeTower(t.getId());
@@ -830,14 +911,20 @@ public abstract class GameContext {
     }
 
     /**
-     * @param towers
-     *            the towers to set
+     * Set this context's towers.
+     * 
+     * @param towers The towers to set
      */
     public void setTowers(List<Tower> towers) {
-        this.towers = towers;
+        synchronized (this.towers) {
+            this.towers.clear();
+            this.towers.addAll(towers);
+        }
     }
 
     /**
+     * Get this context's towers.
+     * 
      * @return the towers
      */
     public List<Tower> getTowers() {
@@ -845,23 +932,30 @@ public abstract class GameContext {
     }
 
     /**
-     * @param creeps
-     *            the creeps to set
+     * Set this context's creeps.
+     *
+     * @param creeps The creeps to set
      */
     public void setCreeps(List<Creep> creeps) {
-        this.creeps = creeps;
+        synchronized (this.creeps) {
+            this.creeps.clear();
+            this.creeps.addAll(creeps);
+        }
     }
 
     /**
-     * @return the creeps
+     * Get this context's creeps.
+     *
+     * @return The creeps
      */
     public List<Creep> getCreeps() {
         return creeps;
     }
 
     /**
-     * @param credits
-     *            the credits to set
+     * Set this context's credit amount.
+     * 
+     * @param credits The credit amount to set
      */
     public synchronized void setCredits(int credits) {
         if (this.isDead()) {
@@ -874,76 +968,85 @@ public abstract class GameContext {
     }
 
     /**
-     * @return the credits
+     * Get this context's credit amount.
+     *
+     * @return The credit amount
      */
     public synchronized int getCredits() {
         return credits;
     }
 
     /**
-     * Removes one live from the context.
+     * Remove one life from the context.
      */
-    public void removeLive() {
+    public void removeLife() {
         checkIntegrity();
-        if (lives > 0) {
-            this.setLives(this.lives-1);
-            fireLivesChangedEvent();
+        if (lifes > 0) {
+            this.setLifes(this.lifes-1);
+            fireLifesChangedEvent();
         }
     }
 
     /**
-     * setter for lives.
+     * Set this context's lifes.
      *
-     * @param lives
-     *            the lives to set
+     * @param lifes The lifes amount to set
      */
-    public void setLives(int lives) {
+    public void setLifes(int lives) {
         checkIntegrity();
-        this.lives = lives;
-        this.lives_hash = Password.md5(""+this.lives, this.getPlayerName());
+        this.lifes = lives;
+        this.lives_hash = Password.md5(""+this.lifes, this.getPlayerName());
     }
 
     /**
-     * @return the lives
+     * Get number of left lifes.
+     * 
+     * @return Lifes left
      */
-    public int getLives() {
-        return lives;
+    public int getLifes() {
+        return lifes;
     }
 
     /**
-     * @return the location
+     * Get the board location associated with this context.
+     *
+     * @return The location
      */
     public BoardLocation getLocation() {
         return location;
     }
 
     /**
-     * @param gameBoard
-     *            the gameBoard to set
+     * Assign the game board.
+     * 
+     * @param gameBoard The gameBoard to set
      */
     public void setGameBoard(GameBoard gameBoard) {
         this.gameBoard = gameBoard;
     }
 
     /**
-     * @return the gameBoard
+     * Get the game board instance, this context belongs to.
+     *
+     * @return The gameBoard
      */
     public GameBoard getGameBoard() {
         return gameBoard;
     }
 
     /**
-     * @return the gameBoard
+     * Find the context belonging to the specified player id.
+     *
+     * @return The found game context
      */
-    public GameContext getGameContext(int player) {
-        return this.gameLoop.getGameContext(player);
+    public GameContext findContextByPlayerId(int playerId) {
+        return this.gameLoop.findContextByPlayerId(playerId);
     }
 
     /**
      * Adds a contextListener to this context.
      *
-     * @param contextListener
-     *            the listeners to add
+     * @param contextListener The listeners to add
      */
     public void addContextListener(ContextListener contextListener) {
         this.contextListeners.add(contextListener);
@@ -952,87 +1055,79 @@ public abstract class GameContext {
     /**
      * Removes a contextListener from this context.
      *
-     * @param contextListener
-     *            the listeners to remove
+     * @param contextListener The listener to remove
      */
     public void removeContextListener(ContextListener contextListener) {
         this.contextListeners.remove(contextListener);
     }
 
     /**
-     * @param network
-     *            the network to set
+     * Assign the underlying network instance.
+     *
+     * @param network The network instance to set
      */
     public void setNetwork(Network network) {
         this.network = network;
     }
 
     /**
-     * @return the network
+     * Get the underlying network instance.
+     *
+     * @return The network instance
      */
     public Network getNetwork() {
         return network;
     }
 
     /**
-     * @param playerId
-     *            the playerId to set
+     * Set the player id of this context.
+     * 
+     * @param playerId The playerId to set
      */
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
     }
 
     /**
-     * @return the playerId
+     * Get the player id of this context.
+     * 
+     * @return The playerId
      */
     public int getPlayerId() {
         return playerId;
     }
 
     /**
-     * @param playerName
-     *            the playerName to set
+     * Set the player name of this context.
+     * 
+     * @param playerName The playerName to set
      */
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
     }
 
     /**
-     * @return the playerName
+     * Get the player name of this context.
+     *
+     * @return The playerName
      */
     public String getPlayerName() {
         return playerName;
     }
 
     /**
-     * @param transfer
-     *            the transfer to set
-     */
-    public void setTransfer(List<Creep> transfer) {
-        this.transfer = transfer;
-    }
-
-    /**
-     * @return the transfer
-     */
-    public List<Creep> getTransfer() {
-        return transfer;
-    }
-
-    /**
-     * Getter for the income of the player.
+     * Get the income of the associated player.
      *
-     * @return the income
+     * @return The current income
      */
     public synchronized int getIncome() {
         return income;
     }
 
     /**
-     * Setter for the income of the player.
+     * Set the income of the associated player.
      *
-     * @param income
-     *            the new income
+     * @param income The new income
      */
     public synchronized void setIncome(int income) {
         checkIntegrity();
@@ -1041,6 +1136,11 @@ public abstract class GameContext {
         fireIncomeChangedEvent();
     }
 
+    /**
+     * Check context data for integrity.
+     *
+     * @return true on valid, else false
+     */
     public boolean checkIntegrity() {
         if (this.getPlayerId() != getNetwork().getCore().getPlayerId()) {
             return true;
@@ -1048,7 +1148,7 @@ public abstract class GameContext {
         String message = null;
         if (
                 (this.income_hash == null || Password.md5(""+this.income, this.getPlayerName()).equals(this.income_hash)) &&
-                (this.lives_hash == null || Password.md5(""+this.lives, this.getPlayerName()).equals(this.lives_hash)) &&
+                (this.lives_hash == null || Password.md5(""+this.lifes, this.getPlayerName()).equals(this.lives_hash)) &&
                 (this.credits_hash == null || Password.md5(""+this.credits, this.getPlayerName()).equals(this.credits_hash))
         ) {
             return true;
@@ -1061,80 +1161,73 @@ public abstract class GameContext {
     }
 
     /**
-     * Getter for SoundManagement.
+     * Get the ´SoundManagement.
      *
-     * @return managementSound object for sound management
+     * @return SoundManagement object assigned to this context or null if none
      */
     public SoundManagement getSoundManagement() {
-        return managementSound;
+        return soundManagement;
     }
 
     /**
-     * Setter for Map on which the game will be played on.
+     * Set the map the game will be played on.
      *
-     * @param m
-     *            one Map out of the enum
+     * @param m The map to set
      */
     public void setMap(Constants.Map m) {
         mapfile = m;
     }
 
     /**
-     * Getter for Map on which the game will be played on.
+     * Get the map the game is played on.
      *
-     * @return just the Map
+     * @return The map
      */
     public Constants.Map getMap() {
         return mapfile;
     }
 
     /**
-     * @return the nextTower
+     * Get next building tower.
+     *
+     * @return The next building tower
      */
     public Constants.Towers getNextTower() {
         return nextTower;
     }
 
     /**
-     * @param nextTower
-     *            the nextTower to set
+     * Set the next building tower.
+     *
+     * @param nextTower The next building tower
      */
     public void setNextTower(Constants.Towers nextTower) {
         this.nextTower = nextTower;
     }
 
     /**
-     * @return the selectedTower
+     * Get the currently selected tower.
+     *
+     * @return The selected tower
      */
     public Tower getSelectedTower() {
         return selectedTower;
     }
 
     /**
-     * @param selectedTower
-     *            the selectedTower to set
+     * Set the currently selected tower.
+     *
+     * @param selectedTower The selected tower
      */
     public void setSelectedTower(Tower selectedTower) {
         this.selectedTower = selectedTower;
     }
 
     /**
-     * @return the winningPosition
+     * Get the highlighted grid.
+     * 
+     * @return The highlighted grid
      */
-    public static int getWinningPosition() {
-        return GameContext.winningPosition;
-    }
-
-    /**
-     * @param winningPosition
-     *            the winningPosition to set
-     */
-    public static void setWinningPosition(int winningPosition) {
-        synchronized (GameContext.winningPosition) {
-            GameContext.winningPosition = winningPosition;
-        }
-    }
-
     public Grid getHighlightedGrid() {
         return this.gameBoard.getHighlightedGrid();
     }
@@ -1143,7 +1236,7 @@ public abstract class GameContext {
      * This methods returns the selected tower. If no tower
      * is selected, the highlighted tower will be returned.
      * Is neither a tower selected or highlighted, null will
-     * be returned
+     * be returned.
      *
      * @return tower or null
      */
@@ -1158,6 +1251,11 @@ public abstract class GameContext {
         return t;
     }
 
+    /**
+     * Get the underlying game loop.
+     *
+     * @return The game loop
+     */
     public GameLoop getGameLoop() {
         return gameLoop;
     }

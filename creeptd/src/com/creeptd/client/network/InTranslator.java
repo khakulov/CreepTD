@@ -57,7 +57,9 @@ import com.creeptd.common.messages.server.LoginResponseMessage;
 import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.common.messages.server.PasswordResetResponseMessage;
 import com.creeptd.common.messages.server.PingMessage;
+import com.creeptd.common.messages.server.PlayerGameOverMessage;
 import com.creeptd.common.messages.server.PlayerJoinedMessage;
+import com.creeptd.common.messages.server.PlayerLosesLifeMessage;
 import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.common.messages.server.PlayersMessage;
 import com.creeptd.common.messages.server.RegistrationResponseMessage;
@@ -68,15 +70,16 @@ import com.creeptd.common.messages.server.ServerMessage;
 import com.creeptd.common.messages.server.ServerOnlineResponseMessage;
 import com.creeptd.common.messages.server.StartGameMessage;
 import com.creeptd.common.messages.server.StartGameResponseMessage;
+import com.creeptd.common.messages.server.TransferCreepMessage;
 import com.creeptd.common.messages.server.UpdateDataResponseMessage;
 import com.creeptd.common.messages.server.UpgradeTowerRoundMessage;
+
 
 /**
  * The InTranslator translates incoming String-messages to message objects.
  * Regular Expressions are used for translating.
  * 
  * @author andreas
- * 
  */
 public class InTranslator {
 
@@ -85,27 +88,27 @@ public class InTranslator {
     private String messageString = "";
 
     /**
-     * @param inputStream
-     *            the InputStream from client-socket
+     * Create InTranslator.
+     * 
+     * @param inputStream The input stream created from the client socket
      */
     public InTranslator(InputStream inputStream) {
         super();
-        this.bufferedReader = new BufferedReader(new InputStreamReader(
-                inputStream, Charset.forName("UTF-8")));
+        this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
 
     }
 
     /**
-     * @return the next message from input-stream (client-socket)
+     * Get the next message from input stream.
+     *
+     * @return The next message
      */
     public ServerMessage getNextMessage() throws IOException {
         ServerMessage messageObject = null;
-
         synchronized (bufferedReader) {
             messageString = "";
             messageString = this.bufferedReader.readLine();
         }
-
         if (messageString.length() < 1) {
             System.out.println(messageString);
             messageString = "I catched a verry silly bug!";
@@ -117,8 +120,14 @@ public class InTranslator {
             messageObject = new BuildTowerRoundMessage();
         } else if (BuildCreepRoundMessage.PATTERN.matcher(messageString).matches()) {
             messageObject = new BuildCreepRoundMessage();
+        } else if (TransferCreepMessage.PATTERN.matcher(messageString).matches()) {
+            messageObject = new TransferCreepMessage();
         } else if (CreateGameResponseMessage.PATTERN.matcher(messageString).matches()) {
             messageObject = new CreateGameResponseMessage();
+        } else if (PlayerLosesLifeMessage.PATTERN.matcher(messageString).matches()) {
+            messageObject = new PlayerLosesLifeMessage();
+        } else if (PlayerGameOverMessage.PATTERN.matcher(messageString).matches()) {
+            messageObject = new PlayerGameOverMessage();
         } else if (ErrorMessage.PATTERN.matcher(messageString).matches()) {
             messageObject = new ErrorMessage();
         } else if (GamesMessage.PATTERN.matcher(messageString).matches()) {

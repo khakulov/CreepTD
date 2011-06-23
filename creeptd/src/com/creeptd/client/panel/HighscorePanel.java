@@ -53,11 +53,14 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import com.creeptd.client.network.MessageListener;
+import com.creeptd.client.util.Fonts;
 import com.creeptd.common.messages.client.HighscoreRequestMessage;
 import com.creeptd.common.messages.server.HighscoreEntry;
 import com.creeptd.common.messages.server.HighscoreResponseMessage;
 import com.creeptd.common.messages.server.ServerMessage;
 import javax.swing.border.EmptyBorder;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * Panel for the highscore.
@@ -85,11 +88,8 @@ public class HighscorePanel extends GameScreen implements MessageListener {
 
         this.setLayout(null);
         this.setBackground(Color.BLACK);
-
-        java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/header-highscores.jpg");
-        this.title = new JLabel();
-        this.title.setBounds(225, 10, 450, 100);
-        this.title.setText("<html><img src=\"" + imageURL + "\"></html>");
+        
+        this.title = Fonts.getFrameTitle(_("Highscores"), 10);
 
         this.plus = new JButton(">");
         this.plus.setBounds(590, 640, 60, 25);
@@ -102,12 +102,12 @@ public class HighscorePanel extends GameScreen implements MessageListener {
         this.minus.setForeground(Color.GREEN);
         this.minus.setEnabled(false);
 
-        this.back = new JButton("Back");
+        this.back = new JButton(_("Back"));
         this.back.setBounds(320, 640, 120, 25);
         this.back.setBackground(Color.BLACK);
         this.back.setForeground(Color.GREEN);
 
-        this.refresh = new JButton("Refresh");
+        this.refresh = new JButton(_("Refresh"));
         this.refresh.setBounds(450, 640, 120, 25);
         this.refresh.setBackground(Color.BLACK);
         this.refresh.setForeground(Color.GREEN);
@@ -216,7 +216,7 @@ public class HighscorePanel extends GameScreen implements MessageListener {
      */
     private void processHighscoreMessage(HighscoreResponseMessage hrm) {
         final Object[] headerNames = new Object[]{
-            "Rank", "Name", "Points (Last)", "Skill (Last)"};
+            _("Rank"), _("Username"), _("Points (Last)"), _("Skill (Last)")};
 
         final Vector<Vector<String>> rows = new Vector<Vector<String>>();
 

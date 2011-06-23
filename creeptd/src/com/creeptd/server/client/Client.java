@@ -48,39 +48,68 @@ import com.creeptd.server.client.states.AnonymousState;
 import com.creeptd.server.client.states.AbstractClientState;
 import com.creeptd.server.client.states.InGameState;
 import com.creeptd.server.model.Player;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
- * This Class represents the instance of a client inside the server-package.
- * Every client has a ClientID, is in a GameState and is able to send or to
- * receive Messages. Adds also calculation of the clients current money that can
- * be used for cheating detection.
+ * A server side client.
  * 
+ * Every client has a ClientID, is in a GameState and is able to send or to
+ * receive Messages.
  */
 public class Client {
+    /** Map of all connected clients, clientId => Client */
+    public static final SortedMap<Integer,Client> allClients = new TreeMap<Integer,Client>();
+
+    /** Logging functionality */
     private static Logger logger = Logger.getLogger(Client.class);
+    /** Client coutner */
     private static AtomicInteger clientCount = new AtomicInteger(0);
-    private int clientID;
+    /** The client's id */
+    private int clientId;
+    /** The client's current state */
     private AbstractClientState clientState = null;
+    /** Client in thread, reading messages */
     private ClientInThread clientInThread;
+    /** Client out thread, writing messages */
     private ClientOutThread clientOutThread;
+    /** The socket */
     private Socket socket;
+    /** The player's database model */
     private Player playerModel = null;
 
     /**
-     * Constructor ...
+     * Get a client by id.
      *
-     * @param id
-     *            the client's ID is a simple integer.
-     * @param socket
-     *            the client's socket is a simple client-socket which is used to
-     *            connect to the server.
-     * @param authenticationService
-     *            the AuthenticationService
+     * @param clientId The client's id
+     * @return The client or null, if unknown
+     */
+    public static final Client findClientById(int clientId) {
+        synchronized (allClients) {
+            return allClients.get(clientId);
+        }
+    }
+
+    /**
+     * Get the number of connected clients.
+     *
+     * @return Number of connected clients
+     */
+    public static final int numClients() {
+        synchronized (allClients) {
+            return allClients.size();
+        }
+    }
+
+    /**
+     * Create a client.
+     *
+     * @param socket The client' socket
      */
     public Client(Socket socket) {
-        this.clientID = clientCount.incrementAndGet();
+        this.clientId = clientCount.incrementAndGet();
         this.socket = socket;
-        logger.info("New client: " + this.clientID);
+        logger.info("New client: " + this.clientId);
         try {
             this.clientOutThread = new ClientOutThread(socket.getOutputStream(), this);
             this.clientOutThread.start();
@@ -88,31 +117,43 @@ public class Client {
             this.clientInThread.start();
             this.changeState(new AnonymousState(this));
         } catch (IOException e) {
-            logger.error("Problem with Client constructor in serverpacket.", e);
+            logger.error("Problem with Client constructor in serverpacket", e);
+        }
+        synchronized (allClients) {
+            allClients.put(this.clientId, this);
         }
     }
 
     /**
-     * Receive a message from the client (over the network).
+     * Get the client's player name.
      *
-     * @param message
-     *            the message, or null if the connection to the client has been
-     *            closed.
+     * @return The player name or null if not authenticated
+     */
+    public String getPlayerName() {
+        if (this.playerModel != null) {
+            return this.playerModel.getName();
+        }
+        return null;
+    }
+
+    /**
+     * Receive a message from the client.
+     *
+     * @param message The recevied message or null, if disconnected
      */
     public void receive(ClientMessage message) {
         if (message == null) {
             this.disconnect();
             return;
         }
-        message.setClientId(this.getClientID());
+        message.setClientId(this.getId());
         this.changeState(this.clientState.receiveMessage(message));
     }
 
     /**
-     * Send a message to the client (over the network).
+     * Send a message to the client.
      *
-     * @param message
-     *            the message
+     * @param message The message to send
      */
     public void send(ServerMessage message) {
         this.clientOutThread.send(message);
@@ -124,51 +165,55 @@ public class Client {
     /**
      * Change the current client state.
      *
-     * @param newState new client state
+     * @param newState New client state
      */
     private void changeState(AbstractClientState newState) {
-        if (this.clientState == newState) {
+        // Do nothing if the state has not changed
+        if ((this.clientState == null && newState == null) || (this.clientState != null && this.clientState.equals(newState))) {
             return;
         }
-
+        // Leave the old state
         if (this.clientState != null) {
             this.clientState.leave();
         }
-
         this.clientState = newState;
-
+        // Enter the new state
         if (this.clientState != null) {
             this.clientState.enter();
         }
     }
 
+    /**
+     * Disconnect the client.
+     */
     public void disconnect() {
-        logger.info("Client " + this.getClientID() + ": disconnecting... disconnect()");
+        logger.info("Client " + this.getId() + ": disconnecting... disconnect()");
         if (this.clientState != null) this.changeState(this.clientState.receiveMessage(null));
         this.clientInThread.terminate();
         this.clientOutThread.terminate();
         try {
             this.socket.close();
         } catch (IOException e) {
-            String socketState;
-            if (socket.isClosed()) {
-                socketState = "closed";
-            } else {
-                socketState = "open";
-            }
-            logger.error("Disconnect client " + this + " failed. socket is " + socketState, e);
+            // Uninteresting
+        }
+        synchronized (allClients) {
+            allClients.remove(this.clientId);
         }
     }
 
     /**
-     * Wenn users socket closed ist, dann Killt alle Threads und liefert false
-     * zuruck, sonst true
+     * Check this client.
      *
-     * @return boolean
+     * If the socket is closed, kill all threads.
+     *
+     * // FIXME: Required...why exactly? This should never happen if the code
+     * // isn't bad.
+     *
+     * @return boolean false if socket is already closed was client is still alive, else true
      */
-    public boolean check() {
+    public boolean doCheck() {
         if (this.socket.isClosed() || !this.clientInThread.isAlive() || !this.clientOutThread.isAlive()) {
-            logger.info("Client " + this + ": disconnecting... check()");
+            logger.info("Client " + this + ": disconnecting... doCheck()");
             this.disconnect();
             return false;
         }
@@ -176,35 +221,48 @@ public class Client {
     }
 
     /**
-     * Returns a string with id and userName.
-     *
-     * @return a string with id and userName.
+     * {@inheritDoc}
      */
     @Override
     public String toString() {
         if (this.getPlayerModel() != null) {
-            return this.clientID + "/" + this.getPlayerModel().getName();
+            return this.clientId + "/" + this.getPlayerModel().getName();
         }
-        return Integer.toString(this.clientID);
+        return "Client #"+Integer.toString(this.clientId);
     }
 
     /**
-     * Returns the client's ID.
+     * Returns the client's id.
      *
-     * @return clientID
+     * @return The client's id
      */
-    public int getClientID() {
-        return this.clientID;
+    public int getId() {
+        return this.clientId;
     }
 
+    /**
+     * Get the client's ip address.
+     *
+     * @return The ip address
+     */
     public String getIPAddress() {
         return this.socket.getInetAddress().toString().replaceAll("/", "");
     }
 
+    /**
+     * Set the player model.
+     *
+     * @param player The player instance
+     */
     public void setPlayerModel(Player player) {
         this.playerModel = player;
     }
 
+    /**
+     * Get the player's database model.
+     *
+     * @return The player's database model
+     */
     public Player getPlayerModel() {
         return playerModel;
     }

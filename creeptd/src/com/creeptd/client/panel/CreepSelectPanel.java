@@ -50,20 +50,29 @@ import javax.swing.JPanel;
 import com.creeptd.client.game.ContextListener;
 import com.creeptd.client.game.GameContext;
 import com.creeptd.common.Constants;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.net.URL;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * Panel with Buttons to select Creeps.
  * 
  * @author sven
  */
-public class CreepSelPanel extends JPanel implements ContextListener {
+public class CreepSelectPanel extends JPanel implements ContextListener {
 
-    private static Logger logger = Logger.getLogger(CreepSelPanel.class.getName());
+    private static Logger logger = Logger.getLogger(CreepSelectPanel.class.getName());
     private static final long serialVersionUID = -5978301134543431476L;
     private Font font;
     private Font labelFont;
     private final int height;
     private final int width;
+    private JLabel title;
     private JPanel buttonPanel;
     private JButton button1;
     private JButton button2;
@@ -101,7 +110,7 @@ public class CreepSelPanel extends JPanel implements ContextListener {
      * @param gamepanel
      *            for getting object Gamepanel
      */
-    public CreepSelPanel(GamePanel gamepanel, int width, int height) {
+    public CreepSelectPanel(GamePanel gamepanel, int width, int height) {
         this.height = height;
         this.width = width;
         this.gamepanel = gamepanel;
@@ -111,9 +120,6 @@ public class CreepSelPanel extends JPanel implements ContextListener {
         font = new Font("Helvetica", Font.PLAIN, 6);
         labelFont = new Font("Helvetica", Font.PLAIN, 10);
         init();
-
-        add(buttonPanel, java.awt.BorderLayout.CENTER);
-
     }
 
     /**
@@ -122,8 +128,24 @@ public class CreepSelPanel extends JPanel implements ContextListener {
     private void init() {
         this.setBackground(Color.BLACK);
 
+        title = new JLabel() {
+            @Override
+            public void paintComponent(Graphics g) {
+                java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/sidebar-title.jpg");
+                Image img = new ImageIcon(imageURL).getImage();
+                g.drawImage(img, 0, 0, null);
+                super.paintComponent(g);
+            }
+        };
+        title.setBounds(0, 0, this.width, 15);
+        title.setForeground(Color.BLACK);
+        title.setFont(new Font("Arial", Font.BOLD, 12));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setText(_("Attack with creeps"));
+
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(4, 4));
+        buttonPanel.setBounds(0, 15, this.getWidth(), this.getHeight()-15);
 
         button1 = new CreepSendButton(gamepanel, Constants.Creeps.creep1, "1");
         button2 = new CreepSendButton(gamepanel, Constants.Creeps.creep2, "2");
@@ -141,7 +163,7 @@ public class CreepSelPanel extends JPanel implements ContextListener {
         button14 = new CreepSendButton(gamepanel, Constants.Creeps.creep14, "14");
         button15 = new CreepSendButton(gamepanel, Constants.Creeps.creep15, "15");
         button16 = new CreepSendButton(gamepanel, Constants.Creeps.creep16, "16");
-
+        
         buttonPanel.add(button1);
         buttonPanel.add(button2);
         buttonPanel.add(button3);
@@ -159,6 +181,8 @@ public class CreepSelPanel extends JPanel implements ContextListener {
         buttonPanel.add(button15);
         buttonPanel.add(button16);
 
+        add(title, BorderLayout.NORTH);
+        add(buttonPanel, BorderLayout.CENTER);
     }
 
     /**

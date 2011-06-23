@@ -57,8 +57,10 @@ import com.creeptd.client.tower.FindFastestCreep;
 import com.creeptd.client.tower.FindStrongestCreep;
 import com.creeptd.client.tower.FindWeakestCreep;
 import com.creeptd.common.Constants;
+import java.net.URL;
 import javax.swing.UIManager;
-import javax.swing.border.LineBorder;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * Panel that shows the attributes of the tower, the user has selected.
@@ -322,7 +324,7 @@ public class SelectTowerInfoPanel extends JPanel implements ContextListener {
 
         // general Tower information
 
-        this.infoTower = new JLabel("Tower Info");
+        this.infoTower = new JLabel("Tower info");
         this.infoSellPrice = new JLabel("Sell for 75%");
         this.infoDamage = new JLabel("Damage Info");
         this.infoSpeed = new JLabel("Speed Info");
@@ -475,15 +477,15 @@ public class SelectTowerInfoPanel extends JPanel implements ContextListener {
         this.towerButtons.setBackground(Color.BLACK);
         this.towerButtons.setLayout(new java.awt.GridBagLayout());
 
-        this.sellButton = new JButton("Sell");
-        this.upgradeButton = new JButton("Upgrade");
-        this.strategyLabel = new JLabel("Strategy");
-        this.weakStrategyButton = new JToggleButton("Weak");
-        this.hardStrategyButton = new JToggleButton("Hard");
-        this.closeStrategyButton = new JToggleButton("Close");
-        this.fastestStrategyButton = new JToggleButton("Fastest");
-        this.farthestStrategyButton = new JToggleButton("Farthest");
-        this.lockCreepButton = new JToggleButton("Lock");
+        this.sellButton = new JButton(_("Sell"));
+        this.upgradeButton = new JButton(_("Upgrade"));
+        this.strategyLabel = new JLabel(_("Strategy"));
+        this.weakStrategyButton = new JToggleButton(_("Weak"));
+        this.hardStrategyButton = new JToggleButton(_("Hard"));
+        this.closeStrategyButton = new JToggleButton(_("Close"));
+        this.fastestStrategyButton = new JToggleButton(_("Fastest"));
+        this.farthestStrategyButton = new JToggleButton(_("Farthest"));
+        this.lockCreepButton = new JToggleButton(_("Lock"));
         this.lockCreepButton.setForeground(Color.RED);
 
         this.sellButton.setFont(buttonFont);
@@ -649,24 +651,25 @@ public class SelectTowerInfoPanel extends JPanel implements ContextListener {
         if (context.getSelectedTower() == null) {
             return;
         }
+        URL imageURL = this.getClass().getClassLoader().getResource("com/creeptd/client/resources/panel");
         // show SelectTowerInfoPanel
         if (message.equals("tower")) {
             // general info panel
             this.infoTower.setText(context.getSelectedTower().getType().getName());
-            this.infoSellPrice.setText("Sell for: " + (int) (context.getSelectedTower().getTotalPrice() * 0.75));
-            this.infoDamage.setText("Damage: " + context.getSelectedTower().getDamage());
-            this.infoSpeed.setText("Speed: " + Constants.Towers.translateSpeed(context.getSelectedTower().getCoolDown()));
-            this.infoRange.setText("Range: " + (int) context.getSelectedTower().getRange());
-            this.infoSpecial.setText(context.getSelectedTower().getType().getSpecial());
+            this.infoSellPrice.setText("<html><img src=\""+imageURL+"/icon_credits.gif\"> &nbsp;"+(int) -(context.getSelectedTower().getTotalPrice() * 0.75)+"</html>");
+            this.infoDamage.setText("<html><img src=\""+imageURL+"/icon_damage.gif\"> &nbsp;" + context.getSelectedTower().getDamage()+"</html>");
+            this.infoSpeed.setText("<html><img src=\""+imageURL+"/icon_speed.gif\"> &nbsp;" + _(Constants.Towers.translateSpeed(context.getSelectedTower().getCoolDown()))+"</html>");
+            this.infoRange.setText("<html><img src=\""+imageURL+"/icon_range.gif\"> &nbsp;" + (int) context.getSelectedTower().getRange()+"</html>");
+            this.infoSpecial.setText(_(context.getSelectedTower().getType().getSpecial()));
 
             // upgrade info panel
             if (context.getSelectedTower().getType().getNext() != null) {
                 upgradeTower.setText(context.getSelectedTower().getType().getNext().getName());
-                upgradePrice.setText("Price: " + context.getSelectedTower().getType().getNext().getPrice());
-                upgradeDamage.setText("Damage: " + context.getSelectedTower().getType().getNext().getDamage());
-                upgradeSpeed.setText("Speed: " + Constants.Towers.translateSpeed(context.getSelectedTower().getType().getNext().getSpeed()));
-                upgradeRange.setText("Range: " + (int) context.getSelectedTower().getType().getNext().getRange());
-                upgradeSpecial.setText(context.getSelectedTower().getType().getNext().getSpecial());
+                upgradePrice.setText("<html><img src=\""+imageURL+"/icon_credits.gif\"> &nbsp;" + context.getSelectedTower().getType().getNext().getPrice());
+                upgradeDamage.setText("<html><img src=\""+imageURL+"/icon_damage.gif\"> &nbsp;" + context.getSelectedTower().getType().getNext().getDamage());
+                upgradeSpeed.setText("<html><img src=\""+imageURL+"/icon_speed.gif\"> &nbsp;" + _(Constants.Towers.translateSpeed(context.getSelectedTower().getType().getNext().getSpeed())));
+                upgradeRange.setText("<html><img src=\""+imageURL+"/icon_range.gif\"> &nbsp;"+ (int) context.getSelectedTower().getType().getNext().getRange());
+                upgradeSpecial.setText(_(context.getSelectedTower().getType().getNext().getSpecial()));
             }
 
             if ((context.getSelectedTower().getType().getNext() != null) && (!context.getSelectedTower().isUpgrading()) && (context.getCredits() >= context.getSelectedTower().getType().getNext().getPrice())) {

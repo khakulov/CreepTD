@@ -60,7 +60,7 @@ public class ClientOutThread extends Thread {
         this.client = client;
         this.queue = new LinkedBlockingQueue<ServerMessage>();
 
-        this.setName("Client " + client.getClientID() + ": OutThread");
+        this.setName("Client " + client.getId() + ": OutThread");
     }
 
     @Override
@@ -69,7 +69,7 @@ public class ClientOutThread extends Thread {
             try {
                 ServerMessage message = queue.take();
                 if (message == null) {
-                    logger.warn("Client " + this.client.getClientID() + ": disconnected... null");
+                    logger.warn("Client " + this.client.getId() + ": disconnected... null");
                     this.client.disconnect();
                 } else {
                     // logger.info("Send: " + message.getMessageString());

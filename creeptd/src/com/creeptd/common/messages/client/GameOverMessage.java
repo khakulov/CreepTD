@@ -49,7 +49,7 @@ public class GameOverMessage extends ClientMessage implements GameMessage {
     /**
      * regular expression for message-parsing.
      */
-    private static final String REGEXP_GAME_OVER = "GAME_OVER\\s([0-9]+)";
+    private static final String REGEXP_GAME_OVER = "GAME_OVER\\s([0-9]+)\\s([0-9]+)";
     /**
      * pattern for regular expression.
      */
@@ -80,7 +80,8 @@ public class GameOverMessage extends ClientMessage implements GameMessage {
     public void initWithMessage(String messageString) {
         Matcher matcher = PATTERN.matcher(messageString);
         if (matcher.matches()) {
-            this.setPosition(Integer.valueOf(matcher.group(1)));
+            this.setClientId(Integer.valueOf(matcher.group(1)));
+            this.setPosition(Integer.valueOf(matcher.group(2)));
         }
     }
 
@@ -89,6 +90,6 @@ public class GameOverMessage extends ClientMessage implements GameMessage {
      */
     @Override
     public String getMessageString() {
-        return "GAME_OVER " + this.getPosition();
+        return "GAME_OVER " + this.getClientId()+" " + this.getPosition();
     }
 }

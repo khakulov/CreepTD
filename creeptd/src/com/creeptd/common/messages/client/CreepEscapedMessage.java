@@ -41,16 +41,16 @@ import java.util.regex.Pattern;
 import com.creeptd.common.messages.MessageUtil;
 
 /**
- * Message from client, taked a live.
+ * Message from client, a creep escaped.
  * 
- * @author Azim
+ * @author Daniel
  */
-public class LiveTakedMessage extends ClientMessage implements GameMessage {
+public class CreepEscapedMessage extends ClientMessage implements GameMessage {
 
     /**
      * Regular expression for message-parsing.
      */
-    private static final String REGEXP = "LIVE_TAKED\\s\"([^\"]+)\"\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)";
+    private static final String REGEXP = "CREEP_ESCAPED\\s\"([^\"]+)\"\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)";
     /**
      * Pattern for regular expression.
      */
@@ -60,17 +60,21 @@ public class LiveTakedMessage extends ClientMessage implements GameMessage {
      */
     private String creepType;
     /**
-     * Id of Player from who the live was taked
+     * ID of creep
+     */
+    private int creepId;
+    /**
+     * Health of the creep
+     */
+    private int creepHealth;
+    /**
+     * Id of Player from who the life was taken
      */
     private int fromPlayerId;
     /**
-     * Id of Player to the creep transfered
-     */
-    private int toPlayerId;
-    /**
      * Id of Player, who created the creep
      */
-    private int senderId;
+    private int creatorId;
     /**
      * Number of Round
      */
@@ -81,22 +85,22 @@ public class LiveTakedMessage extends ClientMessage implements GameMessage {
      */
     @Override
     public String getMessageString() {
-        return "LIVE_TAKED \"" + MessageUtil.prepareToSend(this.getCreepType()) + "\" " + this.getFromPlayerId() + " " + this.getToPlayerId() + " " + this.getSenderId() + " " + this.getRoundId();
+        return "CREEP_ESCAPED \"" + MessageUtil.prepareToSend(this.getCreepType()) + "\" "+this.creepId+" "+this.creepHealth+ " " + this.getFromPlayerId() + " " + this.getCreatorId() + " " + this.getRoundId();
     }
 
     /**
-     * @param messageString
-     *            the message as String.
+     * @param messageString The message as String.
      */
     @Override
     public void initWithMessage(String messageString) {
         Matcher matcher = PATTERN.matcher(messageString);
         if (matcher.matches()) {
             this.setCreepType(matcher.group(1));
-            this.setFromPlayerId(Integer.parseInt(matcher.group(2)));
-            this.setToPlayerId(Integer.parseInt(matcher.group(3)));
-            this.setSenderId(Integer.parseInt(matcher.group(4)));
-            this.setRoundId(Long.parseLong(matcher.group(5)));
+            this.setCreepId(Integer.parseInt(matcher.group(2)));
+            this.setCreepHealth(Integer.parseInt(matcher.group(3)));
+            this.setFromPlayerId(Integer.parseInt(matcher.group(4)));
+            this.setCreatorId(Integer.parseInt(matcher.group(5)));
+            this.setRoundId(Long.parseLong(matcher.group(6)));
         }
     }
 
@@ -115,6 +119,22 @@ public class LiveTakedMessage extends ClientMessage implements GameMessage {
         this.creepType = creepType;
     }
 
+    public int getCreepId() {
+        return creepId;
+    }
+
+    public void setCreepId(int creepId) {
+        this.creepId = creepId;
+    }
+
+    public int getCreepHealth() {
+        return creepHealth;
+    }
+
+    public void setCreepHealth(int creepHealth) {
+        this.creepHealth = creepHealth;
+    }
+
     /**
      * @param fromPlayerId
      *            the from player ID to set
@@ -131,33 +151,17 @@ public class LiveTakedMessage extends ClientMessage implements GameMessage {
     }
 
     /**
-     * @param toPlayerId
-     *            the to Player ID to set
+     * @param creatorId the creator ID to set
      */
-    public void setToPlayerId(int toPlayerId) {
-        this.toPlayerId = toPlayerId;
+    public void setCreatorId(int creatorId) {
+        this.creatorId = creatorId;
     }
 
     /**
-     * @return the to Player ID
+     * @return the creator ID
      */
-    public int getToPlayerId() {
-        return toPlayerId;
-    }
-
-    /**
-     * @param senderId
-     *            the sender ID to set
-     */
-    public void setSenderId(int senderId) {
-        this.senderId = senderId;
-    }
-
-    /**
-     * @return the sender ID
-     */
-    public int getSenderId() {
-        return senderId;
+    public int getCreatorId() {
+        return creatorId;
     }
 
     /**

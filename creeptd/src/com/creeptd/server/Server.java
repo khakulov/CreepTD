@@ -90,7 +90,7 @@ public class Server {
         // init the log4J logger
         initLogger();
 
-        logger.info("Starting server version " + getVersion() + "...");
+        logger.info("Starting CreepTD server version " + getVersion() + "...");
 
         // check if working directory is writeable
         if (!new File("./").canWrite()) {

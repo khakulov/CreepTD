@@ -100,15 +100,18 @@ public class BoardPanel extends Canvas {
         }
         // Antialias on...
 
-        Graphics2D g2 = (Graphics2D) strategy.getDrawGraphics();
-        if (ANTIALIAS) {
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
+        try {
+            Graphics2D g2 = (Graphics2D) strategy.getDrawGraphics();
+            if (ANTIALIAS) {
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+            }
+            // paint the background black
+            g2.clearRect(0, 0, width, height);
+            return g2;
+        } catch (Exception ex) {
+            // Component must have a valid peer
         }
-
-        // paint the background black
-        g2.clearRect(0, 0, width, height);
-
-        return g2;
+        return null;
     }
 }

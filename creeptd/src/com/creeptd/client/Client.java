@@ -78,7 +78,7 @@ public class Client extends JFrame {
         app.getContentPane().setPreferredSize(Core.SCREENSIZE);
         app.setIconImage(core.getIconImage());
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        core.setLocation((screenSize.width - Core.WIDTH) / 2, (screenSize.height - Core.HEIGHT) / 2);
+        app.setLocation((screenSize.width - Core.WIDTH) / 2, (screenSize.height - Core.HEIGHT) / 2);
         app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         app.setResizable(false);
         app.setBackground(Color.BLACK);

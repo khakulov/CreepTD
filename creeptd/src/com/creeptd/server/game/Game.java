@@ -173,20 +173,20 @@ public class Game extends AbstractGame {
         if (this.players.size() >= this.getMaxPlayers()) {
             throw new RuntimeException("Maximum number of players reached, no more players can join");
         }
-        if (this.findPlayer(client.getClientID()) != null) {
+        if (this.findPlayer(client.getId()) != null) {
             return;
         }
 
         synchronized (this.players) {
             for (PlayerInGame p : this.players) {
-                client.send(new PlayerJoinedMessage(p.getClient().getPlayerModel().getName(), p.getClient().getClientID(), p.getClient().getPlayerModel().getExperience(), p.getClient().getPlayerModel().getElopoints()));
+                client.send(new PlayerJoinedMessage(p.getClient().getPlayerModel().getName(), p.getClient().getId(), p.getClient().getPlayerModel().getExperience(), p.getClient().getPlayerModel().getElopoints()));
             }
             PlayerInGame p = new PlayerInGame(client);
             this.players.add(p);
         }
 
         this.sendAll(new PlayerJoinedMessage(client.getPlayerModel().getName(),
-                client.getClientID(),
+                client.getId(),
                 client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints()));
         gamePlayersChanged();
         logger.debug("Player joined to the game");
@@ -206,7 +206,7 @@ public class Game extends AbstractGame {
         if (client == null) {
             throw new IllegalArgumentException("'client' was null!");
         }
-        this.removePlayer(this.findPlayer(client.getClientID()));
+        this.removePlayer(this.findPlayer(client.getId()));
     }
 
     /**
@@ -238,7 +238,7 @@ public class Game extends AbstractGame {
     public PlayerInGame findPlayer(int clientId) {
         synchronized (this.players) {
             for (PlayerInGame p : this.players) {
-                if (p.getClient().getClientID() == clientId) {
+                if (p.getClient().getId() == clientId) {
                     return p;
                 }
             }
