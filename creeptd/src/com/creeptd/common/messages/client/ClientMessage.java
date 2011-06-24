@@ -112,6 +112,8 @@ public abstract class ClientMessage extends Message {
             message = new UpgradeTowerMessage();
         } else if (ServerOnlineRequestMessage.PATTERN.matcher(messageString).matches()) {
             message = new ServerOnlineRequestMessage();
+        } else if (AsyncronousMessage.PATTERN.matcher(messageString).matches()) {
+            message = new AsyncronousMessage();
         } else {
             message = new InvalidMessage();
             return message;

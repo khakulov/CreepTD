@@ -47,7 +47,7 @@ public interface Constants {
     /**
      * Application version
      */
-    String VERSION = "0.8.5-3 beta";
+    String VERSION = "0.8.5-5 beta";
 
     /**
      * Default port for server-socket.

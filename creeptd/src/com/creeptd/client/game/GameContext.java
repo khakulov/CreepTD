@@ -779,10 +779,10 @@ public abstract class GameContext {
         if (!this.deathMsgSent) {
             if (this instanceof PlayerContext) {
                 logger.info("I am dead");
-                GameOverMessage gom = new GameOverMessage();
-                gom.setClientId(this.getPlayerId());
-                gom.setPosition(positionCounter);
-                this.getNetwork().sendMessage(gom);
+                // GameOverMessage gom = new GameOverMessage();
+                // gom.setClientId(this.getPlayerId());
+                // gom.setPosition(positionCounter);
+                // this.getNetwork().sendMessage(gom);
             } else {
                 logger.info(this.getPlayerName()+" is dead");
             }

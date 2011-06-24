@@ -35,7 +35,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.server;
 
-import com.creeptd.common.Password;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -246,8 +245,7 @@ public class AuthenticationService {
     /**
      * Log out.
      *
-     * @param playerName
-     *            the name of the player who wants to log out.
+     * @param playerName The name of the player who wants to log out.
      */
     public static void logout(Client client) {
         synchronized (loggedIn) {
@@ -260,8 +258,7 @@ public class AuthenticationService {
     }
 
     /**
-     * @param firstResult
-     *            the index of the first result returned.
+     * @param firstResult The index of the first result returned.
      * @return 30 players sorted by elopoints starting with firstResult.
      */
     public static Set<Player> getPlayers(int firstResult) {
@@ -284,9 +281,8 @@ public class AuthenticationService {
     }
 
     /**
-     * @param playerName
-     *            the name of a player
-     * @return the player with playerName
+     * @param playerName The name of a player
+     * @return The player with playerName
      */
     public static Player getPlayer(String playerName) {
         EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();

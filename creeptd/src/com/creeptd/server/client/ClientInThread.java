@@ -86,8 +86,9 @@ public class ClientInThread extends Thread {
         while (!this.terminate) {
             try {
                 String messageString = this.bufferedReader.readLine();
+                // logger.info("Received from "+this.client+": "+messageString);
                 if (messageString == null || messageString.equals("")) {
-                    logger.warn("Client " + this.client.getId() + " disconnected (Protocol aborted)");
+                    // logger.warn("Client " + this.client.getId() + " disconnected (Protocol aborted)");
                     this.client.disconnect();
                     continue;
                 }
@@ -105,10 +106,10 @@ public class ClientInThread extends Thread {
                 this.inactivityCount = 0;
                 this.client.receive(message);
             } catch (SocketException e) {
-                logger.warn("Client " + this.client.getId() + " disconnected (Socket closed)");
+                // logger.info("Client " + this.client.getId() + " disconnected (Socket closed)");
                 this.client.disconnect();
             } catch (NullPointerException e) {
-                logger.warn("Client " + this.client.getId() + " disconnected (Connection closed)");
+                // logger.warn("Client " + this.client.getId() + " disconnected (Connection closed)");
                 this.client.disconnect();
             } catch (SocketTimeoutException e) {
                 if (this.inactivityCount > 60) {
@@ -131,7 +132,7 @@ public class ClientInThread extends Thread {
                     this.inactivityCount++;
                     continue;
                 }
-                logger.warn("Client " + this.client.getId() + " timeout (Got no response to PING)");
+                // logger.warn("Client " + this.client.getId() + " timeout (Got no response to PING)");
                 this.client.disconnect();
             } catch (IOException e) {
                 logger.warn("Client " + this.client.getId() + " disconnected (I/O error): "+e);

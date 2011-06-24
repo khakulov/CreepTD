@@ -150,7 +150,7 @@ public class HighscoreService {
             
             int[] newExperience = (game.getMode().equals(Constants.Mode.TEAM2VS2)) ? calcExperienceTeam(experience) : calcExperience(experience);
             int[] newElopoints = (game.getMode().equals(Constants.Mode.TEAM2VS2)) ? calcElopointsTeam(elopoints) : calcElopoints(elopoints);
-
+            
             for (int i = 0; i < playerPositions.size(); i++) {
                 playerPositions.get(i).getClient().getPlayerModel().setExperience((int) newExperience[i]);
                 playerPositions.get(i).getClient().getPlayerModel().setElopoints((int) newElopoints[i]);

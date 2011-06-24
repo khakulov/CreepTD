@@ -38,6 +38,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.creeptd.common.Constants;
+import com.creeptd.common.messages.client.AsyncronousMessage;
 import com.creeptd.common.messages.client.BuildCreepMessage;
 import com.creeptd.common.messages.client.BuildTowerMessage;
 import com.creeptd.common.messages.client.ChangeStrategyMessage;
@@ -57,6 +58,7 @@ import com.creeptd.common.messages.server.PlayerLosesLifeMessage;
 import com.creeptd.common.messages.server.PlayerQuitMessage;
 import com.creeptd.common.messages.server.RoundMessage;
 import com.creeptd.common.messages.server.SellTowerRoundMessage;
+import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.common.messages.server.TransferCreepMessage;
 import com.creeptd.common.messages.server.UpgradeTowerRoundMessage;
 import com.creeptd.server.HighscoreService;
@@ -87,7 +89,7 @@ public class RunningGameState extends AbstractGameState implements
     private List<List> incomeLog = new LinkedList<List>(); // Round1(Player1 inc, ...), Round2(Player1 inc, ...)
     private Integer currentCreepId = 1;
     private final Object currentCreepIdLock = new Object();
-    private final Map<String,Integer> lifeTakenVoting = new HashMap<String,Integer>();
+    private final Map<String, Integer> lifeTakenVoting = new HashMap<String, Integer>();
     private GameMode gameMode;
 
     /**
@@ -113,7 +115,6 @@ public class RunningGameState extends AbstractGameState implements
         this.startDate = System.currentTimeMillis() / 1000;
         tickThread = new TickThread(this, Constants.TICK_MS * 1000000);
     }
-
     private boolean gameStarted = false;
 
     /**
@@ -143,7 +144,7 @@ public class RunningGameState extends AbstractGameState implements
             message.setRoundId(this.maxTick + (Constants.USER_ACTION_DELAY * 10));
             this.getGame().sendAll(message);
         }
-        
+
         this.gameMode.onTick(this.maxTick); // Call the listener
 
         if (this.maxTick % (Constants.INCOME_TIME / Constants.TICK_MS) == 0) {
@@ -205,6 +206,8 @@ public class RunningGameState extends AbstractGameState implements
             return this.removePlayer(sender);
         } else if (message instanceof LogoutMessage) {
             return this.removePlayer(sender);
+        } else if (message instanceof AsyncronousMessage) {
+            this.handle((AsyncronousMessage) message, sender);
         } else if (message instanceof ClientChatMessage) {
             handle((ClientChatMessage) message, sender);
         } else {
@@ -243,17 +246,17 @@ public class RunningGameState extends AbstractGameState implements
     private AbstractGameState handle(CreepEscapedMessage m, PlayerInGame messageSender) {
         PlayerInGame from = this.getGame().findPlayer(m.getFromPlayerId());
         PlayerInGame creator = this.getGame().findPlayer(m.getCreatorId());
-        
+
         // Check message format
         if (from == null || creator == null) {
-            logger.warn("Got a malformed LifeTakenMessage sent by "+messageSender+": from="+from+", creator="+creator);
+            logger.warn("Got a malformed LifeTakenMessage sent by " + messageSender + ": from=" + from + ", creator=" + creator);
             return this;
         }
         // Transfer creep only if the voting (50%+ rule) is successful
         if (voteCreepEscaped(m.getRoundId(), from.getClient().getId(), m.getCreepId())) {
             // Close the voting on success
             closeCreepEscapedVote(m.getRoundId(), from.getClient().getId(), m.getCreepId());
-            
+
             // Send player loses life message only, if there are lifes left
             if (from.getLifes() > 0) {
                 // Take the life
@@ -309,7 +312,7 @@ public class RunningGameState extends AbstractGameState implements
      * @return true on voting success, else false
      */
     private boolean voteCreepEscaped(long roundId, int playerId, int creepId) {
-        String key = roundId+":"+playerId+":"+creepId;
+        String key = roundId + ":" + playerId + ":" + creepId;
         Integer count = this.lifeTakenVoting.get(key);
         if (count == null) {
             count = 0;
@@ -317,7 +320,7 @@ public class RunningGameState extends AbstractGameState implements
             return false; // Voting has already ended
         }
         count++;
-        if (count > (int) (this.getGame().numConnectedPlayers()/2)) { // 50%+ voting
+        if (count > (int) (this.getGame().numConnectedPlayers() / 2)) { // 50%+ voting
             this.lifeTakenVoting.put(key, new Integer(-1));
             return true;
         } else {
@@ -337,7 +340,7 @@ public class RunningGameState extends AbstractGameState implements
      * @param creepId The creep comming through
      */
     private void closeCreepEscapedVote(long roundId, int playerId, int creepId) {
-        String key = roundId+":"+playerId+":"+creepId;
+        String key = roundId + ":" + playerId + ":" + creepId;
         this.lifeTakenVoting.put(key, new Integer(-1));
     }
 
@@ -435,7 +438,7 @@ public class RunningGameState extends AbstractGameState implements
     private void handle(BuildCreepMessage m) {
         PlayerInGame sender = this.getGame().findPlayer(m.getClientId());
         sender.anticheat_sentThisCreep(m.getCreepType(), this.getRoundId());
-        
+
         List<PlayerInGame> receivers = this.gameMode.findReceivers(sender);
         for (PlayerInGame p : receivers) {
             BuildCreepRoundMessage bcrm = new BuildCreepRoundMessage();
@@ -463,15 +466,33 @@ public class RunningGameState extends AbstractGameState implements
         // The game over message sent by the client is useful for us only when
         // clients decide to be game over, before the server side calculation
         // decides so. There should be no use case currently.
-        if (!this.gameMode.isDead(sender)) {
+        /* if (!this.gameMode.isDead(sender)) {
             logger.info("Player " + sender + " sent game over, position=" + m.getPosition());
             this.playerGameOver(sender, 0); // Automatic sort, don't trust clients
             if (this.gameOverForAll()) {
                 this.endGame();
                 return new EndedGameState(this.getGame());
             }
-        }
+        } */
         return this;
+    }
+
+    /**
+     * Handle async message.
+     *
+     * @param message The message
+     * @param sender The message's sender being async
+     */
+    private void handle(AsyncronousMessage message, PlayerInGame sender) {
+        if (!sender.isAsynchronous()) {
+            sender.setAsynchronous(true);
+            ServerChatMessage scm = new ServerChatMessage();
+            scm.setPlayerName(sender.getClient().getPlayerName());
+            scm.setMessage("is asynchronous...");
+            scm.setTranslate(true);
+            this.getGame().sendAll(scm);
+            logger.info(this.getGame() + ": Player " + sender + " is asynchronous (round=" + message.getCurrentRoundId() + ", received=" + message.getReceivedRoundId() + ")");
+        }
     }
 
     /**
@@ -511,7 +532,9 @@ public class RunningGameState extends AbstractGameState implements
     }
 
     private void playerGameOver(PlayerInGame player, int submitted_position) {
-        if (player.isGameOver()) return;
+        if (player.isGameOver()) {
+            return;
+        }
         int position = 0;
         synchronized (this.playerPositions) {
             if (!this.playerPositions.contains(player)) {
@@ -533,8 +556,8 @@ public class RunningGameState extends AbstractGameState implements
                     }
                 }
             }
-            position = this.playerPositions.indexOf(player)+1;
-            logger.info("Game over for " + player + " (position: #" + position+ ")");
+            position = this.playerPositions.indexOf(player) + 1;
+            logger.info("Game over for " + player + " (position: #" + position + ")");
         }
         player.setGameOver(position);
         PlayerGameOverMessage pgom = new PlayerGameOverMessage();

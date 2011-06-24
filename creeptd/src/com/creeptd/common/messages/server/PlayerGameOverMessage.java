@@ -35,7 +35,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.common.messages.server;
 
-import com.creeptd.common.messages.MessageUtil;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -66,6 +66,7 @@ public class PlayerInGame {
     private long anticheatLastTick = 300L;
     private boolean connected = true;
     private int gameOverPosition = 0;
+    private boolean asynchronous;
 
     private static enum AnticheatType {
         CREDIT, INCOME
@@ -170,6 +171,14 @@ public class PlayerInGame {
 
     public void setConnected(boolean connected) {
         this.connected = connected;
+    }
+
+    public boolean isAsynchronous() {
+        return asynchronous;
+    }
+
+    public void setAsynchronous(boolean asynchronous) {
+        this.asynchronous = asynchronous;
     }
 
     @Override

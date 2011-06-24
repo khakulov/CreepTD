@@ -72,7 +72,7 @@ public class ClientOutThread extends Thread {
                     logger.warn("Client " + this.client.getId() + ": disconnected... null");
                     this.client.disconnect();
                 } else {
-                    // logger.info("Send: " + message.getMessageString());
+                    // logger.info("Send to "+this.client+": " + message.getMessageString());
                     this.printWriter.println(message.getMessageString());
                     this.printWriter.flush();
                 }

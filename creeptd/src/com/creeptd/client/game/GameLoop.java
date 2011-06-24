@@ -106,6 +106,7 @@ public class GameLoop extends Thread implements MessageListener, Constants {
         this.network = network;
         this.network.addListener(this);
         this.soundManagement = soundManagement;
+        this.network.getQueue().clear(); // Clear the queue, discard previous messages
         this.network.makeContact();
         GameContext.setPositionCounter(0);
     }

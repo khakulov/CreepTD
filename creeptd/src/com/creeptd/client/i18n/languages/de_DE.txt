@@ -99,6 +99,7 @@ Game of=Spiel von
 (not set)=(keins)
 has joined!=ist beigetreten!
 has left...=ist gegangen...
+is asynchronous...=ist asynchron...
 Sorry, the game could not be started.=Sorry, das Spiel konnte nicht gestartet werden.
 Sorry=Sorry
 You have been kicked by the creator of the game.=Du wurdest vom Ersteller des Spiels gekickt.
