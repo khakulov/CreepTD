@@ -83,7 +83,7 @@ public class GameInfoPanel extends JPanel implements ContextListener {
 
         Map<String,String> args = new HashMap<String,String>();
         args.put("t", "...");
-        incomeCounter = new JLabel(__("New income in %t%", args));
+        incomeCounter = new JLabel(_("New income in %t%", args));
         incomeCounter.setForeground(Color.WHITE);
         incomeCounter.setBounds(5, 5, 233, 15);
 
@@ -201,7 +201,7 @@ public class GameInfoPanel extends JPanel implements ContextListener {
     public void setIncomeCounter(int counter) {
         Map<String,String> args = new HashMap<String,String>();
         args.put("t", counter+"");
-        this.incomeCounter.setText(__("New income in %t%", args));
+        this.incomeCounter.setText(_("New income in %t%", args));
 
     }
 

@@ -480,7 +480,7 @@ public class LoginPanel extends GameScreen implements MessageListener {
         loginMessage.setUsername(name.getText());
         this.getCore().setPlayerName(name.getText());
         loginMessage.setPassword(Password.encodePassword(String.valueOf(password.getPassword())));
-        loginMessage.setMacaddress(getCore().getNetwork().getMACAddress());
+        loginMessage.setUid(getCore().getUid());
         getCore().getNetwork().sendMessage(loginMessage);
         loginButton.setEnabled(false);
     }

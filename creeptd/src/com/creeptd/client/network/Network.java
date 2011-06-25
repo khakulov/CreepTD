@@ -135,17 +135,12 @@ public class Network implements MessageSubject {
             // wait for messages
             this.clientWatcher = new ClientWatcher(this, this.socket.getInputStream());
             this.clientWatcher.start();
-
             this.connected = true;
-
             this.macaddress = byteArrayToHexString(NetworkInterface.getByInetAddress(this.socket.getLocalAddress()).getHardwareAddress());
-
-
             if (this.macaddress == null) {
                 this.macaddress = String.valueOf((int) Math.round(Math.random() * 10000000) + 1000000);
             }
-
-            logger.info("MAC: " + this.macaddress);
+            // logger.info("MAC: " + this.macaddress);
         } catch (ConnectException e) {
             return false;
         } catch (UnknownHostException e) {

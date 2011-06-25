@@ -46,6 +46,22 @@ import java.util.logging.Logger;
  * @author Daniel
  */
 public class JNLP {
+
+    /**
+     * Check if JNLP functionality is available.
+     *
+     * @return true if available, else false
+     */
+    public static boolean isAvailable() {
+        try {
+            Class.forName("javax.jnlp.ServiceManager");
+            javax.jnlp.PersistenceService ps = (javax.jnlp.PersistenceService) javax.jnlp.ServiceManager.lookup("javax.jnlp.PersistenceService");
+        } catch (Exception ex) {
+            System.out.println("JNLP.PersistenceService is not available: "+ex);
+            return false;
+        }
+        return true;
+    }
     
     /**
      * Get persistent value.

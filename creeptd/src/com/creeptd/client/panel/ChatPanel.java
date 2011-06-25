@@ -149,8 +149,8 @@ public class ChatPanel extends JPanel {
      * @param newMessage
      *            message of player
      */
-    public final void setMessage(String nickname, String newMessage) {
-        this.chatdialog.sendChatText(nickname, newMessage, gamepanel.getCore());
+    public final void addMessage(String nickname, String newMessage, boolean action) {
+        this.chatdialog.sendChatText(nickname, newMessage, action, gamepanel.getCore());
         managementSound = gamepanel.getCore().getSoundManagement();
         if (managementSound != null) {
             managementSound.clapSound();

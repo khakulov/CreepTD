@@ -253,9 +253,9 @@ public class RunningGameState extends AbstractGameState implements
             return this;
         }
         // Transfer creep only if the voting (50%+ rule) is successful
-        if (voteCreepEscaped(m.getRoundId(), from.getClient().getId(), m.getCreepId())) {
+        if (voteCreepEscaped(m.getCreepId(), m.getTransferCount())) {
             // Close the voting on success
-            closeCreepEscapedVote(m.getRoundId(), from.getClient().getId(), m.getCreepId());
+            closeCreepEscapedVote(m.getCreepId(), m.getTransferCount());
 
             // Send player loses life message only, if there are lifes left
             if (from.getLifes() > 0) {
@@ -273,6 +273,7 @@ public class RunningGameState extends AbstractGameState implements
                 pllm.setCreatorId(creator.getClient().getId());
                 pllm.setCreepType(m.getCreepType());
                 pllm.setCreepId(m.getCreepId());
+                pllm.setLifes(from.getLifes());
                 this.getGame().sendAll(pllm);
 
                 // If player is dead, sent game over message to all clients
@@ -297,6 +298,7 @@ public class RunningGameState extends AbstractGameState implements
                 tcm.setCreepId(m.getCreepId());
                 tcm.setCreepType(m.getCreepType());
                 tcm.setCreepHealth(m.getCreepHealth());
+                tcm.setTransferCount(m.getTransferCount()+1);
                 this.getGame().sendAll(tcm);
             }
         }
@@ -306,26 +308,27 @@ public class RunningGameState extends AbstractGameState implements
     /**
      * Vote for taking a life from a player.
      *
-     * @param roundId The current round
-     * @param playerId The player losing the life
      * @param creepId The creep comming through
+     * @param transferCount The transfer count for this creep
      * @return true on voting success, else false
      */
-    private boolean voteCreepEscaped(long roundId, int playerId, int creepId) {
-        String key = roundId + ":" + playerId + ":" + creepId;
-        Integer count = this.lifeTakenVoting.get(key);
-        if (count == null) {
-            count = 0;
-        } else if (count == -1) {
-            return false; // Voting has already ended
-        }
-        count++;
-        if (count > (int) (this.getGame().numConnectedPlayers() / 2)) { // 50%+ voting
-            this.lifeTakenVoting.put(key, new Integer(-1));
-            return true;
-        } else {
-            this.lifeTakenVoting.put(key, count);
-            return false;
+    private boolean voteCreepEscaped(int creepId, int transferCount) {
+        String key = creepId+":"+transferCount;
+        synchronized (this.lifeTakenVoting) {
+            Integer count = this.lifeTakenVoting.get(key);
+            if (count == null) {
+                count = 0;
+            } else if (count == -1) {
+                return false; // Voting has already ended
+            }
+            count++;
+            if (count > (int) (this.getGame().numConnectedPlayers() / 2)) { // 50%+ voting
+                this.lifeTakenVoting.put(key, new Integer(-1));
+                return true;
+            } else {
+                this.lifeTakenVoting.put(key, count);
+                return false;
+            }
         }
     }
 
@@ -335,13 +338,14 @@ public class RunningGameState extends AbstractGameState implements
      * All entries, that are left at the end and are not set to -1 (closed),
      * give us a decent hint about the asynchronity of the game.
      *
-     * @param roundId The round's id
-     * @param playerId The player losing the life
      * @param creepId The creep comming through
+     * @param transferCount The transfer count of this creep
      */
-    private void closeCreepEscapedVote(long roundId, int playerId, int creepId) {
-        String key = roundId + ":" + playerId + ":" + creepId;
-        this.lifeTakenVoting.put(key, new Integer(-1));
+    private void closeCreepEscapedVote(int creepId, int transferCount) {
+        String key = creepId+":"+transferCount;
+        synchronized (this.lifeTakenVoting) {
+            this.lifeTakenVoting.put(key, new Integer(-1));
+        }
     }
 
     /**

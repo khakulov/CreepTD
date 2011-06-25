@@ -103,6 +103,8 @@ public abstract class AbstractCreep implements Creep {
     private AffineTransform translation;
     private AffineTransform rotation;
     private double deltaChanged = 0;
+    /** Number of done transfers */
+    private int transferCount = 0;
 
     /**
      * @return the id
@@ -162,6 +164,14 @@ public abstract class AbstractCreep implements Creep {
      */
     public synchronized void setSlowTime(int slowTime) {
         this.slowTime = slowTime;
+    }
+
+    public int getTransferCount() {
+        return transferCount;
+    }
+
+    public void setTransferCount(int transferCount) {
+        this.transferCount = transferCount;
     }
 
     /**
@@ -494,14 +504,15 @@ public abstract class AbstractCreep implements Creep {
                 if (this.health > 0) {
                     logger.info("Voting to remove life from " + context.getPlayerName() + ": original sender=" + this.getSenderId()+ ", creep=" + this.getType().getName()+" ("+this.getID()+")");
                     // Send a life taken message (fromPlayer loses a life)
-                    CreepEscapedMessage ltm = new CreepEscapedMessage();
-                    ltm.setCreepId(this.getID());
-                    ltm.setCreepType(this.getType().name());
-                    ltm.setFromPlayerId(this.getPlayerID());
-                    ltm.setCreatorId(this.getSenderId());
-                    ltm.setCreepHealth(this.getHealth());
-                    ltm.setRoundId(context.getGameLoop().getRoundId());
-                    context.getNetwork().sendMessage(ltm);
+                    CreepEscapedMessage cem = new CreepEscapedMessage();
+                    cem.setCreepId(this.getID());
+                    cem.setCreepType(this.getType().name());
+                    cem.setFromPlayerId(this.getPlayerID());
+                    cem.setCreatorId(this.getSenderId());
+                    cem.setCreepHealth(this.getHealth());
+                    cem.setRoundId(context.getGameLoop().getRoundId());
+                    cem.setTransferCount(this.getTransferCount());
+                    context.getNetwork().sendMessage(cem);
                 } else {
                     SoundManagement sm = this.context.getSoundManagement();
                     if (sm != null) {

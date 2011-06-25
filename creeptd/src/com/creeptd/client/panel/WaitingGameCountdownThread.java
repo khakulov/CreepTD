@@ -74,7 +74,7 @@ public class WaitingGameCountdownThread extends Thread {
             }
             Map<String,String> args = new HashMap<String,String>();
             args.put("n", i+"");
-            m.setMessage(__("in %n%...", args));
+            m.setMessage(_("in %n%...", args));
             core.getNetwork().sendMessage(m);
         }
         core.getNetwork().sendMessage(new StartGameRequestMessage());

@@ -109,9 +109,9 @@ public class InTranslator {
             messageString = "";
             messageString = this.bufferedReader.readLine();
         }
-        if (messageString.length() < 1) {
-            System.out.println(messageString);
-            messageString = "I catched a verry silly bug!";
+        if (messageString == null || messageString.length() < 1) {
+            System.out.println("Got an empty message from readLine(): "+messageString);
+            return null;
         }
 
         logger.info("Received: " + messageString);

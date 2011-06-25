@@ -383,8 +383,8 @@ public class PlayerInGame {
         /*
          * KICK
          */
-        state.getGame().sendAll(new ServerChatMessage("Server", "<span style=\"color:red;\">" + this.getClient().getPlayerModel().getName() + " was kicked by <b>System</b></span>", false));
-        state.getGame().sendAll(new ServerChatMessage(this.getClient().getPlayerModel().getName(), "has left...", true));
+        state.getGame().sendAll(new ServerChatMessage("Server", "<b>" + this.getClient().getPlayerModel().getName() + "</b> was kicked by <b>Server</b>"));
+        // state.getGame().sendAll(new ServerChatMessage(this.getClient().getPlayerModel().getName(), "has left..."));
         // TODO state.removeClient(this.getClient(), "Kick");
         this.getClient().disconnect();
 

@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
  *
  */
 public class TransferCreepMessage extends RoundMessage implements GameMessage {
-    private static final String REG_EXP = "CREEP_TRANSFERED\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s\"([^\"]+)\"\\s([0-9]+)";
+    private static final String REG_EXP = "CREEP_TRANSFERED\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s\"([^\"]+)\"\\s([0-9]+)\\s([0-9]+)";
     /**
      * pattern for regular expression.
      */
@@ -57,6 +57,7 @@ public class TransferCreepMessage extends RoundMessage implements GameMessage {
     private int creepId;
     private String creepType;
     private int creepHealth;
+    private int transferCount;
 
     /**
      * Returns a hash code for this object.
@@ -64,7 +65,7 @@ public class TransferCreepMessage extends RoundMessage implements GameMessage {
      */
     @Override
     public int hashCode() {
-        return super.hashCode() ^ this.getPlayerId() ^ this.fromId ^ this.creatorId ^ this.creepId ^ this.creepType.hashCode() ^ this.creepHealth;
+        return super.hashCode() ^ this.getPlayerId() ^ this.fromId ^ this.creatorId ^ this.creepId ^ this.creepType.hashCode() ^ this.creepHealth ^ this.transferCount;
     }
 
     /**
@@ -120,13 +121,21 @@ public class TransferCreepMessage extends RoundMessage implements GameMessage {
     public void setCreepHealth(int creepHealth) {
         this.creepHealth = creepHealth;
     }
+    
+    public int getTransferCount() {
+        return transferCount;
+    }
+
+    public void setTransferCount(int transferCount) {
+        this.transferCount = transferCount;
+    }
 
     /**
      * @return the message as String.
      */
     @Override
     public String getMessageString() {
-        return "CREEP_TRANSFERED "+this.getRoundId()+" "+this.playerId+" "+this.fromId+" "+this.creatorId+" "+this.creepId+" \""+this.creepType+"\" "+this.creepHealth;
+        return "CREEP_TRANSFERED "+this.getRoundId()+" "+this.playerId+" "+this.fromId+" "+this.creatorId+" "+this.creepId+" \""+this.creepType+"\" "+this.creepHealth+" "+this.transferCount;
     }
 
     /**
@@ -143,6 +152,7 @@ public class TransferCreepMessage extends RoundMessage implements GameMessage {
             this.setCreepId(Integer.parseInt(matcher.group(5)));
             this.setCreepType(matcher.group(6));
             this.setCreepHealth(Integer.parseInt(matcher.group(7)));
+            this.setTransferCount(Integer.parseInt(matcher.group(8)));
         }
     }
 
@@ -158,6 +168,6 @@ public class TransferCreepMessage extends RoundMessage implements GameMessage {
             return false;
         }
         TransferCreepMessage m = (TransferCreepMessage) o;
-        return this.getRoundId() == m.getRoundId() && this.playerId == m.getPlayerId() && this.fromId == m.getFromId() && this.creatorId == m.getCreatorId() && this.creepId == m.getCreepId() && this.creepType.equals(m.getCreepType()) && this.creepHealth == m.getCreepHealth();
+        return this.getRoundId() == m.getRoundId() && this.playerId == m.getPlayerId() && this.fromId == m.getFromId() && this.creatorId == m.getCreatorId() && this.creepId == m.getCreepId() && this.creepType.equals(m.getCreepType()) && this.creepHealth == m.getCreepHealth() && this.transferCount == m.getTransferCount();
     }
 }

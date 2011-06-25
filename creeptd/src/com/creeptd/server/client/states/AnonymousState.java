@@ -113,6 +113,7 @@ public class AnonymousState extends AbstractClientState {
                 return this;
             }
             loginResponseMessage.setResponseType(Constants.ResponseType.ok);
+            this.getClient().setUid(loginRequestMessage.getUid());
             this.getClient().send(loginResponseMessage);
             return new AuthenticatedState(this.getClient(), this);
 
@@ -129,12 +130,12 @@ public class AnonymousState extends AbstractClientState {
     }
 
     @Override
-    public void enter() {
+    public void enter(AbstractClientState oldState) {
         // do nothing
     }
 
     @Override
-    public void leave() {
+    public void leave(AbstractClientState newState) {
         // do nothing
     }
 

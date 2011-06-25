@@ -154,37 +154,34 @@ public class PlayerChat extends JEditorPane {
      * Send a Chat MSG.
      *
      */
-    public void sendChatText(String from, String msg, Core core) {
-        String From = "";
-        String Date = "";
-        if (from.equalsIgnoreCase("server")) {
-            From = "<span style='color:#C0C0C0;'>&#60;" + from + "&#62;: </span>";
-        } else if (core.getPlayerName().equalsIgnoreCase(from)) {
-            From = "<span style='color:#CC0000; font-weight:700'>&#60;" + from + "&#62;: </span>";
-            msg = this.escapeHTML(msg);
-        } else {
-            From = "<span style='color:#FFFF00; font-weight:700'>&#60;" + from + "&#62;: </span>";
-            msg = this.escapeHTML(msg);
-        }
+    public void sendChatText(String from, String msg, boolean action, Core core) {
+        String s = "";
         if (msg.length() > 200) {
             msg = msg.substring(0, 200);
         }
-        msg = addSmileys(msg, 10);
-        
+        if (from.equalsIgnoreCase("Server")) {
+            s = "<span style=\"color:#C0C0C0\">"+msg+"</span>"; // Server may send HTML
+        } else {
+            String color = core.getPlayerName().equalsIgnoreCase(from) ? "FF0000" : "00FF00";
+            if (action) s += "<i>";
+            s += "<span style=\"color:#"+color+"\"><b>" + from + "</b></span>";
+            if (!action) s += "»";
+            s += " "+addSmileys(this.escapeHTML(msg), 10);
+            if (action) s += "</i>";
+        }
         HTMLDocument doc = (HTMLDocument) this.getDocument();
         boolean doScroll = scroller.getVerticalScrollBar().getHeight() == 0 || scroller.getVerticalScrollBar().getValue() + scroller.getVerticalScrollBar().getHeight() + 5 >= scroller.getVerticalScrollBar().getMaximum();
         try {
             if (this.getShowDatum()) {
                 DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT);
-                Date = "<span style='color:#C0C0C0;'>" + df.format(System.currentTimeMillis()) + "</span> ";
+                s = "<span style=\"color:#C0C0C0;\">" + df.format(System.currentTimeMillis()) + "</span> "+s;
             }
-            ((HTMLEditorKit) this.getEditorKit()).insertHTML(doc, doc.getLength(), "<div>" + Date + From + msg + "</div>", 0, 0, null);
+            ((HTMLEditorKit) this.getEditorKit()).insertHTML(doc, doc.getLength(), "<div>"+s+"</div>", 0, 0, null);
         } catch (IOException ex) {
             this.logger.warning(ex.toString());
         } catch (BadLocationException ex) {
             this.logger.warning(ex.toString());
         }
-
         if (doScroll) {
             this.setCaretPosition(doc.getLength());
         }

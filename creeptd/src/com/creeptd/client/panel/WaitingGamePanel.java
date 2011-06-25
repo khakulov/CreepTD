@@ -75,6 +75,8 @@ import com.creeptd.common.messages.server.ServerMessage;
 import com.creeptd.common.messages.server.StartGameMessage;
 import com.creeptd.common.messages.server.StartGameResponseMessage;
 
+import java.util.HashMap;
+import java.util.Map;
 import static com.creeptd.client.i18n.Translator.*;
 
 /**
@@ -379,9 +381,6 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             DefaultListModel dl = (DefaultListModel) this.playerlist.getModel();
 
             dl.addElement(pjm.getPlayerName());
-
-            logger.info("PJM received");
-
             if (pjm.getPlayerName().equalsIgnoreCase(getCore().getPlayerName())) {
                 players.put(pjm.getPlayerId(), pjm.getPlayerName());
                 this.getCore().setPlayerId(pjm.getPlayerId());
@@ -394,8 +393,9 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             if (managementSound != null) {
                 managementSound.hornbeepSound();
             }
-            this.chatdialog.sendChatText("System", pjm.getPlayerName() + "[" + pjm.getPlayerExperience() + "/" + pjm.getPlayerElopoints() + "]" + " "+_("has joined!"), getCore());
-
+            Map<String,String> args = new HashMap<String,String>();
+            args.put("name", pjm.getPlayerName() + "[" + pjm.getPlayerExperience() + "/" + pjm.getPlayerElopoints() + "]");
+            this.chatdialog.sendChatText("Server", _("<b>%name%</b> has joined!", args), false, getCore());
             changeButton();
 
         }
@@ -455,7 +455,9 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             }
             dl.removeElement(pqm.getPlayerName());
             removePlayer(pqm.getPlayerName());
-            this.chatdialog.sendChatText("System", pqm.getPlayerName() + " "+_("has left..."), getCore());
+            Map<String,String> args = new HashMap<String,String>();
+            args.put("name", pqm.getPlayerName());
+            this.chatdialog.sendChatText("Server", _("<b>%name%</b> has left..."), false, getCore());
         }
 
         if (m instanceof ServerChatMessage) {
@@ -464,7 +466,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             if (scm.getTranslate()) {
                 msg = _(msg);
             }
-            this.chatdialog.sendChatText(scm.getPlayerName(), msg, getCore());
+            this.chatdialog.sendChatText(scm.getPlayerName(), msg, scm.isAction(), getCore());
 
             if (managementSound != null) {
                 managementSound.clapSound();

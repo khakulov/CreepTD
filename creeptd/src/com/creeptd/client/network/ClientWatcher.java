@@ -83,10 +83,13 @@ public class ClientWatcher extends Thread {
     @Override
     public void run() {
         while (!interrupt) {
-
             try {
                 final ServerMessage m = inTrans.getNextMessage();
-
+                if (m == null) {
+                    this.shutdown();
+                    errorHandling();
+                    continue;
+                }
                 if (m instanceof GameMessage) {
                     network.addGameMessage((GameMessage) m);
                 } else if (m instanceof PingMessage) {

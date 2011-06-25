@@ -263,7 +263,7 @@ public class Translator {
      * @param replacements Place holder key/value map
      * @return Translated text
      */
-    public static String __(String text, Map<String,String> replacements) {
+    public static String _(String text, Map<String,String> replacements) {
         text = _(text);
         Iterator<String> i = replacements.keySet().iterator();
         while (i.hasNext()) {

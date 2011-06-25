@@ -48,13 +48,14 @@ import com.creeptd.common.messages.MessageUtil;
  */
 public class ServerChatMessage extends ServerMessage {
 
-    private static final String REG_EXP = "MSG\\s\"([^\"]+)\"\\s\"([^\"]+)\"\\s(0|1)";
+    private static final String REG_EXP = "MSG\\s\"([^\"]+)\"\\s\"([^\"]+)\"\\s(0|1)\\s(0|1)";
     /**
      * pattern for regular expression.
      */
     public static final Pattern PATTERN = Pattern.compile(REG_EXP);
     private String playerName;
     private String message;
+    private Boolean action = false;
     private Boolean translate = false;
 
     /**
@@ -68,11 +69,10 @@ public class ServerChatMessage extends ServerMessage {
      * @param playerName the name of the sender
      * @param message the message
      */
-    public ServerChatMessage(String playerName, String message, Boolean translate) {
+    public ServerChatMessage(String playerName, String message) {
         super();
         this.playerName = playerName;
         this.message = message;
-        this.translate = translate;
     }
 
     /**
@@ -103,6 +103,14 @@ public class ServerChatMessage extends ServerMessage {
         this.message = message;
     }
 
+    public boolean isAction() {
+        return action;
+    }
+
+    public void setAction(boolean action) {
+        this.action = action;
+    }
+
     public Boolean getTranslate() {
         return translate;
     }
@@ -116,7 +124,7 @@ public class ServerChatMessage extends ServerMessage {
      */
     @Override
     public String getMessageString() {
-        return "MSG \"" + MessageUtil.prepareToSend(this.playerName) + "\" \"" + MessageUtil.prepareToSend(this.message) + "\" "+(this.translate ? "1" : "0");
+        return "MSG \"" + MessageUtil.prepareToSend(this.playerName) + "\" \"" + MessageUtil.prepareToSend(this.message) + "\" "+(this.action ? "1" : "0")+" "+(this.translate ? "1" : "0");
     }
 
     /**
@@ -128,32 +136,9 @@ public class ServerChatMessage extends ServerMessage {
         if (matcher.matches()) {
             this.setPlayerName(matcher.group(1));
             this.setMessage(matcher.group(2));
-            this.setTranslate(matcher.group(3).equals("1"));
+            this.setAction(matcher.group(3).equals("1"));
+            this.setTranslate(matcher.group(4).equals("1"));
         }
 
-    }
-
-    /**
-     * Returns true if o is a ServerChatMessage with the same contents
-     * as this one.
-     * @param o the object to compare to.
-     * @return true if o is equal to this object.
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof ServerChatMessage)) {
-            return false;
-        }
-        ServerChatMessage m = (ServerChatMessage) o;
-        return this.playerName.equals(m.getPlayerName()) && this.message.equals(m.getMessage()) && this.translate.equals(m.getTranslate());
-    }
-
-    /**
-     * Returns a hash code for this object.
-     * @return a hash code for this object.
-     */
-    @Override
-    public int hashCode() {
-        return this.playerName.hashCode() ^ this.message.hashCode() ^ this.translate.hashCode();
     }
 }

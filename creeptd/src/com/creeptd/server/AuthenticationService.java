@@ -229,7 +229,7 @@ public class AuthenticationService {
                 entityTransaction.begin();
                 player.setLastlogin(System.currentTimeMillis() / 1000L);
                 player.setIp(client.getIPAddress());
-                player.setMac(loginRequestMessage.getMacaddress());
+                player.setMac(loginRequestMessage.getUid());
                 entityManager.merge(player);
                 entityManager.flush();
                 entityTransaction.commit();
@@ -297,7 +297,7 @@ public class AuthenticationService {
 
     public static boolean isBanned(Client client, LoginRequestMessage loginRequestMessage) {
         EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
-        String queryString = QUERY_BANLIST + "('" + client.getIPAddress() + "', '" + loginRequestMessage.getMacaddress() + "')";
+        String queryString = QUERY_BANLIST + "('" + client.getIPAddress() + "', '" + loginRequestMessage.getUid() + "')";
         Query query = entityManager.createNativeQuery(queryString,
                 BlackList.class);
         List<?> resultList = query.getResultList();

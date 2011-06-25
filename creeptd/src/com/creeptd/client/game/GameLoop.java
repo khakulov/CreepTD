@@ -230,64 +230,69 @@ public class GameLoop extends Thread implements MessageListener, Constants {
 
         // The gameloop
         while (running) {
-            if (roundId > maxRoundId) {
-                Thread.yield();
-                continue;
-            }
-            if (maxRound_old != maxRoundId) {
-                if ((roundId + 1) < maxRound_old) {
-                    int skips = 0;
-                    while (((roundId + 1) < maxRound_old) && (skips < MAX_FRAME_SKIPS)) {
-                        gameUpdate();
-                        roundId++;
-                        skips++;
-                    }
-                    gameUpdate(); // updates the gamestate
-                    gameRender(); // paints new screen in a buffer
-                    gamePanel.getBoardPanel().getStrategy().show(); // draw buffer to screen
-                    roundId++;
+            try {
+                if (roundId > maxRoundId) {
+                    Thread.yield();
                     continue;
                 }
-                maxRound_old = maxRoundId;
-            }
-            gameUpdate(); // updates the gamestate
-            gameRender(); // paints new screen in a buffer
-            gamePanel.getBoardPanel().getStrategy().show(); // draw buffer to screen
-            roundId++;
-
-            afterTime = System.nanoTime();
-            timeDiff = afterTime - beforeTime;
-            sleepTime = (period - timeDiff) - overSleepTime;
-
-            if (sleepTime > 0) { // some time left in this cycle
-                try {
-                    Thread.sleep(sleepTime / 1000000L); // nano -> ms
-                } catch (InterruptedException ex) {
+                if (maxRound_old != maxRoundId) {
+                    if ((roundId + 1) < maxRound_old) {
+                        int skips = 0;
+                        while (((roundId + 1) < maxRound_old) && (skips < MAX_FRAME_SKIPS)) {
+                            gameUpdate();
+                            roundId++;
+                            skips++;
+                        }
+                        gameUpdate(); // updates the gamestate
+                        gameRender(); // paints new screen in a buffer
+                        gamePanel.getBoardPanel().getStrategy().show(); // draw buffer to screen
+                        roundId++;
+                        continue;
+                    }
+                    maxRound_old = maxRoundId;
                 }
-                overSleepTime = (System.nanoTime() - afterTime) - sleepTime;
-            } else { // sleepTime <= 0; frame took longer than the period
-                excess -= sleepTime; // store excess time value
-                overSleepTime = 0L;
-
-                if (++noDelays >= NO_DELAYS_PER_YIELD) {
-                    Thread.yield(); // give another thread a chance to run
-                    noDelays = 0;
-                }
-            }
-
-            beforeTime = System.nanoTime();
-
-            /*
-             * If frame animation is taking too long, update the game state
-             * without rendering it, to get the updates/sec nearer to the
-             * required FPS.
-             */
-            int skips = 0;
-            while ((excess > period) && (skips < MAX_FRAME_SKIPS)) {
-                excess -= period;
-                gameUpdate(); // update state but don't render
+                gameUpdate(); // updates the gamestate
+                gameRender(); // paints new screen in a buffer
+                gamePanel.getBoardPanel().getStrategy().show(); // draw buffer to screen
                 roundId++;
-                skips++;
+
+                afterTime = System.nanoTime();
+                timeDiff = afterTime - beforeTime;
+                sleepTime = (period - timeDiff) - overSleepTime;
+
+                if (sleepTime > 0) { // some time left in this cycle
+                    try {
+                        Thread.sleep(sleepTime / 1000000L); // nano -> ms
+                    } catch (InterruptedException ex) {
+                    }
+                    overSleepTime = (System.nanoTime() - afterTime) - sleepTime;
+                } else { // sleepTime <= 0; frame took longer than the period
+                    excess -= sleepTime; // store excess time value
+                    overSleepTime = 0L;
+
+                    if (++noDelays >= NO_DELAYS_PER_YIELD) {
+                        Thread.yield(); // give another thread a chance to run
+                        noDelays = 0;
+                    }
+                }
+
+                beforeTime = System.nanoTime();
+
+                /*
+                 * If frame animation is taking too long, update the game state
+                 * without rendering it, to get the updates/sec nearer to the
+                 * required FPS.
+                 */
+                int skips = 0;
+                while ((excess > period) && (skips < MAX_FRAME_SKIPS)) {
+                    excess -= period;
+                    gameUpdate(); // update state but don't render
+                    roundId++;
+                    skips++;
+                }
+            } catch (Exception ex) {
+                logger.severe("GameLoop.run caught a serious error: "+ex);
+                ex.printStackTrace();
             }
         }
     }
@@ -356,7 +361,7 @@ public class GameLoop extends Thread implements MessageListener, Constants {
             if (scm.getTranslate()) {
                 msg = _(msg);
             }
-            gamePanel.getChatPanel().setMessage(scm.getPlayerName(), msg);
+            gamePanel.getChatPanel().addMessage(scm.getPlayerName(), msg, scm.isAction());
         }
         if (m instanceof RoundMessage) {
             maxRoundId = ((RoundMessage) m).getRoundId();
@@ -389,7 +394,6 @@ public class GameLoop extends Thread implements MessageListener, Constants {
             if (gc.isDead()) {
                 deadCount++;
 
-                // ?
                 for (Tower t : gc.getTowers()) {
                     t.setCoolDownNow(t.getCoolDown() - 1);
                 }

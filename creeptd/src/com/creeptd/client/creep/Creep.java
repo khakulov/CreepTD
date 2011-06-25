@@ -197,4 +197,7 @@ public interface Creep {
      * @return the total segment steps moved
      */
     int getTotalSegmentSteps();
+    
+    int getTransferCount();
+    void setTransferCount(int transferCount);
 }

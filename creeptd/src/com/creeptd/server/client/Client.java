@@ -78,6 +78,10 @@ public class Client {
     private Socket socket;
     /** The player's database model */
     private Player playerModel = null;
+    /** The UID */
+    private String uid = null;
+    /** Ingame flag */
+    private boolean inGame = false;
 
     /**
      * Get a client by id.
@@ -138,6 +142,22 @@ public class Client {
     }
 
     /**
+     * Get the UID.
+     * @return The UID
+     */
+    public String getUid() {
+        return uid;
+    }
+
+    /**
+     * Set the UID.
+     * @param uid The UID
+     */
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    /**
      * Receive a message from the client.
      *
      * @param message The recevied message or null, if disconnected
@@ -175,12 +195,13 @@ public class Client {
         }
         // Leave the old state
         if (this.clientState != null) {
-            this.clientState.leave();
+            this.clientState.leave(newState);
         }
+        AbstractClientState oldState = this.clientState;
         this.clientState = newState;
         // Enter the new state
         if (this.clientState != null) {
-            this.clientState.enter();
+            this.clientState.enter(oldState);
         }
     }
 
@@ -269,5 +290,13 @@ public class Client {
      */
     public Player getPlayerModel() {
         return playerModel;
+    }
+
+    public boolean isInGame() {
+        return inGame;
+    }
+
+    public void setInGame(boolean inGame) {
+        this.inGame = inGame;
     }
 }

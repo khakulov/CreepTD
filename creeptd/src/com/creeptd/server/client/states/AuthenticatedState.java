@@ -121,11 +121,11 @@ public class AuthenticatedState extends AbstractClientState {
             handleChatMessage(((ClientChatMessage) message).getMessage());
             return this;
         }
-        if (message instanceof RefreshMessage) {
+        /* if (message instanceof RefreshMessage) {
             this.getClient().send(Lobby.getCompletePlayersMessage());
             this.getClient().send(GameManager.getGamesMessage());
             return this;
-        }
+        } */
         if (message instanceof ScoreRequestMessage) {
             ScoreRequestMessage requestMessage = (ScoreRequestMessage) message;
             ScoreResponseMessage responseMessage = HighscoreService.getScoreMessage(requestMessage.getPlayerName());
@@ -196,7 +196,7 @@ public class AuthenticatedState extends AbstractClientState {
                 return;
             }
         }
-        Lobby.sendAll(new ServerChatMessage(getClient().getPlayerModel().getName(), message, false));
+        Lobby.sendAll(new ServerChatMessage(getClient().getPlayerModel().getName(), message));
     }
 
     /**
@@ -217,29 +217,39 @@ public class AuthenticatedState extends AbstractClientState {
                 if (user != null) {
                     String messageStr = "<b>" + player.getName() + " -&gt; " + user.getName() + ": " + msgSplit[1] + "</b>";
                     if (!Lobby.sendDirectMessage(this.getClient(), user.getName(), messageStr) && !GameManager.sendDirectMessage(this.getClient(), user.getName(), messageStr)) {
-                        sendSystemMessage(user.getName() + " is not online.");
+                        sendServerMessage("<b>"+user.getName() + "</b> is not online.");
                     }
                 } else {
-                    sendSystemMessage(msgSplit[0] + " not exist.");
+                    sendServerMessage("<b>"+msgSplit[0] + "</b> is not known.");
                 }
             }
             return true;
         }
-        if ("/msg".equalsIgnoreCase(command) && player.hasPermission(Permission.MOD_CHAT)) {
-            message = "<html><b>" + message + "</b></html>";
-            Lobby.sendAll(new ServerChatMessage("System", message, false));
+        if ("/me".equalsIgnoreCase(command)) {
+            ServerChatMessage scm = new ServerChatMessage();
+            scm.setPlayerName(this.getClient().getPlayerName());
+            scm.setMessage(message);
+            scm.setAction(true);
+            Lobby.sendAll(scm);
+            return true;
+        }
+        if ("/global".equalsIgnoreCase(command) && player.hasPermission(Permission.MOD_GLOBAL)) {
+            ServerChatMessage scm = new ServerChatMessage();
+            scm.setPlayerName("Server");
+            scm.setMessage(message);
+            Lobby.sendGlobal(scm);
             return true;
         }
         if ("/kick".equalsIgnoreCase(command) && player.hasPermission(Permission.KICK)) {
             Player targetPlayer = AuthenticationService.getPlayer(message);
             if (targetPlayer != null) {
                 if (targetPlayer.hasPermission(Permission.KICK_IMMUN)) {
-                    sendSystemMessage(message + " user can't be kicked.");
+                    sendServerMessage(message + " user can't be kicked.");
                 } else {
                     Lobby.kickClient(targetPlayer, this.getClient(), false, false);
                 }
             } else {
-                sendSystemMessage(message + " user not found.");
+                sendServerMessage(message + " user not found.");
             }
             return true;
         }
@@ -247,12 +257,12 @@ public class AuthenticatedState extends AbstractClientState {
             Player targetPlayer = AuthenticationService.getPlayer(message);
             if (targetPlayer != null) {
                 if (targetPlayer.hasPermission(Permission.BAN_IMMUNE)) {
-                    sendSystemMessage(targetPlayer.getName() + " user can't be banned.");
+                    sendServerMessage(targetPlayer.getName() + " user can't be banned.");
                 } else {
                     Lobby.kickClient(targetPlayer, this.getClient(), true, true);
                 }
             } else {
-                sendSystemMessage(message + " user not found.");
+                sendServerMessage(message + " user not found.");
             }
             return true;
         }
@@ -261,7 +271,7 @@ public class AuthenticatedState extends AbstractClientState {
             if (targetPlayer != null) {
                 Lobby.unbanClient(targetPlayer, this.getClient());
             } else {
-                sendSystemMessage(message + " user not found.");
+                sendServerMessage(message + " user not found.");
             }
             return true;
         }
@@ -273,18 +283,26 @@ public class AuthenticatedState extends AbstractClientState {
      *
      * @param message The message
      */
-    private void sendSystemMessage(String message) {
-        this.getClient().send(new ServerChatMessage("System", message, false));
+    private void sendServerMessage(String message) {
+        this.getClient().send(new ServerChatMessage("Server", message));
     }
 
     @Override
-    public void enter() {
-        Lobby.add(this.getClient());
+    public void enter(AbstractClientState oldState) {
+        if (oldState != null && oldState instanceof InGameState) {
+            Lobby.setIngame(this.getClient(), false);
+        } else {
+            Lobby.add(this.getClient());
+        }
     }
 
     @Override
-    public void leave() {
-        Lobby.remove(this.getClient());
+    public void leave(AbstractClientState newState) {
+        if (newState != null && newState instanceof InGameState) {
+            Lobby.setIngame(this.getClient(), true);
+        } else {
+            Lobby.remove(this.getClient());
+        }
     }
 
     @Override

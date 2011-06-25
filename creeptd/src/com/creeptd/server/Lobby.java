@@ -93,9 +93,15 @@ public class Lobby {
         }
         client.send(GameManager.getGamesMessage());
         PlayersMessage pm = new PlayersMessage();
-        pm.addPlayer("add", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
+        pm.addPlayer("join", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
         sendAll(pm);
         logger.info("Client enters the lobby: " + client);
+    }
+
+    public static void setIngame(Client client, boolean inGame) {
+        PlayersMessage pm = new PlayersMessage();
+        pm.addPlayer((inGame) ? "ingame" : "outgame", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
+        sendAll(pm);
     }
 
     /**
@@ -115,7 +121,7 @@ public class Lobby {
             allClients.remove(clientKey);
         }
         PlayersMessage pm = new PlayersMessage();
-        pm.addPlayer("remove", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
+        pm.addPlayer("leave", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
         sendAll(pm);
         logger.info("Client left the lobby: " + client);
     }
@@ -144,6 +150,24 @@ public class Lobby {
         }
         synchronized (allClients) {
             for (Client c : allClients.values()) {
+                if (!c.isInGame()) {
+                    c.send(message);
+                }
+            }
+        }
+    }
+
+    /**
+     * Send a message to all clients in the game.
+     *
+     * @param message The message to send
+     */
+    public static void sendGlobal(ServerMessage message) {
+        if (message == null) {
+            throw new IllegalArgumentException("'message' was null");
+        }
+        synchronized (allClients) {
+            for (Client c : allClients.values()) {
                 c.send(message);
             }
         }
@@ -161,6 +185,9 @@ public class Lobby {
             for (Client client : allClients.values()) {
                 if (client.doCheck()) {
                     pm.addPlayer("add", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
+                    if (client.isInGame()) {
+                        pm.addPlayer("ingame", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
+                    }
                 } else {
                     logger.info("There has been a problem with client "+client+" (leaves lobby now)");
                     clientsToRemove.add(client);
@@ -187,7 +214,7 @@ public class Lobby {
         synchronized (allClients) {
             Client receiver = allClients.get(clientKey);
             if (receiver != null) {
-                ServerMessage sm = new ServerChatMessage("Server", message, false);
+                ServerMessage sm = new ServerChatMessage("Server", message);
                 receiver.send(sm);
                 sender.send(sm);
                 return true;
@@ -215,12 +242,12 @@ public class Lobby {
                     logger.info("Player kicked: "+client);
                     client.disconnect();
                     kicked = true;
-                    sendAll(new ServerChatMessage("Server", "<span style=\"color:red;\">" + client.getPlayerName() + " has been kicked by <b>" + adminClient.getPlayerName() + "</b></span>", false));
+                    sendAll(new ServerChatMessage("Server", "<b>" + client.getPlayerName() + "</b> has been kicked by <b>" + adminClient.getPlayerName() + "</b>"));
                 }
             }
         }
         if (!kicked) {
-            adminClient.send(new ServerChatMessage("Server", "<span style=\"color:red;\">"+player.getName()+" is not online!</span>", false));
+            adminClient.send(new ServerChatMessage("Server", "<b>"+player.getName()+"</b> is not online!"));
             return kicked;
         }
         if (doBanUser == true) {
@@ -232,14 +259,14 @@ public class Lobby {
                 entityManager.merge(player);
                 entityManager.flush();
                 entityTransaction.commit();
-                adminClient.send(new ServerChatMessage("Server", "<span style=\"color:red;\">" + player.getName() + " (Account) has been banned!</span>", false));
+                adminClient.send(new ServerChatMessage("Server", "<b>" + player.getName() + "</b> (Account) has been banned!"));
                 logger.debug("Player " + player.getName() + " / " + player.getMac() + " has been banned");
             } catch (Throwable t) {
                 logger.error("Error while banning player " + player.getName() + " / " + player.getMac(), t);
             }
         }
         if (doBanMac == true) {
-            adminClient.send(new ServerChatMessage("Server", "<span style=\"color:red;\">" + player.getName() + " (Mac) has been blacklisted!</span>", false));
+            adminClient.send(new ServerChatMessage("Server", "<b>" + player.getName() + "</b> (Mac) has been blacklisted!"));
             try {
                 EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
                 EntityTransaction entityTransaction = entityManager.getTransaction();
@@ -273,7 +300,7 @@ public class Lobby {
             BlackList blacklist = entityManager.find(BlackList.class, player.getMac());
             if (blacklist != null) {
                 entityManager.remove(blacklist);
-                adminClient.send(new ServerChatMessage("Server", "<span style=\"color:red;\">" + player.getName() + " (Mac) has been removed from the blacklist!</span>", false));
+                adminClient.send(new ServerChatMessage("Server", "<b>" + player.getName() + "</b> (Mac) has been removed from the blacklist!"));
                 retrun = true;
             }
             entityTransaction.commit();
@@ -289,7 +316,7 @@ public class Lobby {
             entityManager.merge(player);
             entityManager.flush();
             entityTransaction.commit();
-            adminClient.send(new ServerChatMessage("Server", "<span style=\"color:red;\">" + player.getName() + " (User) has been unbanned!</span>", false));
+            adminClient.send(new ServerChatMessage("Server", "<b>" + player.getName() + "</b> (User) has been unbanned!</span>"));
             logger.debug("Unbanned user " + player.getName() + " / " + player.getMac());
         } catch (Throwable t) {
             logger.error("Error while unbanning user " + player.getName() + " / " + player.getMac(), t);

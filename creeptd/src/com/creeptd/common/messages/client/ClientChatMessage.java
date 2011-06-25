@@ -53,12 +53,13 @@ public class ClientChatMessage extends ClientMessage
     /**
      * regular expression for message-parsing.
      */
-    private static final String REGEXP_SEND_MSG = "SEND_MSG\\s\"([^\"]+)\"";
+    private static final String REGEXP_SEND_MSG = "SEND_MSG\\s\"([^\"]+)\"\\s(0|1)";
     /**
      * pattern for regular expression.
      */
     public static final Pattern PATTERN = Pattern.compile(REGEXP_SEND_MSG);
     private String message;
+    private boolean action = false;
 
     /**
      * @return the message
@@ -73,6 +74,14 @@ public class ClientChatMessage extends ClientMessage
     public void setMessage(String message) {
         this.message = message;
     }
+    
+    public boolean isAction() {
+        return action;
+    }
+
+    public void setAction(boolean action) {
+        this.action = action;
+    }
 
     /**
      * Initializes Message with data from String.
@@ -84,6 +93,7 @@ public class ClientChatMessage extends ClientMessage
         Matcher matcher = PATTERN.matcher(messageString);
         if (matcher.matches()) {
             this.setMessage(matcher.group(1));
+            this.setAction(matcher.group(2).equals("1"));
         }
     }
 
@@ -92,6 +102,6 @@ public class ClientChatMessage extends ClientMessage
      */
     @Override
     public String getMessageString() {
-        return "SEND_MSG \"" + MessageUtil.prepareToSend(this.getMessage()) + "\"";
+        return "SEND_MSG \"" + MessageUtil.prepareToSend(this.getMessage()) + "\" "+(this.action ? "1" : "0");
     }
 }

@@ -93,9 +93,13 @@ public class InGameState extends AbstractClientState {
         }
         if (message instanceof GameMessage) {
             if (message instanceof ClientChatMessage) {
-                String[] msgSplit = ((ClientChatMessage) message).getMessage().split(" ");
+                ClientChatMessage ccm = (ClientChatMessage) message;
+                String[] msgSplit = ccm.getMessage().split(" ");
                 if (msgSplit.length >= 1) {
-                    if ((msgSplit.length > 2) && msgSplit[0].equalsIgnoreCase("/to") && !this.getClient().getPlayerModel().getName().equalsIgnoreCase(msgSplit[1])) {
+                    if (msgSplit[0].equalsIgnoreCase("/me")) {
+                        ccm.setAction(true);
+                        ccm.setMessage(ccm.getMessage().substring(4));
+                    } else if ((msgSplit.length > 2) && msgSplit[0].equalsIgnoreCase("/to") && !this.getClient().getPlayerModel().getName().equalsIgnoreCase(msgSplit[1])) {
                         authenticatedState.receiveMessage(message);
                         return this;
                     }
@@ -120,11 +124,13 @@ public class InGameState extends AbstractClientState {
     }
 
     @Override
-    public void enter() {
+    public void enter(AbstractClientState oldState) {
+        this.getClient().setInGame(true);
     }
 
     @Override
-    public void leave() {
+    public void leave(AbstractClientState newState) {
+        this.getClient().setInGame(false);
     }
 
     @Override

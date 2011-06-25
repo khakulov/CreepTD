@@ -47,7 +47,7 @@ public interface Constants {
     /**
      * Application version
      */
-    String VERSION = "0.8.5-5 beta";
+    String VERSION = "0.8.5-9 beta";
 
     /**
      * Default port for server-socket.
@@ -91,13 +91,15 @@ public interface Constants {
      */
     int CREDITS = 200;
     /**
-     * MAX 2 same Ips in game.
+     * Allow max N times the same IP in a game. You should not use this, because
+     * players from a home network won't be able to play against each other.
+     * Setting this to 0 will deactivate IP checking.
      */
-    boolean MUTIACCOUNT_IP_CHECK = false;
+    int MUTIACCOUNT_IP_CHECK = 0;
     /**
-     * MAX 1 same MAC adress in game.
+     * Disalow same UID in a game.
      */
-    boolean MUTIACCOUNT_MAC_CHECK = false;
+    boolean MUTIACCOUNT_UID_CHECK = true;
     /**
      * Lives at the beginning.
      */
@@ -120,7 +122,7 @@ public interface Constants {
      * message for another TIMEOUT milliseconds after that, it disconnects the
      * client.
      */
-    int TIMEOUT = 30 * 1000;
+    int TIMEOUT = 60 * 1000;
     /**
      * Creeps in einer Welle
      */
@@ -132,7 +134,7 @@ public interface Constants {
     /**
      * Zeitlicher Abstand zwischen 2 Creeps
      */
-    long CREEP_DELAY = 130000000;
+    long CREEP_DELAY = SEND_WAVE_DELAY*1000000;
     /**
      * Zeitlicher Abstand zwischen 2 Wellen
      */

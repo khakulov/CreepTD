@@ -91,10 +91,11 @@ public abstract class AbstractGameState {
     /**
      * Handle SEND_MESSAGE.
      *
-     * @param m
-     *            the message.
+     * @param m The message.
      */
     protected void handle(ClientChatMessage m, PlayerInGame player) {
-        this.game.sendAll(new ServerChatMessage(player.getClient().getPlayerModel().getName(), m.getMessage(), false));
+        ServerChatMessage msg = new ServerChatMessage(player.getClient().getPlayerModel().getName(), m.getMessage());
+        msg.setAction(m.isAction());
+        this.game.sendAll(msg);
     }
 }

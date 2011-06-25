@@ -243,7 +243,7 @@ public class RegisterPanel extends GameScreen implements MessageListener {
                 loginMessage.setVersion(Core.getVersion());
                 loginMessage.setUsername(lName.getText());
                 loginMessage.setPassword(String.valueOf(Password.encodePassword(new String(lPassword.getPassword()))));
-                loginMessage.setMacaddress(getCore().getNetwork().getMACAddress());
+                loginMessage.setUid(getCore().getNetwork().getMACAddress());
                 getCore().getNetwork().sendMessage(loginMessage);
             }
             if (response.getResponseType() == Constants.ResponseType.failed) {

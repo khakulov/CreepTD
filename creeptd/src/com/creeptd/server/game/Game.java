@@ -158,25 +158,42 @@ public class Game extends AbstractGame {
     public void sendAll(ServerMessage message) {
         synchronized (this.players) {
             for (PlayerInGame p : this.players) {
-                if (p.isConnected()) p.getClient().send(message);
+                if (p.isConnected()) {
+                    p.getClient().send(message);
+                }
             }
         }
     }
 
+    /**
+     * Check if a client is allowed to join this game.
+     * @param client The client to test
+     * @return true if allowed, else false
+     */
+    public boolean mayJoin(Client client) {
+        return isMultiaccount(client.getIPAddress(), client.getUid());
+    }
+
+    /**
+     * Add a player to the game.
+     * @param client
+     */
     public void addPlayer(Client client) {
         if (client == null) {
             throw new IllegalArgumentException("'newClient' was null!");
         }
         if (!(this.getGameState() instanceof WaitingGameState)) {
-            throw new RuntimeException("Game has started, no more players can join (State is " + this.getGameState()+")");
+            throw new RuntimeException("Game has started, no more players can join (State is " + this.getGameState() + ")");
         }
         if (this.players.size() >= this.getMaxPlayers()) {
             throw new RuntimeException("Maximum number of players reached, no more players can join");
         }
+        if (this.isMultiaccount(client.getIPAddress(), client.getUid())) {
+            throw new RuntimeException("You cannot join to a game twice.");
+        }
         if (this.findPlayer(client.getId()) != null) {
             return;
         }
-
         synchronized (this.players) {
             for (PlayerInGame p : this.players) {
                 client.send(new PlayerJoinedMessage(p.getClient().getPlayerModel().getName(), p.getClient().getId(), p.getClient().getPlayerModel().getExperience(), p.getClient().getPlayerModel().getElopoints()));
@@ -217,11 +234,13 @@ public class Game extends AbstractGame {
     public int numConnectedPlayers() {
         int num = 0;
         for (PlayerInGame p : this.players) {
-            if (p.isConnected()) num++;
+            if (p.isConnected()) {
+                num++;
+            }
         }
         return num;
     }
-    
+
     public List<PlayerInGame> getPlayers() {
         return new ArrayList<PlayerInGame>(this.players);
     }
@@ -427,31 +446,33 @@ public class Game extends AbstractGame {
     }
 
     /**
-     * The function check for multiaccounting.
+     * Check for multi account using.
      *
-     * @param ip
-     *            IP Address of Client
+     * @param ip Client's IP address
+     * @param uid Client's UID
+     * @return true if detected as multi account, else false
      */
-    public boolean check4Multi(String ip, String mac) {
-        /*
-         * TODO if (Constants.MUTIACCOUNT_IP_CHECK ||
-         * Constants.MUTIACCOUNT_MAC_CHECK) { boolean a = false; synchronized
-         * (this.clients) { for (PlayerInGame p : this.clients) { Client c =
-         * p.getClient(); // If the client from same Computer if
-         * (mac.equalsIgnoreCase(c.getPlayerModel().getMac()) &&
-         * Constants.MUTIACCOUNT_MAC_CHECK) {
-         * logger.warn("Multiaccounting detected. MAC: " + mac); return false; }
-         * // If the client from same IP if
-         * (ip.equalsIgnoreCase(c.getIPAddress()) &&
-         * Constants.MUTIACCOUNT_IP_CHECK) { if (a) {
-         * logger.warn("Multiaccounting detected. IP: " + ip); return false; } a
-         * = true; } } } }
-         */
-        return true;
+    public boolean isMultiaccount(String ip, String uid) {
+        if (Constants.MUTIACCOUNT_IP_CHECK > 0) {
+            int n=0; for (PlayerInGame p : this.getPlayers()) {
+                if (p.getClient().getIPAddress().equals(ip)) n++;
+            }
+            if (n >= Constants.MUTIACCOUNT_IP_CHECK) {
+                return false;
+            }
+        }
+        if (Constants.MUTIACCOUNT_UID_CHECK) {
+            for (PlayerInGame p : this.getPlayers()) {
+                if (p.getClient().getUid().equals(uid)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
     public String toString() {
-        return this.getGameId()+"/"+this.getGameName();
+        return this.getGameId() + "/" + this.getGameName();
     }
 }

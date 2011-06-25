@@ -192,9 +192,9 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         previewDescription.setForeground(Color.GREEN);
 
         Map<String,String> args = new HashMap<String,String>();
-        args.put("n", "2"); tPlayer.addItem(__("%n% players", args));
-        args.put("n", "3"); tPlayer.addItem(__("%n% players", args));
-        args.put("n", "4"); tPlayer.addItem(__("%n% players", args));
+        args.put("n", "2"); tPlayer.addItem(_("%n% players", args));
+        args.put("n", "3"); tPlayer.addItem(_("%n% players", args));
+        args.put("n", "4"); tPlayer.addItem(_("%n% players", args));
         //don't change the index
         tGamemode.addItem(_(Constants.Mode.ALLVSALL.toString()));
         tGamemode.addItem(_(Constants.Mode.SENDNEXT.toString()));

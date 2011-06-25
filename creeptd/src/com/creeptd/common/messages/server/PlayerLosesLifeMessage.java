@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
  */
 public class PlayerLosesLifeMessage extends RoundMessage implements GameMessage {
 
-    private static final String REG_EXP = "PLAYER_LOSES_LIFE\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s\"([^\"]+)\"";
+    private static final String REG_EXP = "PLAYER_LOSES_LIFE\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s\"([^\"]+)\"\\s([0-9]+)";
     /**
      * pattern for regular expression.
      */
@@ -56,6 +56,7 @@ public class PlayerLosesLifeMessage extends RoundMessage implements GameMessage 
     private int creatorId;
     private String creepType;
     private int creepId;
+    private int lifes;
 
     /**
      * Returns a hash code for this object.
@@ -63,7 +64,7 @@ public class PlayerLosesLifeMessage extends RoundMessage implements GameMessage 
      */
     @Override
     public int hashCode() {
-        return super.hashCode() ^ this.playerId ^ this.creatorId ^ this.creepType.hashCode();
+        return super.hashCode() ^ this.playerId ^ this.creatorId ^ this.creepType.hashCode() ^ this.lifes;
     }
 
     /**
@@ -104,12 +105,20 @@ public class PlayerLosesLifeMessage extends RoundMessage implements GameMessage 
         this.creepType = creepType;
     }
 
+    public int getLifes() {
+        return lifes;
+    }
+
+    public void setLifes(int lifes) {
+        this.lifes = lifes;
+    }
+
     /**
      * @return the message as String.
      */
     @Override
     public String getMessageString() {
-        return "PLAYER_LOSES_LIFE "+this.getRoundId()+" "+this.playerId+" "+this.creatorId+" "+this.creepId+" \""+this.creepType+"\"";
+        return "PLAYER_LOSES_LIFE "+this.getRoundId()+" "+this.playerId+" "+this.creatorId+" "+this.creepId+" \""+this.creepType+"\" "+this.lifes;
     }
 
     /**
@@ -124,6 +133,7 @@ public class PlayerLosesLifeMessage extends RoundMessage implements GameMessage 
             this.setCreatorId(Integer.parseInt(matcher.group(3)));
             this.setCreepId(Integer.parseInt(matcher.group(4)));
             this.setCreepType(matcher.group(5));
+            this.setLifes(Integer.parseInt(matcher.group(6)));
         }
     }
 
@@ -139,6 +149,6 @@ public class PlayerLosesLifeMessage extends RoundMessage implements GameMessage 
             return false;
         }
         PlayerLosesLifeMessage m = (PlayerLosesLifeMessage) o;
-        return this.getRoundId() == m.getRoundId() && this.playerId == m.getPlayerId() && this.creatorId == m.getCreatorId() && this.creepId == m.getCreepId() && this.creepType.equals(m.getCreepType());
+        return this.getRoundId() == m.getRoundId() && this.playerId == m.getPlayerId() && this.creatorId == m.getCreatorId() && this.creepId == m.getCreepId() && this.creepType.equals(m.getCreepType()) && this.lifes == m.getLifes();
     }
 }

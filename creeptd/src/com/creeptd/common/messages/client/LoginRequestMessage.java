@@ -51,8 +51,7 @@ public class LoginRequestMessage extends ClientMessage {
     /**
      * regular expression for message parsing.
      */
-    private static final String REGEXP_LOGIN_REQUEST =
-            "LOGIN_REQUEST\\s\"([^\"]+)\"\\s\"([^\"]+)\"\\s\"([^\"]+)\"\\s\"([^\"]+)\"";
+    private static final String REGEXP_LOGIN_REQUEST = "LOGIN_REQUEST\\s\"([^\"]+)\"\\s\"([^\"]+)\"\\s\"([^\"]+)\"\\s\"([^\"]+)\"";
     /**
      * pattern for regular expression.
      */
@@ -60,7 +59,7 @@ public class LoginRequestMessage extends ClientMessage {
     private String version;
     private String username;
     private String password;
-    private String macaddress;
+    private String uid;
 
     /**
      * @return the version
@@ -108,17 +107,21 @@ public class LoginRequestMessage extends ClientMessage {
     }
 
     /**
-     * @return the macaddress
+     * Get the UID
+     *
+     * @return The UID
      */
-    public String getMacaddress() {
-        return macaddress;
+    public String getUid() {
+        return uid;
     }
 
     /**
-     * @param macaddress the macaddress to set
+     * Set the UID
+     *
+     * @param uid The UID to set
      */
-    public void setMacaddress(String macaddress) {
-        this.macaddress = macaddress;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     /**
@@ -133,7 +136,7 @@ public class LoginRequestMessage extends ClientMessage {
             this.setVersion(matcher.group(1));
             this.setUsername(matcher.group(2));
             this.setPassword(matcher.group(3));
-            this.setMacaddress(matcher.group(4));
+            this.setUid(matcher.group(4));
         }
     }
 
@@ -142,6 +145,6 @@ public class LoginRequestMessage extends ClientMessage {
      */
     @Override
     public String getMessageString() {
-        return "LOGIN_REQUEST \"" + MessageUtil.prepareToSend(this.getVersion()) + "\" \"" + MessageUtil.prepareToSend(this.getUsername()) + "\" \"" + MessageUtil.prepareToSend(this.getPassword()) + "\" \"" + MessageUtil.prepareToSend(this.getMacaddress()) + "\"";
+        return "LOGIN_REQUEST \"" + MessageUtil.prepareToSend(this.getVersion()) + "\" \"" + MessageUtil.prepareToSend(this.getUsername()) + "\" \"" + MessageUtil.prepareToSend(this.getPassword()) + "\" \"" + MessageUtil.prepareToSend(this.getUid()) + "\"";
     }
 }

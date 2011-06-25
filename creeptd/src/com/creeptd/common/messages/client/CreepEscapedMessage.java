@@ -50,7 +50,7 @@ public class CreepEscapedMessage extends ClientMessage implements GameMessage {
     /**
      * Regular expression for message-parsing.
      */
-    private static final String REGEXP = "CREEP_ESCAPED\\s\"([^\"]+)\"\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)";
+    private static final String REGEXP = "CREEP_ESCAPED\\s\"([^\"]+)\"\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)";
     /**
      * Pattern for regular expression.
      */
@@ -79,13 +79,15 @@ public class CreepEscapedMessage extends ClientMessage implements GameMessage {
      * Number of Round
      */
     private long roundId;
+    /** Number of transfers of this creep */
+    private int transferCount = 0;
 
     /**
      * @return the message as String.
      */
     @Override
     public String getMessageString() {
-        return "CREEP_ESCAPED \"" + MessageUtil.prepareToSend(this.getCreepType()) + "\" "+this.creepId+" "+this.creepHealth+ " " + this.getFromPlayerId() + " " + this.getCreatorId() + " " + this.getRoundId();
+        return "CREEP_ESCAPED \"" + MessageUtil.prepareToSend(this.getCreepType()) + "\" "+this.creepId+" "+this.creepHealth+ " " + this.getFromPlayerId() + " " + this.getCreatorId() + " " + this.getRoundId()+" "+this.getTransferCount();
     }
 
     /**
@@ -101,6 +103,7 @@ public class CreepEscapedMessage extends ClientMessage implements GameMessage {
             this.setFromPlayerId(Integer.parseInt(matcher.group(4)));
             this.setCreatorId(Integer.parseInt(matcher.group(5)));
             this.setRoundId(Long.parseLong(matcher.group(6)));
+            this.setTransferCount(Integer.parseInt(matcher.group(7)));
         }
     }
 
@@ -176,5 +179,13 @@ public class CreepEscapedMessage extends ClientMessage implements GameMessage {
      */
     public long getRoundId() {
         return roundId;
+    }
+
+    public int getTransferCount() {
+        return transferCount;
+    }
+
+    public void setTransferCount(int transferCount) {
+        this.transferCount = transferCount;
     }
 }

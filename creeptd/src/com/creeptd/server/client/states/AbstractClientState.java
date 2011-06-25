@@ -79,10 +79,10 @@ public abstract class AbstractClientState {
     /**
      * Enter to this state.
      */
-    public abstract void enter();
+    public abstract void enter(AbstractClientState oldState);
 
     /**
      * Leave from this state.
      */
-    public abstract void leave();
+    public abstract void leave(AbstractClientState newState);
 }

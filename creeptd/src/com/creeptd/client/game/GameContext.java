@@ -59,7 +59,6 @@ import com.creeptd.common.messages.client.AsyncronousMessage;
 import com.creeptd.common.messages.client.BuildCreepMessage;
 import com.creeptd.common.messages.client.ChangeStrategyMessage;
 import com.creeptd.common.messages.client.ExitGameMessage;
-import com.creeptd.common.messages.client.GameOverMessage;
 import com.creeptd.common.messages.client.SellTowerMessage;
 import com.creeptd.common.messages.client.UpgradeTowerMessage;
 import com.creeptd.common.messages.server.BuildCreepRoundMessage;
@@ -411,6 +410,7 @@ public abstract class GameContext {
             c.setSenderId(tcm.getCreatorId());
             c.setPlayerID(tcm.getPlayerId());
             c.setHealth(tcm.getCreepHealth());
+            c.setTransferCount(tcm.getTransferCount());
             this.getCreeps().add(c);
             if (!this.isDead() && this.soundManagement != null) {
                 this.soundManagement.creepWarnSound(c.getType());
@@ -420,8 +420,10 @@ public abstract class GameContext {
         } else if (gm instanceof PlayerLosesLifeMessage) {
             PlayerLosesLifeMessage pllm = (PlayerLosesLifeMessage) gm;
             GameContext sender = this.findContextByPlayerId(pllm.getCreatorId());
-            this.removeLife();
-            sender.takenLifes++;
+            if (this.getLifes() > 0) {
+                this.setLifes(pllm.getLifes());
+                sender.takenLifes++;
+            }
             if (this.soundManagement != null) {
                 this.soundManagement.creepEscapedSound(Constants.Creeps.valueOf(pllm.getCreepType()));
             }
@@ -974,17 +976,6 @@ public abstract class GameContext {
      */
     public synchronized int getCredits() {
         return credits;
-    }
-
-    /**
-     * Remove one life from the context.
-     */
-    public void removeLife() {
-        checkIntegrity();
-        if (lifes > 0) {
-            this.setLifes(this.lifes-1);
-            fireLifesChangedEvent();
-        }
     }
 
     /**

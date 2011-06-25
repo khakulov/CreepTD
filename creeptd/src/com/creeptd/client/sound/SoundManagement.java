@@ -129,18 +129,21 @@ public class SoundManagement {
         this.usedThreadTowerShootS = t;
         this.usedThreadTowerUpgradeS = t;
         t.start();
-
     }
 
     public void setMute(boolean mute) {
         this.mute = mute;
     }
 
+    public boolean getMute() {
+        return this.mute;
+    }
+
     /**
      * Toggle Mute/Play.
      */
     public void toggleMute() {
-        this.mute = !this.mute;
+        this.setMute(!this.mute);
     }
 
     /**

@@ -106,7 +106,6 @@ public class Core extends JPanel {
         this.setBackground(Color.BLACK);
         instance = this;
         this.translator = new Translator();
-        
         ToolTipManager.sharedInstance().setInitialDelay(500);
     }
 
@@ -405,16 +404,20 @@ public class Core extends JPanel {
     }
 
     /**
-     * Get this computer's unique ID.
+     * Get the UID.
      *
-     * @return The unique ID
+     * @return The UID
      */
-    public static String getUniqueId() {
-        String uid = com.creeptd.client.util.JNLP.getValue("/uid");
-        if (uid == null) {
-            uid = new Long((new Random()).nextLong()).toString();
-            com.creeptd.client.util.JNLP.setValue("/uid", uid);
+    public final String getUid() {
+        if (com.creeptd.client.util.JNLP.isAvailable()) {
+            String uid = com.creeptd.client.util.JNLP.getValue("/uid");
+            if (uid == null) {
+                uid = new Long((new Random()).nextLong()).toString();
+                com.creeptd.client.util.JNLP.setValue("/uid", uid);
+            }
+            return uid;
+        } else {
+            return this.network.getMACAddress();
         }
-        return uid;
     }
 }
