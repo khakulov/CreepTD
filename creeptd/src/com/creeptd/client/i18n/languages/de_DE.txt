@@ -172,3 +172,4 @@ Your current amount of credits.=Dein Geld.
 The income you receive every round.=Das Einkommen, das du jede Runde erhältst.
 Lifes left.=Leben übrig.
 Connection aborted.=Die Verbindung wurde unterbrochen.
+You already joined to this game.=Du bist diesem Spiel bereits beigetreten.

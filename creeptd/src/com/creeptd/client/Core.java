@@ -410,10 +410,10 @@ public class Core extends JPanel {
      */
     public final String getUid() {
         if (com.creeptd.client.util.JNLP.isAvailable()) {
-            String uid = com.creeptd.client.util.JNLP.getValue("/uid");
+            String uid = com.creeptd.client.util.JNLP.getValue("uid");
             if (uid == null) {
                 uid = new Long((new Random()).nextLong()).toString();
-                com.creeptd.client.util.JNLP.setValue("/uid", uid);
+                com.creeptd.client.util.JNLP.setValue("uid", uid);
             }
             return uid;
         } else {

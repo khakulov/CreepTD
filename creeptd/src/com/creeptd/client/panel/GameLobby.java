@@ -85,7 +85,6 @@ import com.creeptd.common.messages.client.ClientChatMessage;
 import com.creeptd.common.messages.server.GameDescription;
 import com.creeptd.common.messages.server.GamesMessage;
 import com.creeptd.common.messages.server.JoinGameResponseMessage;
-import com.creeptd.common.messages.server.PlayerJoinedMessage;
 import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.common.messages.server.PlayersMessage;
 import com.creeptd.common.messages.server.ServerMessage;
@@ -96,10 +95,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
+import javax.swing.Timer;
 import java.util.TreeMap;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -119,6 +120,7 @@ public class GameLobby extends GameScreen implements MessageListener {
     private final JLabel lobbyTitle;
     private JLabel onlinePlayersLabel;
     private JEditorPane gameInfoEditorPane;
+    private String gameInfoEditorPaneContent = "";
     private final JTextField message;
     private PlayerChat chatdialog;
     private JScrollPane chatScrollPane;
@@ -147,6 +149,7 @@ public class GameLobby extends GameScreen implements MessageListener {
     private static JDialog helpFrame = new HelpGamePanel();
     public static JDialog optionsFrame = new OptionsPanel();
     public static final SortedMap<String, Player> allPlayers = new TreeMap<String, Player>();
+    Timer swingUpdateTimer = null;
 
     /**
      * A player
@@ -242,6 +245,7 @@ public class GameLobby extends GameScreen implements MessageListener {
         this.gameInfoEditorPane.setFocusable(false);
         this.gameInfoEditorPane.setDoubleBuffered(true);
         this.gameInfoEditorPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        this.gameInfoEditorPane.setBackground(Color.BLACK);
 
         this.playersScrollPane = this.initPlayersList();
         this.playersScrollPane.setBounds(640, 270, 270, 365);
@@ -604,7 +608,6 @@ public class GameLobby extends GameScreen implements MessageListener {
      *
      */
     private void openURL(String URL) {
-
         try {
             java.net.URI url = new java.net.URI(URL);
             Desktop.getDesktop().browse(url);
@@ -1011,6 +1014,7 @@ public class GameLobby extends GameScreen implements MessageListener {
      * Update the players list
      */
     private void updatePlayersList() {
+        int selindex = this.playerList.getSelectedIndex();
         DefaultListModel listModel = new DefaultListModel();
         synchronized (allPlayers) {
             Iterator<Player> i = allPlayers.values().iterator();
@@ -1021,7 +1025,7 @@ public class GameLobby extends GameScreen implements MessageListener {
         }
         this.playerList.setCellRenderer(new PlayerCellRenderer());
         this.playerList.setModel(listModel);
-        this.playerList.repaint();
+        this.playerList.setSelectedIndex(selindex);
     }
 
     /**
@@ -1077,7 +1081,6 @@ public class GameLobby extends GameScreen implements MessageListener {
                 }
             }
         }
-        this.updatePlayersList();
         this.setPlayerCountLabel();
     }
 
@@ -1091,17 +1094,14 @@ public class GameLobby extends GameScreen implements MessageListener {
         String content = "<html><body text=\"#00FF00\" style=\"font-family: Arial\" bgcolor=\"#000000\">";
         if (HTML == null || HTML.equals("")) {
             URL imageURL = this.getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/lobby.jpg");
-            content = content + "<center><img src=\"" + imageURL + "\"></center>";
+            content = content + "<center><img width=270 height=200 src=\"" + imageURL + "\"></center>";
             this.setBorder(new EmptyBorder(0, 0, 0, 0));
         } else {
             content = content + HTML;
             this.setBorder(new LineBorder(Color.GRAY));
         }
         content = content + "</body></html>";
-        if (!content.equals(this.gameInfoEditorPane.getText())) {
-            this.gameInfoEditorPane.setText(content);
-        }
-        this.gameInfoEditorPane.repaint();
+        this.gameInfoEditorPaneContent = content; // Updated by swing timer
     }
 
     /**
@@ -1139,6 +1139,10 @@ public class GameLobby extends GameScreen implements MessageListener {
     @Override
     public void end() {
         this.getCore().getNetwork().removeListener(this);
+        if (this.swingUpdateTimer != null) {
+            this.swingUpdateTimer.stop();
+            this.swingUpdateTimer = null;
+        }
     }
 
     /**
@@ -1150,6 +1154,19 @@ public class GameLobby extends GameScreen implements MessageListener {
         this.getCore().getNetwork().addListener(this);
         this.repaint();
         this.setGameInfoEditorPaneHTML(null);
+        // Using Swing timers to update component contents
+        this.swingUpdateTimer = new Timer(250, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updatePlayersList();
+                if (gameInfoEditorPaneContent != null) {
+                    gameInfoEditorPane.setText(gameInfoEditorPaneContent);
+                    gameInfoEditorPaneContent = null;
+                }
+            }
+        });
+        this.swingUpdateTimer.setRepeats(true);
+        this.swingUpdateTimer.start();
     }
 
     /**
@@ -1172,12 +1189,11 @@ public class GameLobby extends GameScreen implements MessageListener {
                 managementSound.clapSound();
             }
         } else if (m instanceof JoinGameResponseMessage) {
-            if (((JoinGameResponseMessage) m).getResponseType().equals(
-                    Constants.ResponseType.ok)) {
-
+            JoinGameResponseMessage jgrm = (JoinGameResponseMessage) m;
+            if (jgrm.getResponseType().equals(Constants.ResponseType.ok)) {
                 WaitingGamePanel wgp = new WaitingGamePanel();
                 if (this.joinGame == null) {
-                    this.logger.severe("The game to join was null!");
+                    logger.severe("The game to join was null!");
                     errorDialog(_("You cannot join to this game."));
                 } else {
                     wgp.setMapId(this.joinGame.getMapId());
@@ -1185,6 +1201,8 @@ public class GameLobby extends GameScreen implements MessageListener {
                     this.getCore().setActiveGame(this.joinGame);
                     this.getCore().pushScreen(wgp);
                 }
+            } else if (jgrm.getResponseType().equals(Constants.ResponseType.multi)) {
+                errorDialog(_("You already joined to this game."));
             } else {
                 errorDialog(_("You cannot join to this game."));
             }

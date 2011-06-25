@@ -178,18 +178,18 @@ public class Game extends AbstractGame {
      * Add a player to the game.
      * @param client
      */
-    public void addPlayer(Client client) {
+    public void addPlayer(Client client) throws Exception {
         if (client == null) {
             throw new IllegalArgumentException("'newClient' was null!");
         }
         if (!(this.getGameState() instanceof WaitingGameState)) {
-            throw new RuntimeException("Game has started, no more players can join (State is " + this.getGameState() + ")");
+            throw new Exception("Game has started, no more players can join (State is " + this.getGameState() + ")");
         }
         if (this.players.size() >= this.getMaxPlayers()) {
-            throw new RuntimeException("Maximum number of players reached, no more players can join");
+            throw new Exception("Maximum number of players reached, no more players can join");
         }
         if (this.isMultiaccount(client.getIPAddress(), client.getUid())) {
-            throw new RuntimeException("You cannot join to a game twice.");
+            throw new Exception("You cannot join to a game twice.");
         }
         if (this.findPlayer(client.getId()) != null) {
             return;

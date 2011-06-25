@@ -48,7 +48,7 @@ public class JoinGameResponseMessage extends ServerMessage {
     /**
      * regular expression.
      */
-    private static final String REG_EXP = "JOIN_GAME_RESPONSE\\s(ok|failed)";
+    private static final String REG_EXP = "JOIN_GAME_RESPONSE\\s(ok|failed|multi)";
     /**
      * pattern for regular expression.
      */

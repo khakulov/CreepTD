@@ -145,7 +145,11 @@ public class AuthenticatedState extends AbstractClientState {
                 return this;
             }
             this.getClient().send(new CreateGameResponseMessage(ResponseType.ok));
-            game.addPlayer(this.getClient());
+            try {
+                game.addPlayer(this.getClient());
+            } catch (Exception ex) {
+                return this;
+            }
             return new InGameState(this.getClient(), game, this);
         }
         if (message instanceof JoinGameRequestMessage) {
@@ -157,8 +161,13 @@ public class AuthenticatedState extends AbstractClientState {
                 return this;
             }
             logger.info("Client " + this.getClient() + " joined to game " + game);
+            try {
+                game.addPlayer(this.getClient());
+            } catch (Exception ex) {
+                this.getClient().send(new JoinGameResponseMessage(ResponseType.multi));
+                return this;
+            }
             this.getClient().send(new JoinGameResponseMessage(ResponseType.ok));
-            game.addPlayer(this.getClient());
             return new InGameState(this.getClient(), game, this);
         }
         if (message instanceof LogoutMessage) {

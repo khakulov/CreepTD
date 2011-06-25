@@ -45,6 +45,7 @@ import com.creeptd.common.messages.client.ClientMessage;
 import com.creeptd.common.messages.server.KickedMessage;
 import com.creeptd.common.messages.server.ServerMessage;
 import com.creeptd.server.AuthenticationService;
+import com.creeptd.server.Lobby;
 import com.creeptd.server.client.states.AnonymousState;
 import com.creeptd.server.client.states.AbstractClientState;
 import com.creeptd.server.client.states.InGameState;
@@ -222,6 +223,7 @@ public class Client {
             allClients.remove(this.clientId);
         }
         if (this.getPlayerModel() != null) {
+            Lobby.remove(this);
             AuthenticationService.logout(this);
         }
     }

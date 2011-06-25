@@ -251,8 +251,6 @@ public class AuthenticationService {
         synchronized (loggedIn) {
             if (loggedIn.remove(client)) {
                 logger.info(client + " logged out");
-            } else {
-                logger.warn(client + " tried to log out, but wasn't logged in!");
             }
         }
     }

@@ -38,6 +38,7 @@ package com.creeptd.client;
 import com.creeptd.common.Constants;
 import java.awt.BorderLayout;
 import javax.swing.JApplet;
+import javax.swing.text.html.parser.ParserDelegator;
 
 /**
  *
@@ -73,6 +74,8 @@ public class ClientApplet extends JApplet {
 
     @Override
     public void start() {
+        new ParserDelegator(); // @see http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6993691
+        
         this.core.setVisible(true);
         this.setVisible(true);
     }

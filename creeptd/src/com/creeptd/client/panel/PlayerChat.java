@@ -65,7 +65,14 @@ public class PlayerChat extends JEditorPane {
     public PlayerChat(JScrollPane scroller) {
         this.scroller = scroller;
         this.setContentType("text/html");
-        this.setText("<html><body style=\"font-family: Verdana; font-size: 11\" link='#FFFFFF' vlink='#FFFFFF' alink='#FFFFFF' text='#FFFFFF' bgcolor='#000000'></body></html>");
+        try {
+            this.setText("<html><body style=\"font-family: Verdana; font-size: 11\" link='#FFFFFF' vlink='#FFFFFF' alink='#FFFFFF' text='#FFFFFF' bgcolor='#000000'></body></html>");
+        } catch (Exception ex) {
+            try {
+                Thread.sleep(500);
+            } catch (Exception ex2) {}
+            this.setText("<html><body style=\"font-family: Verdana; font-size: 11\" link='#FFFFFF' vlink='#FFFFFF' alink='#FFFFFF' text='#FFFFFF' bgcolor='#000000'></body></html>");
+        }
 
         this.setEditable(false);
 
@@ -162,7 +169,7 @@ public class PlayerChat extends JEditorPane {
         if (from.equalsIgnoreCase("Server")) {
             s = "<span style=\"color:#C0C0C0\">"+msg+"</span>"; // Server may send HTML
         } else {
-            String color = core.getPlayerName().equalsIgnoreCase(from) ? "FF0000" : "00FF00";
+            String color = core.getPlayerName().equalsIgnoreCase(from) ? "FF0000" : "FFFF00";
             if (action) s += "<i>";
             s += "<span style=\"color:#"+color+"\"><b>" + from + "</b></span>";
             if (!action) s += "»";

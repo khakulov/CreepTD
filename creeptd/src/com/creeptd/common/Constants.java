@@ -451,7 +451,11 @@ public interface Constants {
         /**
          * Request failed because the client and server have different version.
          */
-        version
+        version,
+        /**
+         * Request failed because multi account using was detected.
+         */
+        multi
     }
 
     /**
