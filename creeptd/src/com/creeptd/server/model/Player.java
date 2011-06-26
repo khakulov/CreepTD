@@ -55,10 +55,10 @@ public class Player {
     private String name;
     private String password;
     private String email;
-    private int experience = 0;
-    private int elopoints = 1000;
-    private int lastgame_experience = 0;
-    private int lastgame_elopoints = 0;
+    private int points = 0;
+    private int skill = 1000;
+    private int lastgame_points = 0;
+    private int lastgame_skill = 0;
     private Integer lastgame_id = -1;
     private long lastlogin = 0;
     private boolean blocked = false;
@@ -128,42 +128,42 @@ public class Player {
         this.email = email;
     }
 
-    public int getExperience() {
-        return experience;
+    public int getPoints() {
+        return points;
     }
 
-    public void setExperience(int experience) {
-        this.experience = experience;
-    }
-
-    /**
-     * @return the elopoints
-     */
-    public int getElopoints() {
-        return this.elopoints;
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     /**
-     * @param elopoints the elopoints to set
+     * @return the skill
      */
-    public void setElopoints(int elopoints) {
-        this.elopoints = elopoints;
+    public int getSkill() {
+        return this.skill;
     }
 
-    public int getLastgameElopoints() {
-        return lastgame_elopoints;
+    /**
+     * @param skill the skill to set
+     */
+    public void setSkill(int skill) {
+        this.skill = skill;
     }
 
-    public void setLastgameElopoints(int lastgame_elopoints) {
-        this.lastgame_elopoints = lastgame_elopoints;
+    public int getLastgameSkill() {
+        return lastgame_skill;
     }
 
-    public int getLastgameExperience() {
-        return lastgame_experience;
+    public void setLastgameSkill(int skill) {
+        this.lastgame_skill = skill;
     }
 
-    public void setLastgameExperience(int lastgame_experience) {
-        this.lastgame_experience = lastgame_experience;
+    public int getLastgamePoints() {
+        return lastgame_points;
+    }
+
+    public void setLastgamePoints(int points) {
+        this.lastgame_points = points;
     }
 
     public int getLastgameId() {

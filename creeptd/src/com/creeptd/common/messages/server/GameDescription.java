@@ -59,8 +59,8 @@ public class GameDescription {
     private String Player2;
     private String Player3;
     private String Player4;
-    private Integer MaxEloPoints = 0;
-    private Integer MinEloPoints = 0;
+    private Integer MaxSkill = 0;
+    private Integer MinSkill = 0;
     private Boolean shufflePlayers = true;
     private String state;
     private Constants.Mode gameMode;
@@ -83,7 +83,7 @@ public class GameDescription {
      * @param state the state of the game
      */
     public GameDescription(Integer gameId, String gameName, Integer mapId,
-            Integer maxPlayers, Integer currentPlayers, Integer MaxEloPoints, Integer MinEloPoints,
+            Integer maxPlayers, Integer currentPlayers, Integer MaxSkill, Integer MinSkill,
             String Password,
             Constants.Mode gameMode,
             String Player1,
@@ -97,8 +97,8 @@ public class GameDescription {
         this.mapId = mapId;
         this.numberOfPlayers = maxPlayers;
         this.currentPlayers = currentPlayers;
-        this.MaxEloPoints = MaxEloPoints;
-        this.MinEloPoints = MinEloPoints;
+        this.MaxSkill = MaxSkill;
+        this.MinSkill = MinSkill;
         this.Password = Password;
         this.gameMode = gameMode;
         this.Player1 = Player1;
@@ -275,31 +275,31 @@ public class GameDescription {
     }
 
     /**
-     * @param MaxEloPoints of this game
+     * @param MaxSkill of this game
      */
-    public void setMaxEloPoints(Integer MaxEloPoints) {
-        this.MaxEloPoints = MaxEloPoints;
+    public void setMaxSkill(Integer MaxSkill) {
+        this.MaxSkill = MaxSkill;
     }
 
     /**
-     * @return the number of MaxEloPoints
+     * @return the number of MaxSkill
      */
-    public Integer getMaxEloPoints() {
-        return this.MaxEloPoints;
+    public Integer getMaxSkill() {
+        return this.MaxSkill;
     }
 
     /**
-     * @param numberOfPlayers MinEloPoints of this game
+     * @param numberOfPlayers MinSkil of this game
      */
-    public void setMinEloPoints(Integer MinEloPoints) {
-        this.MinEloPoints = MinEloPoints;
+    public void setMinSkill(Integer MinSkill) {
+        this.MinSkill = MinSkill;
     }
 
     /**
-     * @return the number of MinEloPoints
+     * @return the number of MinSkill
      */
-    public Integer getMinEloPoints() {
-        return this.MinEloPoints;
+    public Integer getMinSkill() {
+        return this.MinSkill;
     }
 
     /**
@@ -322,7 +322,7 @@ public class GameDescription {
      */
     @Override
     public String toString() {
-        return this.gameId.toString() + " " + "\"" + this.gameName + "\" " + this.mapId.toString() + " " + this.numberOfPlayers + " " + this.currentPlayers + " " + this.getMaxEloPoints() + " " + this.getMinEloPoints() + " " + "" + this.getGameMode().getValue() + " " + "\"" + MessageUtil.prepareToSend(this.getPassword()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer1()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer2()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer3()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer4()) + "\" " + "\"" + this.state + "\"" + " " + (this.getShufflePlayers() ? "1" : "0");
+        return this.gameId.toString() + " " + "\"" + this.gameName + "\" " + this.mapId.toString() + " " + this.numberOfPlayers + " " + this.currentPlayers + " " + this.getMaxSkill() + " " + this.getMinSkill() + " " + "" + this.getGameMode().getValue() + " " + "\"" + MessageUtil.prepareToSend(this.getPassword()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer1()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer2()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer3()) + "\" " + "\"" + MessageUtil.prepareToSend(this.getPlayer4()) + "\" " + "\"" + this.state + "\"" + " " + (this.getShufflePlayers() ? "1" : "0");
     }
 
     /**
@@ -336,8 +336,8 @@ public class GameDescription {
             this.setMapId(Integer.valueOf(matcher.group(4)));
             this.setNumberOfPlayers(Integer.valueOf(matcher.group(5)));
             this.setCurrentPlayers(Integer.valueOf(matcher.group(6)));
-            this.setMaxEloPoints(Integer.valueOf(matcher.group(7)));
-            this.setMinEloPoints(Integer.valueOf(matcher.group(8)));
+            this.setMaxSkill(Integer.valueOf(matcher.group(7)));
+            this.setMinSkill(Integer.valueOf(matcher.group(8)));
             Constants.Mode mode = Constants.Mode.ALLVSALL;
             try {
                 int sentModeValue = Integer.valueOf(matcher.group(9));
@@ -367,7 +367,7 @@ public class GameDescription {
             return false;
         }
         GameDescription d = (GameDescription) o;
-        return this.gameId == d.getGameId() && this.gameName.equals(d.getGameName()) && this.mapId == d.getMapId() && this.numberOfPlayers == d.getNumberOfPlayers() && this.currentPlayers == d.getCurrentPlayers() && this.MaxEloPoints == d.getMaxEloPoints() && this.MinEloPoints == d.getMinEloPoints() && this.gameMode == d.getGameMode() && this.Password.equals(d.getPassword()) && this.Player1.equals(d.getPlayer1()) && this.Player2.equals(d.getPlayer2()) && this.Player3.equals(d.getPlayer3()) && this.Player4.equals(d.getPlayer4()) && this.state.equals(d.getState()) && this.shufflePlayers.equals(d.getShufflePlayers());
+        return this.gameId == d.getGameId() && this.gameName.equals(d.getGameName()) && this.mapId == d.getMapId() && this.numberOfPlayers == d.getNumberOfPlayers() && this.currentPlayers == d.getCurrentPlayers() && this.MaxSkill == d.getMaxSkill() && this.MinSkill == d.getMinSkill() && this.gameMode == d.getGameMode() && this.Password.equals(d.getPassword()) && this.Player1.equals(d.getPlayer1()) && this.Player2.equals(d.getPlayer2()) && this.Player3.equals(d.getPlayer3()) && this.Player4.equals(d.getPlayer4()) && this.state.equals(d.getState()) && this.shufflePlayers.equals(d.getShufflePlayers());
     }
 
     /**

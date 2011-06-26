@@ -44,6 +44,7 @@ import com.creeptd.client.network.Network;
 import com.creeptd.client.panel.GameScreen;
 import com.creeptd.client.panel.LoginPanel;
 import com.creeptd.client.sound.SoundManagement;
+import com.creeptd.client.util.JNLP;
 import com.creeptd.common.Constants;
 import com.creeptd.common.messages.server.GameDescription;
 
@@ -55,11 +56,14 @@ import java.awt.Toolkit;
 import java.util.Random;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+
+import static com.creeptd.client.i18n.Translator.*;
 
 /**
  * The core of the game. This class manages the displayed screens and holds the
@@ -81,8 +85,8 @@ public class Core extends JPanel {
     private final Stack<GameScreen> screens = new Stack<GameScreen>();
     protected static Network network;
     private String playerName;
-    private Integer playerExperience = 0;
-    private Integer playerElopoints = 1500;
+    private Integer playerPoints = 0;
+    private Integer playerSkill = 1500;
     private Integer playerId;
     private GameDescription activeGame;
     private SoundManagement soundManagement;
@@ -100,7 +104,12 @@ public class Core extends JPanel {
             e.printStackTrace();
         }
 
-        network = new Network(host, port, this);
+        boolean localMode = host.equals("localhost") || host.equals("127.0.0.1");
+        if (!localMode && !JNLP.isAvailable()) {
+            JOptionPane.showMessageDialog(this, _("Sorry, JNLP functionality seems not to be available. Please update your Java Runtime Environment (JRE): www.java.com"), _("An error occured"), JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+        network = new Network(host, port, localMode);
         soundManagement = new SoundManagement();
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);
@@ -302,28 +311,21 @@ public class Core extends JPanel {
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
     }
-
-    /**
-     * @return the getPlayerEloScore
-     */
-    public int getPlayerElopoints() {
-        return this.playerElopoints;
+    
+    public int getPlayerSkill() {
+        return this.playerSkill;
+    }
+    
+    public void setPlayerSkill(int skill) {
+        this.playerSkill = skill;
     }
 
-    /**
-     * @param PlayerEloScore
-     *            the playerName to set
-     */
-    public void setPlayerElopoints(int elopoints) {
-        this.playerElopoints = elopoints;
+    public Integer getPlayerPoints() {
+        return playerPoints;
     }
 
-    public Integer getPlayerExperience() {
-        return playerExperience;
-    }
-
-    public void setPlayerExperience(Integer playerExperience) {
-        this.playerExperience = playerExperience;
+    public void setPlayerPoints(Integer points) {
+        this.playerPoints = points;
     }
 
     /**

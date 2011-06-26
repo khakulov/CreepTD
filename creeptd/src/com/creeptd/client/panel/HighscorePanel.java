@@ -238,8 +238,8 @@ public class HighscorePanel extends GameScreen implements MessageListener {
             Collections.sort(list, new Comparator<HighscoreEntry>() {
 
                 public int compare(HighscoreEntry a, HighscoreEntry b) {
-                    if (b.getExperience().compareTo(a.getExperience()) != 0) {
-                        return b.getExperience().compareTo(a.getExperience());
+                    if (b.getPoints().compareTo(a.getPoints()) != 0) {
+                        return b.getPoints().compareTo(a.getPoints());
                     } else {
                         return a.getPlayerName().compareTo(b.getPlayerName());
                     }
@@ -253,20 +253,20 @@ public class HighscorePanel extends GameScreen implements MessageListener {
                 rowsData.add(String.valueOf(position + nr));
                 rowsData.add(he.getPlayerName().toString());
 
-                String exp = he.getExperience().toString() + " (";
-                if (he.getLastgameExperience() >= 0) {
-                    exp += "+" + he.getLastgameExperience();
+                String exp = he.getPoints().toString() + " (";
+                if (he.getLastgamePoints() >= 0) {
+                    exp += "+" + he.getLastgamePoints();
                 } else {
-                    exp += he.getLastgameExperience();
+                    exp += he.getLastgamePoints();
                 }
                 exp += ")";
                 rowsData.add(exp);
 
-                String elo = he.getElopoints().toString() + " (";
-                if (he.getLastgameElopoints() >= 0) {
-                    elo += "+" + he.getLastgameElopoints();
+                String elo = he.getSkill().toString() + " (";
+                if (he.getLastgameSkill() >= 0) {
+                    elo += "+" + he.getLastgameSkill();
                 } else {
-                    elo += he.getLastgameElopoints();
+                    elo += he.getLastgameSkill();
                 }
                 elo += ")";
                 rowsData.add(elo);

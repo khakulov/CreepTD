@@ -50,10 +50,10 @@ public class HighscoreEntry {
             "[\\s]?\"([^\"]+)\"\\s([0-9]+)\\s([0-9]+)\\s([-]?[0-9]+)\\s([-]?[0-9]+)[\\s]?";
     public static final Pattern PATTERN = Pattern.compile(REG_EXP);
     private String playerName;
-    private Integer experience;
-    private Integer elopoints;
-    private Integer lastgame_experience;
-    private Integer lastgame_elopoints;
+    private Integer points;
+    private Integer skill;
+    private Integer lastgame_points;
+    private Integer lastgame_skill;
 
     /**
      * @return the playerName
@@ -69,36 +69,36 @@ public class HighscoreEntry {
         this.playerName = playerName;
     }
 
-    public Integer getElopoints() {
-        return elopoints;
+    public Integer getSkill() {
+        return skill;
     }
 
-    public void setElopoints(Integer elopoints) {
-        this.elopoints = elopoints;
+    public void setSkill(Integer skill) {
+        this.skill = skill;
     }
 
-    public Integer getExperience() {
-        return experience;
+    public Integer getPoints() {
+        return points;
     }
 
-    public void setExperience(Integer experience) {
-        this.experience = experience;
+    public void setPoints(Integer points) {
+        this.points = points;
     }
 
-    public Integer getLastgameElopoints() {
-        return lastgame_elopoints;
+    public Integer getLastgameSkill() {
+        return lastgame_skill;
     }
 
-    public void setLastgameElopoints(Integer lastgame_elopoints) {
-        this.lastgame_elopoints = lastgame_elopoints;
+    public void setLastgameSkill(Integer skill) {
+        this.lastgame_skill = skill;
     }
 
-    public Integer getLastgameExperience() {
-        return lastgame_experience;
+    public Integer getLastgamePoints() {
+        return lastgame_points;
     }
 
-    public void setLastgameExperience(Integer lastgame_experience) {
-        this.lastgame_experience = lastgame_experience;
+    public void setLastgamePoints(Integer points) {
+        this.lastgame_points = points;
     }
 
     /**
@@ -106,7 +106,7 @@ public class HighscoreEntry {
      */
     @Override
     public String toString() {
-        return "\"" + this.getPlayerName() + "\" " + this.getExperience() + " " + this.getElopoints() + " " + this.getLastgameExperience() + " " + this.getLastgameElopoints();
+        return "\"" + this.getPlayerName() + "\" " + this.getPoints() + " " + this.getSkill() + " " + this.getLastgamePoints() + " " + this.getLastgameSkill();
     }
 
     /**
@@ -116,10 +116,10 @@ public class HighscoreEntry {
         Matcher matcher = PATTERN.matcher(messageString);
         if (matcher.matches()) {
             this.setPlayerName(matcher.group(1));
-            this.setExperience(Integer.parseInt(matcher.group(2)));
-            this.setElopoints(Integer.parseInt(matcher.group(3)));
-            this.setLastgameExperience(Integer.parseInt(matcher.group(4)));
-            this.setLastgameElopoints(Integer.parseInt(matcher.group(5)));
+            this.setPoints(Integer.parseInt(matcher.group(2)));
+            this.setSkill(Integer.parseInt(matcher.group(3)));
+            this.setLastgamePoints(Integer.parseInt(matcher.group(4)));
+            this.setLastgameSkill(Integer.parseInt(matcher.group(5)));
         }
     }
 }

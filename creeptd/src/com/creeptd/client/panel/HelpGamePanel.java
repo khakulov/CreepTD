@@ -42,6 +42,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
@@ -61,6 +62,8 @@ import static com.creeptd.client.i18n.Translator.*;
  */
 public class HelpGamePanel extends JDialog {
 
+    public static Logger logger = Logger.getLogger(HelpGamePanel.class.getName());
+    
     /**
      * @param args
      */
@@ -79,7 +82,18 @@ public class HelpGamePanel extends JDialog {
     public HelpGamePanel() {
         this.init();
         this.setTitle("CreepTD - "+_("Help"));
-        this.index = getClass().getClassLoader().getResource("com/creeptd/client/resources/help/index.html");
+        String langKey = Core.getInstance().getTranslator().getLanguageKey();
+        this.index = getClass().getClassLoader().getResource("com/creeptd/client/resources/help/"+langKey+"/index.html");
+        if (this.index == null) {
+            logger.warning("Help page not found: com/creeptd/client/resources/help/"+langKey+"/index.html");
+            this.index = getClass().getClassLoader().getResource("com/creeptd/client/resources/help/en_US/index.html");
+        }
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        GameLobby.onCloseHelpGamePanel();
     }
 
     /**
@@ -132,11 +146,14 @@ public class HelpGamePanel extends JDialog {
         this.quit.setBackground(Color.BLACK);
         this.quit.setForeground(Color.GREEN);
         this.quit.setBounds(265, 620, 100, 30);
+
         this.quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
             }
         });
+
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         try {
             htmlDisplay.setPage(this.index);

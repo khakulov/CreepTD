@@ -2,7 +2,7 @@ package com.creeptd.common;
 
 public interface Permission {
 
-	int MOD_GLOBAL = 1 << 0;
+	int GLOBAL = 1 << 0;
 
 	int KICK = 1 << 1;
 

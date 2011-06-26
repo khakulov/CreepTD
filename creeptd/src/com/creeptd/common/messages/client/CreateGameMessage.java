@@ -63,8 +63,8 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
     private Integer mapId;
     private Integer maxPlayers;
     private String Passwort = "";
-    private Integer MaxEloPoints = 0;
-    private Integer MinEloPoints = 0;
+    private Integer MaxSkill = 0;
+    private Integer MinSkill = 0;
     private Constants.Mode gameMode;
     private Boolean shufflePlayers = true;
 
@@ -81,13 +81,13 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
      * @param mapId initial mapId
      * @param maxPlayers initial maxPlayers
      */
-    public CreateGameMessage(String gameName, Integer mapId, Integer maxPlayers, Integer MaxEloPoints, Integer MinEloPoints, String Passwort) {
+    public CreateGameMessage(String gameName, Integer mapId, Integer maxPlayers, Integer MaxSkill, Integer MinSkill, String Passwort) {
         this.gameName = gameName;
         this.mapId = mapId;
         this.maxPlayers = maxPlayers;
         this.Passwort = Passwort;
-        this.MaxEloPoints = MaxEloPoints;
-        this.MinEloPoints = MinEloPoints;
+        this.MaxSkill = MaxSkill;
+        this.MinSkill = MinSkill;
 
     }
 
@@ -148,31 +148,31 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
     }
 
     /**
-     * @param MaxEloPoints of this game
+     * @param MaxSkill of this game
      */
-    public void setMaxEloPoints(Integer MaxEloPoints) {
-        this.MaxEloPoints = MaxEloPoints;
+    public void setMaxSkill(Integer MaxSkill) {
+        this.MaxSkill = MaxSkill;
     }
 
     /**
-     * @return the number of MaxEloPoints
+     * @return the number of MaxSkill
      */
-    public Integer getMaxEloPoints() {
-        return this.MaxEloPoints;
+    public Integer getMaxSkill() {
+        return this.MaxSkill;
     }
 
     /**
-     * @param maxPlayers MinEloPoints of this game
+     * @param maxPlayers MinSkill of this game
      */
-    public void setMinEloPoints(Integer MinEloPoints) {
-        this.MinEloPoints = MinEloPoints;
+    public void setMinSkill(Integer MinSkill) {
+        this.MinSkill = MinSkill;
     }
 
     /**
-     * @return the number of MinEloPoints
+     * @return the number of MinSkill
      */
-    public Integer getMinEloPoints() {
-        return this.MinEloPoints;
+    public Integer getMinSkill() {
+        return this.MinSkill;
     }
 
     /**
@@ -207,8 +207,8 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
             this.setGameName(matcher.group(1));
             this.setMapId(Integer.valueOf(matcher.group(2)));
             this.setMaxPlayers(Integer.valueOf(matcher.group(3)));
-            this.setMaxEloPoints(Integer.valueOf(matcher.group(4)));
-            this.setMinEloPoints(Integer.valueOf(matcher.group(5)));
+            this.setMaxSkill(Integer.valueOf(matcher.group(4)));
+            this.setMinSkill(Integer.valueOf(matcher.group(5)));
             this.setPasswort(matcher.group(6));
             Constants.Mode mode = Constants.Mode.ALLVSALL;
             try {
@@ -226,6 +226,6 @@ public class CreateGameMessage extends ClientMessage implements LobbyMessage {
      */
     @Override
     public String getMessageString() {
-        return "CREATE_GAME_REQUEST \"" + MessageUtil.prepareToSend(this.getGameName()) + "\" " + this.getMapId() + " " + this.getMaxPlayers() + " " + this.getMaxEloPoints() + " " + this.getMinEloPoints() + " " + "\"" + MessageUtil.prepareToSend(this.getPassword()) + "\" " + this.getGameMode().getValue() + " " + (this.getShufflePlayers() ? "1" : "0");
+        return "CREATE_GAME_REQUEST \"" + MessageUtil.prepareToSend(this.getGameName()) + "\" " + this.getMapId() + " " + this.getMaxPlayers() + " " + this.getMaxSkill() + " " + this.getMinSkill() + " " + "\"" + MessageUtil.prepareToSend(this.getPassword()) + "\" " + this.getGameMode().getValue() + " " + (this.getShufflePlayers() ? "1" : "0");
     }
 }

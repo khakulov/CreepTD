@@ -50,7 +50,8 @@ public class HighscoreRequestMessage extends ClientMessage
     /**
      * regular expression for message parsing.
      */
-    private static final String REGEXP_HIGHSCORE_REQUEST = "HIGHSCORE_REQUEST\\s([0-9]+)";
+    private static final String REGEXP_HIGHSCORE_REQUEST = "HIGHSCORE_REQUEST\\s\"(points|skill)\"\\s([0-9]+)";
+    private String sortBy = "points";
     private int start;
     /**
      * pattern for regular expression.
@@ -79,7 +80,8 @@ public class HighscoreRequestMessage extends ClientMessage
     public void initWithMessage(String messageString) {
         Matcher matcher = PATTERN.matcher(messageString);
         if (matcher.matches()) {
-            this.setStart(Integer.valueOf(matcher.group(1)));
+            this.setSortBy(matcher.group(1));
+            this.setStart(Integer.valueOf(matcher.group(2)));
         }
     }
 
@@ -88,7 +90,15 @@ public class HighscoreRequestMessage extends ClientMessage
      */
     @Override
     public String getMessageString() {
-        return "HIGHSCORE_REQUEST " + start;
+        return "HIGHSCORE_REQUEST \""+sortBy+"\" "+start;
+    }
+
+    public String getSortBy() {
+        return sortBy;
+    }
+
+    public void setSortBy(String sortBy) {
+        this.sortBy = sortBy;
     }
 
     /**

@@ -64,22 +64,22 @@ public class GameJournal {
     private String player2;
     private String player3;
     private String player4;
-    private int player1_experience;
-    private int player1_given_experience;
-    private int player2_experience;
-    private int player2_given_experience;
-    private int player3_experience;
-    private int player3_given_experience;
-    private int player4_experience;
-    private int player4_given_experience;
-    private int player1_elopoints;
-    private int player1_given_elopoints;
-    private int player2_elopoints;
-    private int player2_given_elopoints;
-    private int player3_elopoints;
-    private int player3_given_elopoints;
-    private int player4_elopoints;
-    private int player4_given_elopoints;
+    private int player1_points;
+    private int player1_given_points;
+    private int player2_points;
+    private int player2_given_points;
+    private int player3_points;
+    private int player3_given_points;
+    private int player4_points;
+    private int player4_given_points;
+    private int player1_skill;
+    private int player1_given_skill;
+    private int player2_skill;
+    private int player2_given_skill;
+    private int player3_skill;
+    private int player3_given_skill;
+    private int player4_skill;
+    private int player4_given_skill;
     private int player1_position;
     private int player2_position;
     private int player3_position;
@@ -270,132 +270,132 @@ public class GameJournal {
         this.player4 = player4;
     }
 
-    public int getPlayer1Elopoints() {
-        return player1_elopoints;
+    public int getPlayer1Skill() {
+        return player1_skill;
     }
 
-    public void setPlayer1Elopoints(int player1_elopoints) {
-        this.player1_elopoints = player1_elopoints;
+    public void setPlayer1Skill(int skill) {
+        this.player1_skill = skill;
     }
 
-    public int getPlayer1Experience() {
-        return player1_experience;
+    public int getPlayer1Points() {
+        return player1_points;
     }
 
-    public void setPlayer1Experience(int player1_experience) {
-        this.player1_experience = player1_experience;
+    public void setPlayer1Points(int points) {
+        this.player1_points = points;
     }
 
-    public int getPlayer1GivenElopoints() {
-        return player1_given_elopoints;
+    public int getPlayer1GivenSkill() {
+        return player1_given_skill;
     }
 
-    public void setPlayer1GivenElopoints(int player1_given_elopoints) {
-        this.player1_given_elopoints = player1_given_elopoints;
+    public void setPlayer1GivenSkill(int skill) {
+        this.player1_given_skill = skill;
     }
 
-    public int getPlayer1GivenExperience() {
-        return player1_given_experience;
+    public int getPlayer1GivenPoints() {
+        return player1_given_points;
     }
 
-    public void setPlayer1GivenExperience(int player1_given_experience) {
-        this.player1_given_experience = player1_given_experience;
+    public void setPlayer1GivenPoints(int points) {
+        this.player1_given_points = points;
     }
 
-    public int getPlayer2Elopoints() {
-        return player2_elopoints;
+    public int getPlayer2Skill() {
+        return player2_skill;
     }
 
-    public void setPlayer2Elopoints(int player2_elopoints) {
-        this.player2_elopoints = player2_elopoints;
+    public void setPlayer2Skill(int skill) {
+        this.player2_skill = skill;
     }
 
-    public int getPlayer2Experience() {
-        return player2_experience;
+    public int getPlayer2Points() {
+        return player2_points;
     }
 
-    public void setPlayer2Experience(int player2_experience) {
-        this.player2_experience = player2_experience;
+    public void setPlayer2Points(int points) {
+        this.player2_points = points;
     }
 
-    public int getPlayer2GivenElopoints() {
-        return player2_given_elopoints;
+    public int getPlayer2GivenSkill() {
+        return player2_given_skill;
     }
 
-    public void setPlayer2GivenElopoints(int player2_given_elopoints) {
-        this.player2_given_elopoints = player2_given_elopoints;
+    public void setPlayer2GivenSkill(int skill) {
+        this.player2_given_skill = skill;
     }
 
-    public int getPlayer2GivenExperience() {
-        return player2_given_experience;
+    public int getPlayer2GivenPoints() {
+        return player2_given_points;
     }
 
-    public void setPlayer2GivenExperience(int player2_given_experience) {
-        this.player2_given_experience = player2_given_experience;
+    public void setPlayer2GivenPoints(int points) {
+        this.player2_given_points = points;
     }
 
-    public int getPlayer3Elopoints() {
-        return player3_elopoints;
+    public int getPlayer3Skill() {
+        return player3_skill;
     }
 
-    public void setPlayer3Elopoints(int player3_elopoints) {
-        this.player3_elopoints = player3_elopoints;
+    public void setPlayer3Skill(int skill) {
+        this.player3_skill = skill;
     }
 
-    public int getPlayer3Experience() {
-        return player3_experience;
+    public int getPlayer3Points() {
+        return player3_points;
     }
 
-    public void setPlayer3Experience(int player3_experience) {
-        this.player3_experience = player3_experience;
+    public void setPlayer3Points(int points) {
+        this.player3_points = points;
     }
 
-    public int getPlayer3GivenElopoints() {
-        return player3_given_elopoints;
+    public int getPlayer3GivenSkill() {
+        return player3_given_skill;
     }
 
-    public void setPlayer3GivenElopoints(int player3_given_elopoints) {
-        this.player3_given_elopoints = player3_given_elopoints;
+    public void setPlayer3GivenSkill(int skill) {
+        this.player3_given_skill = skill;
     }
 
-    public int getPlayer3GivenExperience() {
-        return player3_given_experience;
+    public int getPlayer3GivenPoints() {
+        return player3_given_points;
     }
 
-    public void setPlayer3GivenExperience(int player3_given_experience) {
-        this.player3_given_experience = player3_given_experience;
+    public void setPlayer3GivenPoints(int points) {
+        this.player3_given_points = points;
     }
 
-    public int getPlayer4Elopoints() {
-        return player4_elopoints;
+    public int getPlayer4Skill() {
+        return player4_skill;
     }
 
-    public void setPlayer4Elopoints(int player4_elopoints) {
-        this.player4_elopoints = player4_elopoints;
+    public void setPlayer4Skill(int skill) {
+        this.player4_skill = skill;
     }
 
-    public int getPlayer4Experience() {
-        return player4_experience;
+    public int getPlayer4Points() {
+        return player4_points;
     }
 
-    public void setPlayer4Experience(int player4_experience) {
-        this.player4_experience = player4_experience;
+    public void setPlayer4Points(int points) {
+        this.player4_points = points;
     }
 
-    public int getPlayer4GivenElopoints() {
-        return player4_given_elopoints;
+    public int getPlayer4GivenSkill() {
+        return player4_given_skill;
     }
 
-    public void setPlayer4GivenElopoints(int player4_given_elopoints) {
-        this.player4_given_elopoints = player4_given_elopoints;
+    public void setPlayer4GivenSkill(int skill) {
+        this.player4_given_skill = skill;
     }
 
-    public int getPlayer4GivenExperience() {
-        return player4_given_experience;
+    public int getPlayer4GivenPoints() {
+        return player4_given_points;
     }
 
-    public void setPlayer4GivenExperience(int player4_given_experience) {
-        this.player4_given_experience = player4_given_experience;
+    public void setPlayer4GivenPoints(int points) {
+        this.player4_given_points = points;
     }
 
     /**

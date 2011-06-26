@@ -55,8 +55,8 @@ public class PlayerJoinedMessage extends ServerMessage {
      */
     public static final Pattern PATTERN = Pattern.compile(REG_EXP);
     private String playerName;
-    private Integer playerExperience = 0;
-    private Integer playerElopoints = 1500;
+    private Integer playerPoints = 0;
+    private Integer playerSkill = 1500;
     private Integer playerId;
 
     /**
@@ -70,11 +70,11 @@ public class PlayerJoinedMessage extends ServerMessage {
      * @param playerName the name of the player
      * @param playerId the id of the player
      */
-    public PlayerJoinedMessage(String playerName, Integer playerId, Integer playerExperience, Integer playerElopoints) {
+    public PlayerJoinedMessage(String playerName, Integer playerId, Integer points, Integer skill) {
         this.playerName = playerName;
         this.playerId = playerId;
-        this.playerExperience = playerExperience;
-        this.playerElopoints = playerElopoints;
+        this.playerPoints = points;
+        this.playerSkill = skill;
     }
 
     /**
@@ -108,23 +108,23 @@ public class PlayerJoinedMessage extends ServerMessage {
     /**
      * @return the playerId
      */
-    public Integer getPlayerExperience() {
-        return this.playerExperience;
+    public Integer getPlayerPoints() {
+        return this.playerPoints;
     }
 
     /**
      * @param playerId the playerId to set
      */
-    public void setPlayerExperience(Integer playerExperience) {
-        this.playerExperience = playerExperience;
+    public void setPlayerPoints(Integer points) {
+        this.playerPoints = points;
     }
 
-    public Integer getPlayerElopoints() {
-        return playerElopoints;
+    public Integer getPlayerSkill() {
+        return playerSkill;
     }
 
-    public void setPlayerElopoints(Integer playerElopoints) {
-        this.playerElopoints = playerElopoints;
+    public void setPlayerSkill(Integer skill) {
+        this.playerSkill = skill;
     }
 
     /**
@@ -132,7 +132,7 @@ public class PlayerJoinedMessage extends ServerMessage {
      */
     @Override
     public String getMessageString() {
-        return "PLAYER_JOINED \"" + MessageUtil.prepareToSend(this.playerName) + "\" " + this.playerId + " " + this.playerExperience + " " + this.playerElopoints;
+        return "PLAYER_JOINED \"" + MessageUtil.prepareToSend(this.playerName) + "\" " + this.playerId + " " + this.playerPoints + " " + this.playerSkill;
     }
 
     /**
@@ -144,8 +144,8 @@ public class PlayerJoinedMessage extends ServerMessage {
         if (matcher.matches()) {
             this.setPlayerName(matcher.group(1).replace("\"", ""));
             this.setPlayerId(Integer.parseInt(matcher.group(2)));
-            this.setPlayerExperience(Integer.parseInt(matcher.group(3)));
-            this.setPlayerElopoints(Integer.parseInt(matcher.group(4)));
+            this.setPlayerPoints(Integer.parseInt(matcher.group(3)));
+            this.setPlayerSkill(Integer.parseInt(matcher.group(4)));
         }
 
     }
@@ -162,7 +162,7 @@ public class PlayerJoinedMessage extends ServerMessage {
             return false;
         }
         PlayerJoinedMessage m = (PlayerJoinedMessage) o;
-        return this.playerName.equals(m.getPlayerName()) && this.playerId == m.getPlayerId() && this.playerExperience == m.getPlayerExperience() && this.playerElopoints == m.getPlayerElopoints();
+        return this.playerName.equals(m.getPlayerName()) && this.playerId == m.getPlayerId() && this.playerPoints == m.getPlayerPoints() && this.playerSkill == m.getPlayerSkill();
     }
 
     /**

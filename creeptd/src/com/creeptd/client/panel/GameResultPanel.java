@@ -150,20 +150,20 @@ public class GameResultPanel extends GameScreen implements MessageListener {
         Vector<String> row = new Vector<String>();
         row.add(srm.getPlayerName());
         String exp = "";
-        if (srm.getLastgameExperience() >= 0) {
-            exp += "+" + srm.getLastgameExperience();
+        if (srm.getLastgamePoints() >= 0) {
+            exp += "+" + srm.getLastgamePoints();
         } else {
-            exp += srm.getLastgameExperience();
+            exp += srm.getLastgamePoints();
         }
-        exp += " (" + srm.getExperience() + ")";
+        exp += " (" + srm.getPoints() + ")";
         row.add(exp);
         String elo = "";
-        if (srm.getLastgameElopoints() >= 0) {
-            elo += "+" + srm.getLastgameElopoints();
+        if (srm.getLastgameSkill() >= 0) {
+            elo += "+" + srm.getLastgameSkill();
         } else {
-            elo += srm.getLastgameElopoints();
+            elo += srm.getLastgameSkill();
         }
-        elo += " (" + srm.getElopoints() + ")";
+        elo += " (" + srm.getSkill() + ")";
         row.add(elo);
         tableData.add(row);
 
@@ -227,8 +227,8 @@ public class GameResultPanel extends GameScreen implements MessageListener {
             }
             Collections.sort(list, new Comparator<HighscoreEntry>() {
                 public int compare(HighscoreEntry a, HighscoreEntry b) {
-                    Integer aPoints = a.getLastgameExperience();
-                    Integer bPoints = b.getLastgameExperience();
+                    Integer aPoints = a.getLastgamePoints();
+                    Integer bPoints = b.getLastgamePoints();
                     if (aPoints.compareTo(bPoints) != 0) {
                         return aPoints.compareTo(bPoints);
                     } else {
@@ -244,16 +244,16 @@ public class GameResultPanel extends GameScreen implements MessageListener {
                 rowsData.add(String.valueOf(nr));
                 rowsData.add(he.getPlayerName().toString());
 
-                if (he.getLastgameExperience() >= 0) {
-                    rowsData.add("+" + he.getExperience().toString());
+                if (he.getLastgamePoints() >= 0) {
+                    rowsData.add("+" + he.getPoints().toString());
                 } else {
-                    rowsData.add(he.getExperience().toString());
+                    rowsData.add(he.getPoints().toString());
                 }
 
-                if (he.getLastgameElopoints() >= 0) {
-                    rowsData.add("+" + he.getElopoints().toString());
+                if (he.getLastgameSkill() >= 0) {
+                    rowsData.add("+" + he.getSkill().toString());
                 } else {
-                    rowsData.add(he.getElopoints().toString());
+                    rowsData.add(he.getSkill().toString());
                 }
 
                 rows.add(rowsData);

@@ -66,8 +66,10 @@ import com.creeptd.common.messages.server.GameDescription;
 import com.creeptd.common.messages.server.ServerMessage;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.InputVerifier;
 import javax.swing.JCheckBox;
 
+import javax.swing.JComponent;
 import static com.creeptd.client.i18n.Translator.*;
 
 /**
@@ -82,12 +84,13 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
     private JLabel player;
     private JLabel map;
     private JLabel Passwort;
-    private JLabel MaxEloPoints;
+    private JLabel MinSkill;
+    private JLabel MaxSkill;
     private JLabel lGamemode;
     private JTextField tName;
     private JTextField tPasswort;
-    private JTextField tMaxEloPoints;
-    private JTextField tMinEloPoints;
+    private JTextField tMaxSkill;
+    private JTextField tMinSkill;
     private JComboBox tPlayer;
     private JComboBox tGamemode;
     private JButton tMap;
@@ -121,25 +124,25 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         this.setGameScreenFocus(tName);
 
         player = new JLabel(_("Players")+": ");
-        player.setBounds(200, 250, 200, 25);
+        player.setBounds(200, 450, 200, 25);
         player.setForeground(Color.GRAY);
         player.setFont(new Font("Arial", Font.PLAIN, 12));
 
         tPlayer = new JComboBox();
         tPlayer.setBackground(Color.BLACK);
         tPlayer.setForeground(Color.GREEN);
-        tPlayer.setBounds(300, 250, 200, 25);
+        tPlayer.setBounds(300, 450, 200, 25);
         tPlayer.setFont(new Font("Arial", Font.PLAIN, 12));
 
         lGamemode = new JLabel(_("Mode")+": ");
-        lGamemode.setBounds(200, 450, 200, 25);
+        lGamemode.setBounds(200, 250, 200, 25);
         lGamemode.setForeground(Color.GRAY);
         lGamemode.setFont(new Font("Arial", Font.PLAIN, 12));
 
         tGamemode = new JComboBox();
         tGamemode.setBackground(Color.BLACK);
         tGamemode.setForeground(Color.GREEN);
-        tGamemode.setBounds(300, 450, 200, 25);
+        tGamemode.setBounds(300, 250, 200, 25);
         tGamemode.setFont(new Font("Arial", Font.PLAIN, 12));
 
         map = new JLabel(_("Map")+": ");
@@ -161,18 +164,45 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         tPasswort.setBounds(300, 350, 200, 25);
         tPasswort.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        MaxEloPoints = new JLabel(_("Min-Max skill")+": ");
-        MaxEloPoints.setBounds(200, 400, 200, 25);
-        MaxEloPoints.setForeground(Color.GRAY);
-        MaxEloPoints.setFont(new Font("Arial", Font.PLAIN, 12));
+        MinSkill = new JLabel(_("Min. skill")+": ");
+        MinSkill.setBounds(200, 400, 200, 25);
+        MinSkill.setForeground(Color.GRAY);
+        MinSkill.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        tMinEloPoints = new JTextField();
-        tMinEloPoints.setBounds(300, 400, 80, 25);
-        tMinEloPoints.setFont(new Font("Arial", Font.PLAIN, 12));
+        MaxSkill = new JLabel(_("Max. skill")+": ");
+        MaxSkill.setBounds(370, 400, 70, 25);
+        MaxSkill.setForeground(Color.GRAY);
+        MaxSkill.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        tMaxEloPoints = new JTextField();
-        tMaxEloPoints.setBounds(420, 400, 80, 25);
-        tMaxEloPoints.setFont(new Font("Arial", Font.PLAIN, 12));
+        InputVerifier verifier = new InputVerifier() {
+            public boolean verify(JComponent comp) {
+                JTextField t = (JTextField) comp;
+                if (t.getText().length() > 4) {
+                    t.setText(t.getText().substring(0, 4));
+                    return false;
+                }
+                try {
+                    Integer n = Integer.parseInt(t.getText());
+                    t.setText(""+n);
+                } catch (Exception ex) {
+                    t.setText("0");
+                    return false;
+                }
+                return true;
+            }
+        };
+        
+        tMinSkill = new JTextField();
+        tMinSkill.setBounds(300, 400, 60, 25);
+        tMinSkill.setFont(new Font("Arial", Font.PLAIN, 12));
+        tMinSkill.setText("0");
+        tMinSkill.setInputVerifier(verifier);
+
+        tMaxSkill = new JTextField();
+        tMaxSkill.setBounds(440, 400, 60, 25);
+        tMaxSkill.setFont(new Font("Arial", Font.PLAIN, 12));
+        tMaxSkill.setText("3000");
+        tMaxSkill.setInputVerifier(verifier);
 
         create = new JButton(_("Create game"));
         create.setBounds(225, 600, 200, 25);
@@ -233,12 +263,13 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
 
         this.selectMap = 0;
 
-        this.add(MaxEloPoints);
+        this.add(MinSkill);
+        this.add(MaxSkill);
         this.add(tName);
         this.add(Passwort);
         this.add(tPasswort);
-        this.add(tMaxEloPoints);
-        this.add(tMinEloPoints);
+        this.add(tMaxSkill);
+        this.add(tMinSkill);
         this.add(title);
         this.add(name);
         this.add(tName);
@@ -337,19 +368,19 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
             StartGame = false;
         }
 
-        if (StartGame == true && (!tMaxEloPoints.getText().equals("")) || !tMinEloPoints.getText().equals("")) {
-            int minEloPoints = 0;
+        if (StartGame == true && (!tMaxSkill.getText().equals("")) || !tMinSkill.getText().equals("")) {
+            int minSkill = 0;
             try {
-                minEloPoints = Integer.parseInt(tMinEloPoints.getText());
+                minSkill = Integer.parseInt(tMinSkill.getText());
             } catch (Exception ex) {
             }
-            int maxEloPoints = 0;
+            int maxSkill = 0;
             try {
-                maxEloPoints = Integer.parseInt(tMaxEloPoints.getText());
+                maxSkill = Integer.parseInt(tMaxSkill.getText());
             } catch (Exception ex) {
             }
 
-            if (maxEloPoints < minEloPoints) {
+            if (maxSkill < minSkill) {
                 errorDialog(_("Maximum skill must be larger than minimum skill!"));
                 StartGame = false;
 
@@ -392,14 +423,14 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         gM.setMapId(this.selectMap);
         gM.setMaxPlayers(tPlayer.getSelectedIndex() + 2);
         try {
-            gM.setMaxEloPoints(Integer.parseInt(tMaxEloPoints.getText()));
+            gM.setMaxSkill(Integer.parseInt(tMaxSkill.getText()));
         } catch (NumberFormatException ex) {
-            gM.setMaxEloPoints(0);
+            gM.setMaxSkill(0);
         }
         try {
-            gM.setMinEloPoints(Integer.parseInt(tMinEloPoints.getText()));
+            gM.setMinSkill(Integer.parseInt(tMinSkill.getText()));
         } catch (NumberFormatException ex) {
-            gM.setMinEloPoints(0);
+            gM.setMinSkill(0);
         }
         gM.setPasswort(tPasswort.getText());
         int selectedMode = tGamemode.getSelectedIndex();
@@ -432,14 +463,14 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
             gd.setMapId(this.selectMap);
             gd.setGameName(tName.getText());
             try {
-                gd.setMaxEloPoints(Integer.valueOf(tMaxEloPoints.getText()));
+                gd.setMaxSkill(Integer.valueOf(tMaxSkill.getText()));
             } catch (NumberFormatException ex) {
-                gd.setMaxEloPoints(0);
+                gd.setMaxSkill(0);
             }
             try {
-                gd.setMinEloPoints(Integer.valueOf(tMinEloPoints.getText()));
+                gd.setMinSkill(Integer.valueOf(tMinSkill.getText()));
             } catch (NumberFormatException ex) {
-                gd.setMinEloPoints(0);
+                gd.setMinSkill(0);
             }
             int selectedMode = tGamemode.getSelectedIndex();
             Constants.Mode mode = Constants.Mode.ALLVSALL;
@@ -505,7 +536,7 @@ public class CreateGamePanel extends GameScreen implements MessageListener {
         this.getCore().getNetwork().makeContact();
         this.getCore().getNetwork().addListener(this);
         int playerScore = 0;
-        playerScore = this.getCore().getPlayerElopoints();
+        playerScore = this.getCore().getPlayerSkill();
         this.repaint();
 
 

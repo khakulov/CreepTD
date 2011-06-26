@@ -37,14 +37,9 @@ package com.creeptd.server;
 
 import java.util.LinkedList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
-
-import java.util.Hashtable;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-
 import com.creeptd.common.messages.server.ServerChatMessage;
 import com.creeptd.common.messages.server.PlayersMessage;
 import com.creeptd.common.messages.server.ServerMessage;
@@ -52,7 +47,6 @@ import com.creeptd.server.client.Client;
 import com.creeptd.server.game.GameManager;
 import com.creeptd.server.model.BlackList;
 import com.creeptd.server.model.Player;
-import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -83,7 +77,6 @@ public class Lobby {
             throw new IllegalArgumentException("Argument 'client' was null");
         }
         // Initialize client list
-        client.send(getCompletePlayersMessage());
         String clientKey = client.getPlayerModel().getName().toLowerCase();
         synchronized (allClients) {
             if (allClients.containsKey(clientKey)) {
@@ -93,14 +86,14 @@ public class Lobby {
         }
         client.send(GameManager.getGamesMessage());
         PlayersMessage pm = new PlayersMessage();
-        pm.addPlayer("join", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
-        sendAll(pm);
+        pm.addPlayer("join", client.getId(), client.getPlayerName(), client.getPlayerModel().getPoints(), client.getPlayerModel().getSkill());
+        sendAllExcept(pm, client); // The client will REFRESH
         logger.info("Client enters the lobby: " + client);
     }
 
     public static void setIngame(Client client, boolean inGame) {
         PlayersMessage pm = new PlayersMessage();
-        pm.addPlayer((inGame) ? "ingame" : "outgame", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
+        pm.addPlayer((inGame) ? "ingame" : "outgame", client.getId(), client.getPlayerName(), client.getPlayerModel().getPoints(), client.getPlayerModel().getSkill());
         sendAll(pm);
     }
 
@@ -121,7 +114,7 @@ public class Lobby {
             allClients.remove(clientKey);
         }
         PlayersMessage pm = new PlayersMessage();
-        pm.addPlayer("leave", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
+        pm.addPlayer("leave", client.getId(), client.getPlayerName(), client.getPlayerModel().getPoints(), client.getPlayerModel().getSkill());
         sendAll(pm);
         logger.info("Client left the lobby: " + client);
     }
@@ -158,6 +151,25 @@ public class Lobby {
     }
 
     /**
+     * Send a message to all clients in the lobby except to the specified
+     * client.
+     *
+     * @param message The message to send
+     */
+    public static void sendAllExcept(ServerMessage message, Client client) {
+        if (message == null) {
+            throw new IllegalArgumentException("'message' was null");
+        }
+        synchronized (allClients) {
+            for (Client c : allClients.values()) {
+                if (!c.equals(client) && !c.isInGame()) {
+                    c.send(message);
+                }
+            }
+        }
+    }
+
+    /**
      * Send a message to all clients in the game.
      *
      * @param message The message to send
@@ -184,14 +196,14 @@ public class Lobby {
         synchronized (allClients) {
             for (Client client : allClients.values()) {
                 if (client.doCheck()) {
-                    pm.addPlayer("add", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
+                    pm.addPlayer("add", client.getId(), client.getPlayerName(), client.getPlayerModel().getPoints(), client.getPlayerModel().getSkill());
                     if (client.isInGame()) {
-                        pm.addPlayer("ingame", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
+                        pm.addPlayer("ingame", client.getId(), client.getPlayerName(), client.getPlayerModel().getPoints(), client.getPlayerModel().getSkill());
                     }
                 } else {
                     logger.info("There has been a problem with client "+client+" (leaves lobby now)");
                     clientsToRemove.add(client);
-                    pm.addPlayer("remove", client.getId(), client.getPlayerName(), client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints());
+                    pm.addPlayer("remove", client.getId(), client.getPlayerName(), client.getPlayerModel().getPoints(), client.getPlayerModel().getSkill());
                 }
             }
         }

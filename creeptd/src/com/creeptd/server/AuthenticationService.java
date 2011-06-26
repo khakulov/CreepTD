@@ -64,7 +64,8 @@ public class AuthenticationService {
 
     private static Logger logger = Logger.getLogger(AuthenticationService.class);
     private final static HashSet<Client> loggedIn = new HashSet<Client>();
-    private static final String QUERY_PLAYERS_ORDERBY_POINTS = "SELECT player FROM Player AS player ORDER BY player.experience DESC";
+    private static final String QUERY_PLAYERS_ORDERBY_POINTS = "SELECT player FROM Player AS player ORDER BY player.points DESC";
+    private static final String QUERY_PLAYERS_ORDERBY_SKILL = "SELECT player FROM Player AS player ORDER BY player.skill DESC";
     private static final String QUERY_BANLIST = "SELECT * FROM BlackList WHERE data IN ";
 
     private AuthenticationService() {
@@ -116,8 +117,8 @@ public class AuthenticationService {
             player.setName(registrationRequestMessage.getUsername());
             player.setAndEncodePassword(registrationRequestMessage.getPassword());
             player.setEmail(registrationRequestMessage.getEmail());
-            player.setExperience(0);
-            player.setElopoints(1000);
+            player.setPoints(0);
+            player.setSkill(1000);
 
             entityManager.persist(player);
             entityManager.flush();
@@ -257,12 +258,16 @@ public class AuthenticationService {
 
     /**
      * @param firstResult The index of the first result returned.
-     * @return 30 players sorted by elopoints starting with firstResult.
+     * @return 30 players sorted by skill/points starting with firstResult.
      */
-    public static Set<Player> getPlayers(int firstResult) {
+    public static Set<Player> getPlayers(String sortBy, int firstResult) {
         EntityManager entityManager = PersistenceManager.getInstance().getEntityManager();
-
-        Query query = entityManager.createQuery(QUERY_PLAYERS_ORDERBY_POINTS);
+        Query query;
+        if (sortBy == null || sortBy.equals("points")) {
+            query = entityManager.createQuery(QUERY_PLAYERS_ORDERBY_POINTS);
+        } else {
+            query = entityManager.createQuery(QUERY_PLAYERS_ORDERBY_SKILL);
+        }
         query.setMaxResults(30);
         query.setFirstResult(firstResult);
 

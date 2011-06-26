@@ -39,7 +39,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
@@ -57,6 +56,7 @@ import com.creeptd.common.messages.client.ClientMessage;
 import com.creeptd.common.messages.server.GameMessage;
 import com.creeptd.common.messages.server.ServerMessage;
 import java.net.ConnectException;
+import java.net.NetworkInterface;
 
 /**
  * Networkclass that handles the network communication on clientside.
@@ -82,6 +82,7 @@ public class Network implements MessageSubject {
     private ArrayList<MessageListener> remlisteners;
     private ArrayList<MessageListener> addlisteners;
     private boolean connected = false;
+    private boolean localMode = false;
 
     /**
      * Constructor of Network.
@@ -91,10 +92,11 @@ public class Network implements MessageSubject {
      * @param core
      *
      */
-    public Network(String host, int port, Core core) {
+    public Network(String host, int port, Core core, boolean localMode) {
         this.core = core;
         this.host = host;
         this.port = port;
+        this.localMode = localMode;
 
         this.queue = Collections.synchronizedList(new ArrayList<GameMessage>());
         this.listeners = new ArrayList<MessageListener>();
@@ -110,9 +112,10 @@ public class Network implements MessageSubject {
      * @param port
      *            the Port
      */
-    public Network(String host, int port) {
+    public Network(String host, int port, boolean localMode) {
         this.host = host;
         this.port = port;
+        this.localMode = localMode;
         this.queue = Collections.synchronizedList(new ArrayList<GameMessage>());
         this.listeners = new ArrayList<MessageListener>();
         this.remlisteners = new ArrayList<MessageListener>();
@@ -129,14 +132,16 @@ public class Network implements MessageSubject {
             }
             logger.info("Connecting to " + host + ":" + port);
             this.socket = new Socket(host, port);
-
             this.out = new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream(), Charset.forName("UTF-8")), true);
 
             // wait for messages
             this.clientWatcher = new ClientWatcher(this, this.socket.getInputStream());
             this.clientWatcher.start();
             this.connected = true;
-            this.macaddress = byteArrayToHexString(NetworkInterface.getByInetAddress(this.socket.getLocalAddress()).getHardwareAddress());
+            this.macaddress = null;
+            if (this.localMode) {
+                this.macaddress = byteArrayToHexString(NetworkInterface.getByInetAddress(this.socket.getLocalAddress()).getHardwareAddress());
+            }
             if (this.macaddress == null) {
                 this.macaddress = String.valueOf((int) Math.round(Math.random() * 10000000) + 1000000);
             }

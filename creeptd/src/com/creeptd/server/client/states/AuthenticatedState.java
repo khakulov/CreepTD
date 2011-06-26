@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 package com.creeptd.server.client.states;
 
+import com.creeptd.client.panel.PlayerChat;
 import org.apache.log4j.Logger;
 
 import com.creeptd.common.Permission;
@@ -121,11 +122,11 @@ public class AuthenticatedState extends AbstractClientState {
             handleChatMessage(((ClientChatMessage) message).getMessage());
             return this;
         }
-        /* if (message instanceof RefreshMessage) {
+        if (message instanceof RefreshMessage) {
             this.getClient().send(Lobby.getCompletePlayersMessage());
             this.getClient().send(GameManager.getGamesMessage());
             return this;
-        } */
+        }
         if (message instanceof ScoreRequestMessage) {
             ScoreRequestMessage requestMessage = (ScoreRequestMessage) message;
             ScoreResponseMessage responseMessage = HighscoreService.getScoreMessage(requestMessage.getPlayerName());
@@ -134,7 +135,7 @@ public class AuthenticatedState extends AbstractClientState {
         }
         if (message instanceof HighscoreRequestMessage) {
             HighscoreRequestMessage requestMessage = (HighscoreRequestMessage) message;
-            this.getClient().send(HighscoreService.getHighscoreMessage(requestMessage.getStart()));
+            this.getClient().send(HighscoreService.getHighscoreMessage(requestMessage.getSortBy(), requestMessage.getStart()));
             return this;
         }
         if (message instanceof CreateGameMessage) {
@@ -161,14 +162,11 @@ public class AuthenticatedState extends AbstractClientState {
                 return this;
             }
             logger.info("Client " + this.getClient() + " joined to game " + game);
-            try {
-                game.addPlayer(this.getClient());
-            } catch (Exception ex) {
-                this.getClient().send(new JoinGameResponseMessage(ResponseType.multi));
-                return this;
+            if (game.addPlayer(this.getClient())) {
+                return new InGameState(this.getClient(), game, this);
             }
-            this.getClient().send(new JoinGameResponseMessage(ResponseType.ok));
-            return new InGameState(this.getClient(), game, this);
+            this.getClient().send(new JoinGameResponseMessage(ResponseType.failed));
+            return this;
         }
         if (message instanceof LogoutMessage) {
             AuthenticationService.logout(this.getClient());
@@ -224,7 +222,7 @@ public class AuthenticatedState extends AbstractClientState {
             if (msgSplit.length > 1 && !player.getName().equalsIgnoreCase(msgSplit[0])) {
                 Player user = AuthenticationService.getPlayer(msgSplit[0]);
                 if (user != null) {
-                    String messageStr = "<b>" + player.getName() + " -&gt; " + user.getName() + ": " + msgSplit[1] + "</b>";
+                    String messageStr = "<b>" + player.getName() + " -&gt; " + user.getName() + ": " + PlayerChat.escapeHTML(msgSplit[1]) + "</b>";
                     if (!Lobby.sendDirectMessage(this.getClient(), user.getName(), messageStr) && !GameManager.sendDirectMessage(this.getClient(), user.getName(), messageStr)) {
                         sendServerMessage("<b>"+user.getName() + "</b> is not online.");
                     }
@@ -242,7 +240,7 @@ public class AuthenticatedState extends AbstractClientState {
             Lobby.sendAll(scm);
             return true;
         }
-        if ("/global".equalsIgnoreCase(command) && player.hasPermission(Permission.MOD_GLOBAL)) {
+        if ("/global".equalsIgnoreCase(command) && player.hasPermission(Permission.GLOBAL)) {
             ServerChatMessage scm = new ServerChatMessage();
             scm.setPlayerName("Server");
             scm.setMessage(message);

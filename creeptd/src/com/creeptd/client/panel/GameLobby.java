@@ -100,7 +100,6 @@ import java.util.TreeMap;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -146,10 +145,31 @@ public class GameLobby extends GameScreen implements MessageListener {
     private GameDescription joinGame;
     private ArrayList<GameDescription> games;
     private int playersInGame;
-    private static JDialog helpFrame = new HelpGamePanel();
-    public static JDialog optionsFrame = new OptionsPanel();
     public static final SortedMap<String, Player> allPlayers = new TreeMap<String, Player>();
-    Timer swingUpdateTimer = null;
+    private Timer swingUpdateTimer = null;
+    private boolean waitingForRefresh = false;
+    private static JDialog helpGamePanel = null;
+    private static JDialog optionsPanel = null;
+
+    public static void openHelpGamePanel() {
+        if (helpGamePanel != null) return;
+        helpGamePanel = new HelpGamePanel();
+        helpGamePanel.setVisible(true);
+    }
+
+    public static void onCloseHelpGamePanel() {
+        helpGamePanel = null;
+    }
+
+    public static void openOptionsPanel() {
+        if (optionsPanel != null) return;
+        optionsPanel = new OptionsPanel();
+        optionsPanel.setVisible(true);
+    }
+
+    public static void onCloseOptionsPanel() {
+        optionsPanel = null;
+    }
 
     /**
      * A player
@@ -228,13 +248,12 @@ public class GameLobby extends GameScreen implements MessageListener {
         this.lobbyTitle.setFont(new Font("Arial", Font.BOLD, 28));
         java.net.URL imageURL = getClass().getClassLoader().getResource("com/creeptd/client/resources/panel/creeptd-logo-long.jpg");
         this.lobbyTitle.setText("<html><img src=\"" + imageURL + "\"></html>");
-
-        Map<String, String> opl = new HashMap<String, String>();
-        opl.put("n", "0");
-        this.onlinePlayersLabel = new JLabel(_("%n% players online", opl), SwingConstants.RIGHT);
-        this.onlinePlayersLabel.setBounds(635, 19, 270, 10);
+        
+        this.onlinePlayersLabel = new JLabel(_("Loading..."), SwingConstants.RIGHT);
+        this.onlinePlayersLabel.setBounds(635, 19, 270, 20);
         this.onlinePlayersLabel.setForeground(Color.GRAY);
         this.onlinePlayersLabel.setFont(new Font("Arial", Font.BOLD, 11));
+        this.setPlayerCountLabel();
 
         this.gameInfoEditorPane = new JEditorPane();
         this.gameInfoEditorPane.setBounds(640, 50, 270, 200);
@@ -326,6 +345,7 @@ public class GameLobby extends GameScreen implements MessageListener {
         this.refreshButton.setBounds(260, 650, 110, 25);
         this.refreshButton.setBackground(Color.BLACK);
         this.refreshButton.setForeground(Color.GREEN);
+        this.refreshButton.setEnabled(false);
 
         this.highscoresButton = new JButton(_("Highscores"));
         this.highscoresButton.setBounds(380, 650, 110, 25);
@@ -377,15 +397,15 @@ public class GameLobby extends GameScreen implements MessageListener {
                     GameLobby.this.logger.info("Could not select the game");
                     return;
                 }
-                if (GameLobby.this.joinGame.getMinEloPoints() > getCore().getPlayerElopoints() && GameLobby.this.joinGame.getMinEloPoints() != 0) {
+                if (GameLobby.this.joinGame.getMinSkill() > getCore().getPlayerSkill() && GameLobby.this.joinGame.getMinSkill() != 0) {
                     Map<String, String> args = new HashMap<String, String>();
-                    args.put("min", GameLobby.this.joinGame.getMinEloPoints() + "");
+                    args.put("min", GameLobby.this.joinGame.getMinSkill() + "");
                     errorDialog(_("A minimum skill of %min% is required for this game.", args));
                     return;
                 }
-                if (GameLobby.this.joinGame.getMaxEloPoints() < getCore().getPlayerElopoints() && GameLobby.this.joinGame.getMaxEloPoints() != 0) {
+                if (GameLobby.this.joinGame.getMaxSkill() < getCore().getPlayerSkill() && GameLobby.this.joinGame.getMaxSkill() != 0) {
                     Map<String, String> args = new HashMap<String, String>();
-                    args.put("max", GameLobby.this.joinGame.getMaxEloPoints() + "");
+                    args.put("max", GameLobby.this.joinGame.getMaxSkill() + "");
                     errorDialog(_("A maximum skill of %max% is required for this game.", args));
                     return;
                 }
@@ -428,12 +448,12 @@ public class GameLobby extends GameScreen implements MessageListener {
                 GameLobby.this.logger.info("Could not select the game");
                 return;
                 }
-                if (GameLobby.this.joinGame.getMinEloPoints() > getCore().getPlayerElopoints() && GameLobby.this.joinGame.getMinEloPoints() != 0) {
-                errorDialog("A minimum skill of "+GameLobby.this.joinGame.getMinEloPoints() + " is required for this game.");
+                if (GameLobby.this.joinGame.getMinSkill() > getCore().getPlayerSkill() && GameLobby.this.joinGame.getMinSkill() != 0) {
+                errorDialog("A minimum skill of "+GameLobby.this.joinGame.getMinSkill() + " is required for this game.");
                 return;
                 }
-                if (GameLobby.this.joinGame.getMaxEloPoints() < getCore().getPlayerElopoints() && GameLobby.this.joinGame.getMaxEloPoints() != 0) {
-                errorDialog("A maximum skill of " + GameLobby.this.joinGame.getMaxEloPoints() + " is required for this game.");
+                if (GameLobby.this.joinGame.getMaxSkill() < getCore().getPlayerSkill() && GameLobby.this.joinGame.getMaxSkill() != 0) {
+                errorDialog("A maximum skill of " + GameLobby.this.joinGame.getMaxSkill() + " is required for this game.");
                 return;
                 }
                 if (!GameLobby.this.joinGame.getState().equals("waiting")) {
@@ -581,14 +601,14 @@ public class GameLobby extends GameScreen implements MessageListener {
         this.helpButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                helpFrame.setVisible(true);
+                openHelpGamePanel();
             }
         });
 
         this.optionsButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                optionsFrame.setVisible(true);
+                openOptionsPanel();
             }
         });
 
@@ -791,7 +811,7 @@ public class GameLobby extends GameScreen implements MessageListener {
 
                 // Mode
                 rowsData.add("<html><b>" + _(gd.getGameModeString()) + "</b></html>");
-                rowsData.add(((gd.getMinEloPoints() == 0) ? _("all") : gd.getMinEloPoints()) + "-" + ((gd.getMaxEloPoints() == 0) ? _("all") : gd.getMaxEloPoints()));
+                rowsData.add(((gd.getMinSkill() == 0) ? _("all") : gd.getMinSkill()) + "-" + ((gd.getMaxSkill() == 0) ? _("all") : gd.getMaxSkill()));
                 rowsData.add((gd.getPassword().equals("yes") ? "<html><DIV style=\"color:red;\"><b>" + _(gd.getPassword()) + "</DIV></HTML>" : _(gd.getPassword())));
 
                 // State
@@ -982,7 +1002,7 @@ public class GameLobby extends GameScreen implements MessageListener {
             label.setLayout(null);
             label.setBorder(new EmptyBorder(2, 1, 1, 1));
             label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            String html = "<html><table><tr><td width=\"210\">";
+            String html = "<html><table><tr><td width=\"190\">";
             if (GameLobby.this.getCore().getPlayerName().equalsIgnoreCase(p.getName())) {
                 html += "<font color=\"red\">" + p.getName() + "</font>";
             } else {
@@ -1005,7 +1025,12 @@ public class GameLobby extends GameScreen implements MessageListener {
                 label.setForeground(Color.GREEN);
             }
             label.setText(html);
-            label.setToolTipText("<html><b>" + p.getName() + "</b><br>" + _("Points") + ": " + p.getPoints() + "<br>" + _("Skill") + ": " + p.getSkill() + "</html>");
+            String tt = "<html><b>" + p.getName() + "</b><br>" + _("Points") + ": " + p.getPoints() + "<br>" + _("Skill") + ": " + p.getSkill();
+            if (p.state.equals("ingame")) {
+                tt += "<br /><i>"+_("In game")+"</i>";
+            }
+            tt += "</html>";
+            label.setToolTipText(tt);
             return label;
         }
     }
@@ -1063,9 +1088,11 @@ public class GameLobby extends GameScreen implements MessageListener {
                     if (pon != null) {
                         pon.state = "ingame";
                     }
-                    Map<String, String> args = new HashMap<String, String>();
-                    args.put("name", p.name);
-                    this.chatdialog.sendChatText(_("Server"), _("<b>%name%</b> joined a game...", args), false, Core.getInstance());
+                    if (!this.waitingForRefresh) {
+                        Map<String, String> args = new HashMap<String, String>();
+                        args.put("name", p.name);
+                        this.chatdialog.sendChatText(_("Server"), _("<b>%name%</b> joined a game...", args), false, Core.getInstance());
+                    }
                 } else if (p.operation.equals("outgame")) {
                     Player pon = allPlayers.get(p.name.toLowerCase());
                     if (pon != null) {
@@ -1073,14 +1100,17 @@ public class GameLobby extends GameScreen implements MessageListener {
                         pon.skill = p.skill;
                         pon.state = "";
                     }
-                    Map<String, String> args = new HashMap<String, String>();
-                    args.put("name", p.name);
-                    this.chatdialog.sendChatText(_("Server"), _("<b>%name%</b> returned from playing...", args), false, Core.getInstance());
+                    if (!this.waitingForRefresh) {
+                        Map<String, String> args = new HashMap<String, String>();
+                        args.put("name", p.name);
+                        this.chatdialog.sendChatText(_("Server"), _("<b>%name%</b> returned from playing...", args), false, Core.getInstance());
+                    }
                 } else {
                     logger.warning("Invalid players list operation: " + p.operation + " for " + p);
                 }
             }
         }
+        this.waitingForRefresh = false;
         this.setPlayerCountLabel();
     }
 
@@ -1125,8 +1155,8 @@ public class GameLobby extends GameScreen implements MessageListener {
         Map<String, String> minOfMaxArgs = new HashMap<String, String>();
         minOfMaxArgs.put("min", GameRow.getCurrentPlayers() + "");
         minOfMaxArgs.put("max", GameRow.getNumberOfPlayers() + "");
-        String minSkill = GameRow.getMinEloPoints() == 0 ? _("all") : GameRow.getMinEloPoints() + "";
-        String maxSkill = GameRow.getMaxEloPoints() == 0 ? _("all") : GameRow.getMaxEloPoints() + "";
+        String minSkill = GameRow.getMinSkill() == 0 ? _("all") : GameRow.getMinSkill() + "";
+        String maxSkill = GameRow.getMaxSkill() == 0 ? _("all") : GameRow.getMaxSkill() + "";
         String txt = "<div align=\"center\"><div style=\"background: gray; color: white; margin-bottom: 5\"><b>" + GameRow.getGameName() + "</b><br>(" + Constants.Map.getMapById(GameRow.getMapId()).toString() + ")<br> </div>" + "<table border='0' style='border-collapse: collapse' width='270' height='102' cellpadding='3'>" + "<tr>" + "<td width='122' valign='top' height='102'>" + "<center>" + "	<img src='" + imageURL + "' width='100' height='100'></center></td>" + "	<td valign='top' width='150' height='102'>" + "	" + _("Players") + ": " + _("%min% of %max%", minOfMaxArgs) + "<br>" + "	" + _("Mode") + ": " + _(mode) + "<br>" + "	" + _("State") + ": " + state + "<br>" + "	" + _("Min/Max") + ": " + minSkill + "-" + maxSkill + "<br>" + "	" + _("Password") + ": " + _(GameRow.getPassword()) + "<br>" + "  </td>" + "</tr>" + "</table>" + "</div><div style=\"margin-top: 5\">" + "<b>" + _("Players") + ":</b> " + GameRow.getPlayer1() + " " + GameRow.getPlayer2() + " " + GameRow.getPlayer3() + " " + GameRow.getPlayer4() + "<br>" + "</div></font>";
 
         this.setGameInfoEditorPaneHTML(txt);
@@ -1150,6 +1180,7 @@ public class GameLobby extends GameScreen implements MessageListener {
      */
     @Override
     public void start() {
+        this.allPlayers.clear();
         managementSound = this.getCore().getSoundManagement();
         this.getCore().getNetwork().addListener(this);
         this.repaint();
@@ -1165,6 +1196,11 @@ public class GameLobby extends GameScreen implements MessageListener {
                 }
             }
         });
+        if (!this.waitingForRefresh) {
+            this.waitingForRefresh = true;
+            RefreshMessage rm = new RefreshMessage();
+            this.getCore().getNetwork().sendMessage(rm);
+        }
         this.swingUpdateTimer.setRepeats(true);
         this.swingUpdateTimer.start();
     }
@@ -1215,8 +1251,9 @@ public class GameLobby extends GameScreen implements MessageListener {
      */
     public synchronized void setPlayerCountLabel() {
         Map<String, String> args = new HashMap<String, String>();
-        args.put("n", (allPlayers.size() + this.playersInGame) + "");
-        onlinePlayersLabel.setText(_("%n% players online", args));
+        args.put("online", allPlayers.size()+"");
+        args.put("playing", ""+this.playersInGame);
+        onlinePlayersLabel.setText(_("%online% players online, %playing% in game", args));
     }
 
     /**

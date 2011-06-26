@@ -46,11 +46,11 @@ public class SkillImage {
 
     private static final SkillImage instance = new SkillImage();
 
-    public static URL getURL(int elopoints) {
+    public static URL getURL(int skill) {
         String image = "";
         int img = 20;
         for (int n = 3000; n >= 0; n -= 150) {
-            if (elopoints > n) {
+            if (skill > n) {
                 image = "skill" + img;
                 break;
             }
@@ -60,7 +60,7 @@ public class SkillImage {
         return url;
     }
 
-    public static Image getImage(int elopoints) {
+    public static Image getImage(int skill) {
         return null;
     }
 }

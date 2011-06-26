@@ -170,7 +170,7 @@ public class PlayerChat extends JEditorPane {
             s = "<span style=\"color:#C0C0C0\">"+msg+"</span>"; // Server may send HTML
         } else {
             String color = core.getPlayerName().equalsIgnoreCase(from) ? "FF0000" : "FFFF00";
-            if (action) s += "<i>";
+            if (action) s += "<i>» ";
             s += "<span style=\"color:#"+color+"\"><b>" + from + "</b></span>";
             if (!action) s += "»";
             s += " "+addSmileys(this.escapeHTML(msg), 10);
@@ -198,7 +198,7 @@ public class PlayerChat extends JEditorPane {
     /**
      * @see http://www.rgagnon.com/javadetails/java-0306.html
      */
-    public final String escapeHTML(String s) {
+    public final static String escapeHTML(String s) {
 
         StringBuffer sb = new StringBuffer();
         int n = s.length();

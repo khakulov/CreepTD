@@ -286,7 +286,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
         if (map.equals("Random_Map")) {
             map = _("Random map");
         }
-        description.setText("<html><p style=\"padding-bottom: 3; color: yellow;\"><b>„"+gamename+"”</b></p><table width=\"180px\"><tr><td>"+_("Map")+": </td><td>" + map + "</td></tr><tr><td>"+_("Players")+":  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>"+_("Min-Max")+":  </td><td>" + ((this.getCore().getActiveGame().getMinEloPoints() == 0) ? _("all") : this.getCore().getActiveGame().getMinEloPoints()) + "-" + ((this.getCore().getActiveGame().getMaxEloPoints() == 0) ? _("all") : this.getCore().getActiveGame().getMaxEloPoints()) + "</td></tr>" + "<tr><td>"+_("Mode")+":  </td><td>" + _(this.getCore().getActiveGame().getGameModeString()) + "</td></tr>" + "<tr><td>"+_("Password")+":  </td><td>" + ("".equals(this.getCore().getActiveGame().getPassword()) ? _("(not set)") : this.getCore().getActiveGame().getPassword()) + "</td></tr>" + "</td></tr></table></html>");
+        description.setText("<html><p style=\"padding-bottom: 3; color: yellow;\"><b>„"+gamename+"”</b></p><table width=\"180px\"><tr><td>"+_("Map")+": </td><td>" + map + "</td></tr><tr><td>"+_("Players")+":  </td><td>" + this.getCore().getActiveGame().getNumberOfPlayers() + "<tr><td>"+_("Min-Max")+":  </td><td>" + ((this.getCore().getActiveGame().getMinSkill() == 0) ? _("all") : this.getCore().getActiveGame().getMinSkill()) + "-" + ((this.getCore().getActiveGame().getMaxSkill() == 0) ? _("all") : this.getCore().getActiveGame().getMaxSkill()) + "</td></tr>" + "<tr><td>"+_("Mode")+":  </td><td>" + _(this.getCore().getActiveGame().getGameModeString()) + "</td></tr>" + "<tr><td>"+_("Password")+":  </td><td>" + ("".equals(this.getCore().getActiveGame().getPassword()) ? _("(not set)") : this.getCore().getActiveGame().getPassword()) + "</td></tr>" + "</td></tr></table></html>");
 
         try {
             preview = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(Constants.Map.getPicturePath(Constants.Map.getMapById(this.getCore().getActiveGame().getMapId()).toString()))));
@@ -394,7 +394,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
                 managementSound.hornbeepSound();
             }
             Map<String,String> args = new HashMap<String,String>();
-            args.put("name", pjm.getPlayerName() + "[" + pjm.getPlayerExperience() + "/" + pjm.getPlayerElopoints() + "]");
+            args.put("name", pjm.getPlayerName() + "[" + pjm.getPlayerPoints() + "/" + pjm.getPlayerSkill() + "]");
             this.chatdialog.sendChatText("Server", _("<b>%name%</b> has joined!", args), false, getCore());
             changeButton();
 
@@ -457,7 +457,7 @@ public class WaitingGamePanel extends GameScreen implements MessageListener {
             removePlayer(pqm.getPlayerName());
             Map<String,String> args = new HashMap<String,String>();
             args.put("name", pqm.getPlayerName());
-            this.chatdialog.sendChatText("Server", _("<b>%name%</b> has left..."), false, getCore());
+            this.chatdialog.sendChatText("Server", _("<b>%name%</b> has left...", args), false, getCore());
         }
 
         if (m instanceof ServerChatMessage) {

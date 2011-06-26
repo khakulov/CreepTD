@@ -39,7 +39,11 @@ import com.creeptd.common.Constants;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
@@ -49,6 +53,7 @@ import javax.swing.JFrame;
  * @author Daniel
  */
 public class Client extends JFrame {
+    private static Point mousePosition;
 
     public static void main(String[] args) {
         if (args.length > 2) {
@@ -67,7 +72,8 @@ public class Client extends JFrame {
             Core.port = Constants.DEFAULT_SERVER_PORT;
         }
         System.out.println("Using server=" + Core.host + ", port=" + Core.port);
-        Client app = new Client();
+        final Client app = new Client();
+        // app.setUndecorated(true);
         Core core = new Core(app);
         app.setTitle("CreepTD - Online Multiplayer TowerDefense");
         app.getContentPane().setPreferredSize(Core.SCREENSIZE);
@@ -83,12 +89,35 @@ public class Client extends JFrame {
         core.init();
         core.setVisible(true);
         app.setVisible(true);
-        app.addWindowListener(new WindowAdapter() {
+        /* app.addWindowListener(new WindowAdapter() {
 
             @Override
             public void windowClosing(WindowEvent e) {
                 Core.network.shutdown();
             }
         });
+        app.addMouseMotionListener(new MouseMotionListener() {
+
+            public void mouseMoved(MouseEvent mouseEvent) {
+            }
+
+            public void mouseDragged(MouseEvent mouseEvent) {
+                int dx = mouseEvent.getPoint().x - mousePosition.x;
+                int dy = mouseEvent.getPoint().y - mousePosition.y;
+                app.setLocation(app.getLocation().x + dx, app.getLocation().y + dy);
+            }
+        });
+
+        app.addMouseListener(new MouseAdapter() {
+
+            public void mousePressed(MouseEvent mouseEvent) {
+                mousePosition = mouseEvent.getPoint();
+            }
+
+            public void mouseReleased(MouseEvent mouseEvent) {
+                mousePosition = null;
+            }
+        }); */
+
     }
 }

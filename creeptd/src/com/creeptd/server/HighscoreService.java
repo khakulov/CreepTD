@@ -95,10 +95,10 @@ public class HighscoreService {
         Player player = AuthenticationService.getPlayer(playerName);
         if (player != null) {
             scoreResponseMessage.setPlayerName(player.getName());
-            scoreResponseMessage.setExperience(player.getExperience());
-            scoreResponseMessage.setElopoints(player.getElopoints());
-            scoreResponseMessage.setLastgameExperience(player.getLastgameExperience());
-            scoreResponseMessage.setLastgameElopoints(player.getLastgameElopoints());
+            scoreResponseMessage.setPoints(player.getPoints());
+            scoreResponseMessage.setSkill(player.getSkill());
+            scoreResponseMessage.setLastgamePoints(player.getLastgamePoints());
+            scoreResponseMessage.setLastgameSkill(player.getLastgameSkill());
         }
         return scoreResponseMessage;
     }
@@ -107,17 +107,17 @@ public class HighscoreService {
      * @param offset
      * @return the actual HighscoreResponseMessage to send to clients.
      */
-    public static HighscoreResponseMessage getHighscoreMessage(int offset) {
+    public static HighscoreResponseMessage getHighscoreMessage(String sortBy, int offset) {
         HighscoreResponseMessage highscoreResponseMessage = new HighscoreResponseMessage();
         Set<HighscoreEntry> highscoreEntries = new HashSet<HighscoreEntry>();
-        Set<Player> players = AuthenticationService.getPlayers(offset);
+        Set<Player> players = AuthenticationService.getPlayers(sortBy, offset);
         for (Player player : players) {
             HighscoreEntry highscoreEntry = new HighscoreEntry();
             highscoreEntry.setPlayerName(player.getName());
-            highscoreEntry.setExperience(player.getExperience());
-            highscoreEntry.setElopoints(player.getElopoints());
-            highscoreEntry.setLastgameExperience(player.getLastgameExperience());
-            highscoreEntry.setLastgameElopoints(player.getLastgameElopoints());
+            highscoreEntry.setPoints(player.getPoints());
+            highscoreEntry.setSkill(player.getSkill());
+            highscoreEntry.setLastgamePoints(player.getLastgamePoints());
+            highscoreEntry.setLastgameSkill(player.getLastgameSkill());
             highscoreEntries.add(highscoreEntry);
         }
         highscoreResponseMessage.setHighscoreEntries(highscoreEntries);
@@ -135,27 +135,27 @@ public class HighscoreService {
         try {
             EntityManager entityManager = entityManager = PersistenceManager.getInstance().getEntityManager();
 
-            int[] experience = new int[playerPositions.size()];
+            int[] points = new int[playerPositions.size()];
             for (int i = 0; i < playerPositions.size(); i++) {
-                experience[i] = playerPositions.get(i).getClient().getPlayerModel().getExperience();
+                points[i] = playerPositions.get(i).getClient().getPlayerModel().getPoints();
             }
 
-            int[] elopoints = new int[playerPositions.size()];
+            int[] skill = new int[playerPositions.size()];
             for (int i = 0; i < playerPositions.size(); i++) {
-                elopoints[i] = playerPositions.get(i).getClient().getPlayerModel().getElopoints();
+                skill[i] = playerPositions.get(i).getClient().getPlayerModel().getSkill();
             }
             
             EntityTransaction entityTransaction = entityManager.getTransaction();
             entityTransaction.begin();
             
-            int[] newExperience = (game.getMode().equals(Constants.Mode.TEAM2VS2)) ? calcExperienceTeam(experience) : calcExperience(experience);
-            int[] newElopoints = (game.getMode().equals(Constants.Mode.TEAM2VS2)) ? calcElopointsTeam(elopoints) : calcElopoints(elopoints);
+            int[] newPoints = (game.getMode().equals(Constants.Mode.TEAM2VS2)) ? calcPointsTeam(points) : calcPoints(points);
+            int[] newSkill = (game.getMode().equals(Constants.Mode.TEAM2VS2)) ? calcSkillTeam(skill) : calcSkill(skill);
             
             for (int i = 0; i < playerPositions.size(); i++) {
-                playerPositions.get(i).getClient().getPlayerModel().setExperience((int) newExperience[i]);
-                playerPositions.get(i).getClient().getPlayerModel().setElopoints((int) newElopoints[i]);
-                playerPositions.get(i).getClient().getPlayerModel().setLastgameExperience((int) (newExperience[i] - experience[i]));
-                playerPositions.get(i).getClient().getPlayerModel().setLastgameElopoints((int) (newElopoints[i] - elopoints[i]));
+                playerPositions.get(i).getClient().getPlayerModel().setPoints((int) newPoints[i]);
+                playerPositions.get(i).getClient().getPlayerModel().setSkill((int) newSkill[i]);
+                playerPositions.get(i).getClient().getPlayerModel().setLastgamePoints((int) (newPoints[i] - points[i]));
+                playerPositions.get(i).getClient().getPlayerModel().setLastgameSkill((int) (newSkill[i] - skill[i]));
                 playerPositions.get(i).getClient().getPlayerModel().setLastgameId(game.getGameId());
                 entityManager.merge(playerPositions.get(i).getClient().getPlayerModel());
             }
@@ -167,13 +167,13 @@ public class HighscoreService {
     }
 
     /**
-     * Calculate elopoints for given match.
+     * Calculate skill for given match.
      *
-     * @param eloPoints The players' elopoints before the match in correct winning order
+     * @param skill The players' skill before the match in correct winning order
      * @return
      */
-    private static int[] calcElopoints(int[] eloPoints) {
-        int[] newElopoints = eloPoints.clone();
+    private static int[] calcSkill(int[] skill) {
+        int[] newSkill = skill.clone();
 
         // Calculation is as following:
         // 2 player game is calculated as normal match
@@ -182,40 +182,40 @@ public class HighscoreService {
         //   for each of these matches we check for the winner (best position) and calculate points
         // 4 player game is calculated as 4 player tournament accordingly
 
-        for (int p1 = 0; p1 < eloPoints.length; p1++) {
-            for (int p2 = 0; p2 < eloPoints.length; p2++) {
+        for (int p1 = 0; p1 < skill.length; p1++) {
+            for (int p2 = 0; p2 < skill.length; p2++) {
                 if (p2 != p1) { // Can't play against oneself
                     // ...but again everyone else
-                    double p1_prob = getEloProbability(eloPoints[p1], eloPoints[p2]);
-                    newElopoints[p1] += getNewElopoints(eloPoints[p1], p1 < p2 ? 1.0 : 0.0, p1_prob);
+                    double p1_prob = getEloProbability(skill[p1], skill[p2]);
+                    newSkill[p1] += getNewEloPoints(skill[p1], p1 < p2 ? 1.0 : 0.0, p1_prob);
                 }
             }
         }
-        return newElopoints;
+        return newSkill;
     }
 
     /**
-     * Calculate  elopoints for given team match.
+     * Calculate skill (elo points) for given team match.
      *
-     * @param eloPoints The players' elopoints before the match in correct winning order
+     * @param skill The players' skill before the match in correct winning order
      * @return
      */
-    private static int[] calcElopointsTeam(int[] eloPoints) {
-        int[] newElopoints = eloPoints.clone();
+    private static int[] calcSkillTeam(int[] skill) {
+        int[] newSkill = skill.clone();
 
-        newElopoints[0] += getNewElopoints(eloPoints[0], 1.0, getEloProbability(eloPoints[0], eloPoints[2])); // p1 vs p3
-        newElopoints[0] += getNewElopoints(eloPoints[0], 1.0, getEloProbability(eloPoints[0], eloPoints[3])); // p1 vs p4
+        newSkill[0] += getNewEloPoints(skill[0], 1.0, getEloProbability(skill[0], skill[2])); // p1 vs p3
+        newSkill[0] += getNewEloPoints(skill[0], 1.0, getEloProbability(skill[0], skill[3])); // p1 vs p4
 
-        newElopoints[1] += getNewElopoints(eloPoints[1], 1.0, getEloProbability(eloPoints[1], eloPoints[2])); // p2 vs p3
-        newElopoints[1] += getNewElopoints(eloPoints[1], 1.0, getEloProbability(eloPoints[1], eloPoints[2])); // p2 vs p4
+        newSkill[1] += getNewEloPoints(skill[1], 1.0, getEloProbability(skill[1], skill[2])); // p2 vs p3
+        newSkill[1] += getNewEloPoints(skill[1], 1.0, getEloProbability(skill[1], skill[2])); // p2 vs p4
 
-        newElopoints[2] += getNewElopoints(eloPoints[2], 0.0, getEloProbability(eloPoints[2], eloPoints[0])); // p3 vs p1
-        newElopoints[2] += getNewElopoints(eloPoints[2], 0.0, getEloProbability(eloPoints[2], eloPoints[1])); // p3 vs p2
+        newSkill[2] += getNewEloPoints(skill[2], 0.0, getEloProbability(skill[2], skill[0])); // p3 vs p1
+        newSkill[2] += getNewEloPoints(skill[2], 0.0, getEloProbability(skill[2], skill[1])); // p3 vs p2
 
-        newElopoints[3] += getNewElopoints(eloPoints[3], 0.0, getEloProbability(eloPoints[3], eloPoints[0])); // p4 vs p1
-        newElopoints[3] += getNewElopoints(eloPoints[3], 0.0, getEloProbability(eloPoints[3], eloPoints[1])); // p4 vs p2
+        newSkill[3] += getNewEloPoints(skill[3], 0.0, getEloProbability(skill[3], skill[0])); // p4 vs p1
+        newSkill[3] += getNewEloPoints(skill[3], 0.0, getEloProbability(skill[3], skill[1])); // p4 vs p2
 
-        return newElopoints;
+        return newSkill;
     }
 
     /**
@@ -237,7 +237,7 @@ public class HighscoreService {
      * @param ea Probability for player to win
      * @return Change in ELO points
      */
-    private static int getNewElopoints(double ro, double sa, double ea) {
+    private static int getNewEloPoints(double ro, double sa, double ea) {
         // Modified ELO constant:
         // We calculate k linearly from 30 at ro=0 to 0 at ro=3000, but it can't
         // become less than 2 (eqal enemies receive 1 point) so that there is
@@ -250,43 +250,43 @@ public class HighscoreService {
     }
 
     /**
-     * Calculate experience with fixed point system.
+     * Calculate points with fixed point system.
      *
      * @param ePoints old points
      * @return
      */
-    private static int[] calcExperience(int[] ePoints) {
-        int[] newExperience = new int[ePoints.length];
+    private static int[] calcPoints(int[] ePoints) {
+        int[] newPoints = new int[ePoints.length];
 
         if (ePoints.length == 4) {
-            newExperience[0] = ePoints[0] + 8;
-            newExperience[1] = ePoints[1] + 4;
-            newExperience[2] = ePoints[2] + 2;
-            newExperience[3] = ePoints[3] + 0;
+            newPoints[0] = ePoints[0] + 8;
+            newPoints[1] = ePoints[1] + 4;
+            newPoints[2] = ePoints[2] + 2;
+            newPoints[3] = ePoints[3] + 0;
         } else if (ePoints.length == 3) {
-            newExperience[0] = ePoints[0] + 6;
-            newExperience[1] = ePoints[1] + 3;
-            newExperience[2] = ePoints[2] + 0;
+            newPoints[0] = ePoints[0] + 6;
+            newPoints[1] = ePoints[1] + 3;
+            newPoints[2] = ePoints[2] + 0;
         } else if (ePoints.length == 2) {
-            newExperience[0] = ePoints[0] + 4;
-            newExperience[1] = ePoints[1] + 0;
+            newPoints[0] = ePoints[0] + 4;
+            newPoints[1] = ePoints[1] + 0;
         }
 
-        return newExperience;
+        return newPoints;
     }
 
     /**
-     * Calculate experience with fixed point system in team mode.
+     * Calculate points with fixed point system in team mode.
      *
      * @param ePoints old points
      * @return
      */
-    private static int[] calcExperienceTeam(int[] ePoints) {
-        int[] newExperience = new int[ePoints.length];
-        newExperience[0] = ePoints[0] + 6;
-        newExperience[1] = ePoints[1] + 6;
-        newExperience[2] = ePoints[2] + 0;
-        newExperience[3] = ePoints[3] + 0;
-        return newExperience;
+    private static int[] calcPointsTeam(int[] ePoints) {
+        int[] newPoints = new int[ePoints.length];
+        newPoints[0] = ePoints[0] + 6;
+        newPoints[1] = ePoints[1] + 6;
+        newPoints[2] = ePoints[2] + 0;
+        newPoints[3] = ePoints[3] + 0;
+        return newPoints;
     }
 }

@@ -1,5 +1,5 @@
 ###
-### MAP_DOODLE
+### DOODLE\MAP_DOODLE
 ###
 # set the Background:
 map_Doodle.jpg
@@ -9,7 +9,7 @@ map_Doodle.jpg
 # or if you do not want to use it for this map:
 # just set it to:
 # OFF
-SET_ALPHA_BACKGROUND_COLOR:BLUE
+SET_ALPHA_BACKGROUND_COLOR:GRAY
 
 # Next lines represent cells
 # where no tower can be built.

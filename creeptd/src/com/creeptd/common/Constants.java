@@ -47,7 +47,7 @@ public interface Constants {
     /**
      * Application version
      */
-    String VERSION = "0.8.5-9 beta";
+    String VERSION = "0.8.5-12 beta";
 
     /**
      * Default port for server-socket.
@@ -234,7 +234,6 @@ public interface Constants {
         FLYINGORB("com/creeptd/client/resources/maps/map_flyingorb.map"),
         GEOMETRY("com/creeptd/client/resources/maps/map_geometry.map"),
         GEWITTER("com/creeptd/client/resources/maps/map_gewitter.map"),
-        GOLDENAGE("com/creeptd/client/resources/maps/map_goldenage.map"),
         GREEN("com/creeptd/client/resources/maps/map_green.map"),
         GREENBLUEAURA("com/creeptd/client/resources/maps/map_greenblueaura.map"),
         GREENCRISTALINE("com/creeptd/client/resources/maps/map_GreenCristaline.map"),
@@ -256,18 +255,15 @@ public interface Constants {
         MAGICMIKE("com/creeptd/client/resources/maps/map_magicmike.map"),
         MASTESOFCREEP("com/creeptd/client/resources/maps/map_mastesofcreep.map"),
         NOVA("com/creeptd/client/resources/maps/map_nova.map"),
-        NUCLEARVECTOR("com/creeptd/client/resources/maps/map_nuclearvector.map"),
         OLDPAPER("com/creeptd/client/resources/maps/map_oldpaper.map"),
         ORANGEVECTOR("com/creeptd/client/resources/maps/map_orangevector.map"),
         PINKVECTOR("com/creeptd/client/resources/maps/map_pinkvector.map"),
         PLASMAVEKTOR("com/creeptd/client/resources/maps/map_plasmavektor.map"),
         PLOX("com/creeptd/client/resources/maps/map_plox.map"),
-        PRISON("com/creeptd/client/resources/maps/map_prison.map"),
         QUADCORE("com/creeptd/client/resources/maps/map_quadcore.map"),
         RACEWAYS("com/creeptd/client/resources/maps/map_raceways.map"),
         RADIALFADE("com/creeptd/client/resources/maps/map_radialfade.map"),
         RAINBOW("com/creeptd/client/resources/maps/map_rainbow.map"),
-        REDCOREWORLD("com/creeptd/client/resources/maps/map_redcoreworld.map"),
         REDCREEP("com/creeptd/client/resources/maps/map_redcreep.map"),
         REDPHASE("com/creeptd/client/resources/maps/map_redphase.map"),
         REDVECTOR("com/creeptd/client/resources/maps/map_redvector.map"),

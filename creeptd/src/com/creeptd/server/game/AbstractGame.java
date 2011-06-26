@@ -49,8 +49,8 @@ public abstract class AbstractGame extends Thread {
     private int mapId;
     private int maxPlayers;
     private String password;
-    private Integer maxPoints;
-    private Integer minPoints;
+    private Integer maxSkill;
+    private Integer minSkill;
     private Boolean shufflePlayers = true;
 
     public AbstractGame(CreateGameMessage message) {
@@ -60,8 +60,8 @@ public abstract class AbstractGame extends Thread {
         this.mapId = message.getMapId();
         this.maxPlayers = message.getMaxPlayers();
         this.password = message.getPassword();
-        this.maxPoints = message.getMaxEloPoints();
-        this.minPoints = message.getMinEloPoints();
+        this.maxSkill = message.getMaxSkill();
+        this.minSkill = message.getMinSkill();
         this.shufflePlayers = message.getShufflePlayers();
     }
 
@@ -94,11 +94,11 @@ public abstract class AbstractGame extends Thread {
     }
 
     public Integer getMaxPoints() {
-        return maxPoints;
+        return maxSkill;
     }
 
     public Integer getMinPoints() {
-        return minPoints;
+        return minSkill;
     }
 
     public Boolean getShufflePlayers() {

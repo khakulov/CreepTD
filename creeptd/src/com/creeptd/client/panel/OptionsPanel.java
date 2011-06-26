@@ -45,6 +45,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
+import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
 import static com.creeptd.client.i18n.Translator.*;
 
@@ -66,6 +67,7 @@ public class OptionsPanel extends JDialog {
         this.getContentPane().setBackground(Color.BLACK);
         this.setTitle("CreepTD - "+_("Options"));
         this.setResizable(false);
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
         title = Fonts.getFrameTitle(_("Options"), 0, this);
 
@@ -97,7 +99,7 @@ public class OptionsPanel extends JDialog {
         closeButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                setVisible(false);
+                dispose();
             }
         });
 
@@ -105,5 +107,11 @@ public class OptionsPanel extends JDialog {
         this.add(soundsCheckBox);
         this.add(closeButton);
         this.validate();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        GameLobby.onCloseOptionsPanel();
     }
 }

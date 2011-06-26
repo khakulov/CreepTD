@@ -161,7 +161,7 @@ public class GamePanel extends GameScreen {
         this.options.setForeground(Color.YELLOW);
         this.options.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                GameLobby.optionsFrame.setVisible(true);
+                GameLobby.openOptionsPanel();
             }
         });
 

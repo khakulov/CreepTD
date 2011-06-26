@@ -48,10 +48,12 @@ import javax.persistence.EntityTransaction;
 import org.apache.log4j.Logger;
 
 import com.creeptd.common.Constants;
+import com.creeptd.common.Constants.ResponseType;
 import com.creeptd.common.messages.client.CreateGameMessage;
 import com.creeptd.common.messages.client.GameMessage;
 import com.creeptd.common.messages.client.JoinGameRequestMessage;
 import com.creeptd.common.messages.server.GameDescription;
+import com.creeptd.common.messages.server.JoinGameResponseMessage;
 import com.creeptd.common.messages.server.PlayerJoinedMessage;
 import com.creeptd.common.messages.server.ServerMessage;
 import com.creeptd.server.PersistenceManager;
@@ -164,39 +166,43 @@ public class Game extends AbstractGame {
             }
         }
     }
-
+    
     /**
      * Check if a client is allowed to join this game.
      * @param client The client to test
      * @return true if allowed, else false
      */
     public boolean mayJoin(Client client) {
-        return isMultiaccount(client.getIPAddress(), client.getUid());
+        if (client == null) {
+            return false;
+        }
+        if (!(this.getGameState() instanceof WaitingGameState)) {
+            return false;
+        }
+        if (this.players.size() >= this.getMaxPlayers()) {
+           return false;
+        }
+        if (this.isMultiaccount(client.getIPAddress(), client.getUid())) {
+            return false;
+        }
+        if (this.findPlayer(client.getId()) != null) {
+            return false;
+        }
+        return true;
     }
 
     /**
      * Add a player to the game.
      * @param client
      */
-    public void addPlayer(Client client) throws Exception {
-        if (client == null) {
-            throw new IllegalArgumentException("'newClient' was null!");
-        }
-        if (!(this.getGameState() instanceof WaitingGameState)) {
-            throw new Exception("Game has started, no more players can join (State is " + this.getGameState() + ")");
-        }
-        if (this.players.size() >= this.getMaxPlayers()) {
-            throw new Exception("Maximum number of players reached, no more players can join");
-        }
-        if (this.isMultiaccount(client.getIPAddress(), client.getUid())) {
-            throw new Exception("You cannot join to a game twice.");
-        }
-        if (this.findPlayer(client.getId()) != null) {
-            return;
+    public boolean addPlayer(Client client) {
+        if (!mayJoin(client)) {
+            return false;
         }
         synchronized (this.players) {
+            client.send(new JoinGameResponseMessage(ResponseType.ok));
             for (PlayerInGame p : this.players) {
-                client.send(new PlayerJoinedMessage(p.getClient().getPlayerModel().getName(), p.getClient().getId(), p.getClient().getPlayerModel().getExperience(), p.getClient().getPlayerModel().getElopoints()));
+                client.send(new PlayerJoinedMessage(p.getClient().getPlayerModel().getName(), p.getClient().getId(), p.getClient().getPlayerModel().getPoints(), p.getClient().getPlayerModel().getSkill()));
             }
             PlayerInGame p = new PlayerInGame(client);
             this.players.add(p);
@@ -204,9 +210,10 @@ public class Game extends AbstractGame {
 
         this.sendAll(new PlayerJoinedMessage(client.getPlayerModel().getName(),
                 client.getId(),
-                client.getPlayerModel().getExperience(), client.getPlayerModel().getElopoints()));
+                client.getPlayerModel().getPoints(), client.getPlayerModel().getSkill()));
         gamePlayersChanged();
         logger.debug("Player joined to the game");
+        return true;
     }
 
     public void removePlayer(PlayerInGame player) {
@@ -302,7 +309,7 @@ public class Game extends AbstractGame {
                 } else if (count == 3) {
                     player4 = p.getClient().getPlayerModel().getName();
                 }
-                score += p.getClient().getPlayerModel().getElopoints();
+                score += p.getClient().getPlayerModel().getSkill();
                 count++;
             }
             if (count != 0) {
@@ -323,10 +330,10 @@ public class Game extends AbstractGame {
         if ((!this.getPassword().equals("")) && (!this.getPassword().equals(jgrm.getPassword()))) {
             return false;
         }
-        if (this.getMinPoints() > 0 && client.getPlayerModel().getElopoints() < this.getMinPoints()) {
+        if (this.getMinPoints() > 0 && client.getPlayerModel().getSkill() < this.getMinPoints()) {
             return false;
         }
-        if (this.getMaxPoints() > 0 && client.getPlayerModel().getElopoints() > this.getMaxPoints()) {
+        if (this.getMaxPoints() > 0 && client.getPlayerModel().getSkill() > this.getMaxPoints()) {
             return false;
         }
         return true;
@@ -394,37 +401,37 @@ public class Game extends AbstractGame {
                     int num = playerPositions.indexOf(player) + 1;
                     if (i == 1) {
                         gameJournalEntry.setPlayer1(client.getPlayerModel().getName());
-                        gameJournalEntry.setPlayer1Experience(client.getPlayerModel().getExperience());
-                        gameJournalEntry.setPlayer1GivenExperience(client.getPlayerModel().getLastgameExperience());
-                        gameJournalEntry.setPlayer1Elopoints(client.getPlayerModel().getElopoints());
-                        gameJournalEntry.setPlayer1GivenElopoints(client.getPlayerModel().getLastgameElopoints());
+                        gameJournalEntry.setPlayer1Points(client.getPlayerModel().getPoints());
+                        gameJournalEntry.setPlayer1GivenPoints(client.getPlayerModel().getLastgamePoints());
+                        gameJournalEntry.setPlayer1Skill(client.getPlayerModel().getSkill());
+                        gameJournalEntry.setPlayer1GivenSkill(client.getPlayerModel().getLastgameSkill());
                         gameJournalEntry.setPlayer1Position(num);
                         gameJournalEntry.setIp1(client.getPlayerModel().getIp());
                         gameJournalEntry.setMac1(client.getPlayerModel().getMac());
                     } else if (i == 2) {
                         gameJournalEntry.setPlayer2(client.getPlayerModel().getName());
-                        gameJournalEntry.setPlayer2Experience(client.getPlayerModel().getExperience());
-                        gameJournalEntry.setPlayer2GivenExperience(client.getPlayerModel().getLastgameExperience());
-                        gameJournalEntry.setPlayer2Elopoints(client.getPlayerModel().getElopoints());
-                        gameJournalEntry.setPlayer2GivenElopoints(client.getPlayerModel().getLastgameElopoints());
+                        gameJournalEntry.setPlayer2Points(client.getPlayerModel().getPoints());
+                        gameJournalEntry.setPlayer2GivenPoints(client.getPlayerModel().getLastgamePoints());
+                        gameJournalEntry.setPlayer2Skill(client.getPlayerModel().getSkill());
+                        gameJournalEntry.setPlayer2GivenSkill(client.getPlayerModel().getLastgameSkill());
                         gameJournalEntry.setPlayer2Position(num);
                         gameJournalEntry.setIp2(client.getPlayerModel().getIp());
                         gameJournalEntry.setMac2(client.getPlayerModel().getMac());
                     } else if (i == 3) {
                         gameJournalEntry.setPlayer3(client.getPlayerModel().getName());
-                        gameJournalEntry.setPlayer3Experience(client.getPlayerModel().getExperience());
-                        gameJournalEntry.setPlayer3GivenExperience(client.getPlayerModel().getLastgameExperience());
-                        gameJournalEntry.setPlayer3Elopoints(client.getPlayerModel().getElopoints());
-                        gameJournalEntry.setPlayer3GivenElopoints(client.getPlayerModel().getLastgameElopoints());
+                        gameJournalEntry.setPlayer3Points(client.getPlayerModel().getPoints());
+                        gameJournalEntry.setPlayer3GivenPoints(client.getPlayerModel().getLastgamePoints());
+                        gameJournalEntry.setPlayer3Skill(client.getPlayerModel().getSkill());
+                        gameJournalEntry.setPlayer3GivenSkill(client.getPlayerModel().getLastgameSkill());
                         gameJournalEntry.setPlayer3Position(num);
                         gameJournalEntry.setIp3(client.getPlayerModel().getIp());
                         gameJournalEntry.setMac3(client.getPlayerModel().getMac());
                     } else if (i == 4) {
                         gameJournalEntry.setPlayer4(client.getPlayerModel().getName());
-                        gameJournalEntry.setPlayer4Experience(client.getPlayerModel().getExperience());
-                        gameJournalEntry.setPlayer4GivenExperience(client.getPlayerModel().getLastgameExperience());
-                        gameJournalEntry.setPlayer4Elopoints(client.getPlayerModel().getElopoints());
-                        gameJournalEntry.setPlayer4GivenElopoints(client.getPlayerModel().getLastgameElopoints());
+                        gameJournalEntry.setPlayer4Points(client.getPlayerModel().getPoints());
+                        gameJournalEntry.setPlayer4GivenPoints(client.getPlayerModel().getLastgamePoints());
+                        gameJournalEntry.setPlayer4Skill(client.getPlayerModel().getSkill());
+                        gameJournalEntry.setPlayer4GivenSkill(client.getPlayerModel().getLastgameSkill());
                         gameJournalEntry.setPlayer4Position(num);
                         gameJournalEntry.setIp4(client.getPlayerModel().getIp());
                         gameJournalEntry.setMac4(client.getPlayerModel().getMac());

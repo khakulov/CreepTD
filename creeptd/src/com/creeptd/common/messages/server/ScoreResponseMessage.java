@@ -53,10 +53,10 @@ public class ScoreResponseMessage extends ServerMessage {
     private static final String REG_EXP =
             "SCORE\\s\"([^\"]+)\"\\s([0-9]+)\\s([0-9]+)\\s([-]?[0-9]+)\\s([-]?[0-9]+)[\\s]?";
     private String playerName;
-    private Integer experience;
-    private Integer elopoints;
-    private Integer lastgame_experience;
-    private Integer lastgame_elopoints;
+    private Integer points;
+    private Integer skill;
+    private Integer lastgame_points;
+    private Integer lastgame_skill;
     /**
      * Pattern for regular expression.
      */
@@ -74,12 +74,12 @@ public class ScoreResponseMessage extends ServerMessage {
      * @param oldPoints the points for the last game
      * @param points the actual points in the highscore
      */
-    public ScoreResponseMessage(String playerName, Integer experience, Integer elopoints, Integer lastgame_experience, Integer lastgame_elopoints) {
+    public ScoreResponseMessage(String playerName, Integer points, Integer skill, Integer lastgame_points, Integer lastgame_skill) {
         this.playerName = playerName;
-        this.experience = experience;
-        this.elopoints = elopoints;
-        this.lastgame_experience = experience;
-        this.lastgame_elopoints = elopoints;
+        this.points = points;
+        this.skill = skill;
+        this.lastgame_points = points;
+        this.lastgame_skill = skill;
     }
 
     /**
@@ -87,7 +87,7 @@ public class ScoreResponseMessage extends ServerMessage {
      */
     @Override
     public String getMessageString() {
-        return "SCORE \"" + this.playerName + "\" " + this.experience + " " + this.elopoints + " " + this.lastgame_experience + " " + this.lastgame_elopoints;
+        return "SCORE \"" + this.playerName + "\" " + this.points + " " + this.skill + " " + this.lastgame_points + " " + this.lastgame_skill;
     }
 
     /**
@@ -98,10 +98,10 @@ public class ScoreResponseMessage extends ServerMessage {
         Matcher matcher = PATTERN.matcher(messageString);
         if (matcher.matches()) {
             this.setPlayerName(matcher.group(1));
-            this.setExperience(Integer.valueOf(matcher.group(2)));
-            this.setElopoints(Integer.valueOf(matcher.group(3)));
-            this.setLastgameExperience(Integer.valueOf(matcher.group(4)));
-            this.setLastgameElopoints(Integer.valueOf(matcher.group(5)));
+            this.setPoints(Integer.valueOf(matcher.group(2)));
+            this.setSkill(Integer.valueOf(matcher.group(3)));
+            this.setLastgamePoints(Integer.valueOf(matcher.group(4)));
+            this.setLastgameSkill(Integer.valueOf(matcher.group(5)));
         }
     }
 
@@ -119,35 +119,35 @@ public class ScoreResponseMessage extends ServerMessage {
         this.playerName = playerName;
     }
 
-    public Integer getElopoints() {
-        return elopoints;
+    public Integer getSkill() {
+        return skill;
     }
 
-    public void setElopoints(Integer elopoints) {
-        this.elopoints = elopoints;
+    public void setSkill(Integer skill) {
+        this.skill = skill;
     }
 
-    public Integer getExperience() {
-        return experience;
+    public Integer getPoints() {
+        return points;
     }
 
-    public void setExperience(Integer experience) {
-        this.experience = experience;
+    public void setPoints(Integer points) {
+        this.points = points;
     }
 
-    public Integer getLastgameElopoints() {
-        return lastgame_elopoints;
+    public Integer getLastgameSkill() {
+        return lastgame_skill;
     }
 
-    public void setLastgameElopoints(Integer lastgame_elopoints) {
-        this.lastgame_elopoints = lastgame_elopoints;
+    public void setLastgameSkill(Integer skill) {
+        this.lastgame_skill = skill;
     }
 
-    public Integer getLastgameExperience() {
-        return lastgame_experience;
+    public Integer getLastgamePoints() {
+        return lastgame_points;
     }
 
-    public void setLastgameExperience(Integer lastgame_experience) {
-        this.lastgame_experience = lastgame_experience;
+    public void setLastgamePoints(Integer points) {
+        this.lastgame_points = points;
     }
 }
