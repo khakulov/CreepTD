@@ -1,6 +1,6 @@
-This is a unofficial clone of the Subversion repository http://creeptd.googlecode.com
+This is a unofficial mirror of the Subversion repository http://creeptd.googlecode.com
 
-„CreepTD is an online multiplayer towerdefense game for 2-4 players playing on one map. It's the mother of all TD games.”
+CreepTD is an online multiplayer towerdefense game for 2-4 players playing on one map. It's the mother of all TD games.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **It's simple: At the beginning, every player gets 20 lives to defend. The goal of the game is, of course, to survive your opponents.**
