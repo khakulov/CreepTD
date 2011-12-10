@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<jnlp href="creeptd-watcher.jnlp">
+
+<information>
+        <title>CreepTD - Online Multiplayer TowerDefense</title>
+        <vendor>2011 CreepTD Developers, GNU General Public License Version 3</vendor>
+</information>
+
+<resources>
+        <j2se version="1.6+"/>
+        <jar href="creeptd-watcher.jar"/>
+</resources>
+
+<application-desc main-class="com.creeptd.client.Client">
+	<argument>www.creeptd.com</argument>
+	<argument>4747</argument>
+</application-desc>
+
+</jnlp>
